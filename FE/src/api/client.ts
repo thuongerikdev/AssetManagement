@@ -13,7 +13,9 @@ const buildUrl = (endpoint: string) => {
 const getHeaders = () => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'accept': '*/*'
+    'accept': '*/*',
+    // Bỏ qua màn hình cảnh báo của ngrok bản miễn phí để không bị lỗi CORS
+    'ngrok-skip-browser-warning': 'true' 
   };
   
   const token = localStorage.getItem('access_token');
@@ -29,7 +31,7 @@ export const apiClient = {
   get: async (endpoint: string) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'GET',
-      headers: getHeaders(), // Nhét token vào đây
+      headers: getHeaders(), // Nhét token và ngrok header vào đây
     });
     return response.json();
   },
@@ -37,7 +39,7 @@ export const apiClient = {
   post: async (endpoint: string, data: any) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'POST',
-      headers: getHeaders(), // Nhét token vào đây
+      headers: getHeaders(), // Nhét token và ngrok header vào đây
       body: JSON.stringify(data),
     });
     return response.json();
@@ -46,7 +48,7 @@ export const apiClient = {
   put: async (endpoint: string, data: any) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'PUT',
-      headers: getHeaders(), // Nhét token vào đây
+      headers: getHeaders(), // Nhét token và ngrok header vào đây
       body: JSON.stringify(data),
     });
     return response.json();
@@ -55,7 +57,7 @@ export const apiClient = {
   delete: async (endpoint: string) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'DELETE',
-      headers: getHeaders(), // Nhét token vào đây
+      headers: getHeaders(), // Nhét token và ngrok header vào đây
     });
     return response.json();
   }
