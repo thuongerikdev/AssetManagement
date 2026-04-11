@@ -263,6 +263,7 @@ namespace TH.Auth.ApplicationService.Service.User
                     tokenVersion = 1,
                     createdAt = DateTime.UtcNow,
                     updatedAt = DateTime.UtcNow,
+                    departmentID = req.departmentID,
                     scope = req.scope
                 };
 

@@ -18,4 +18,5 @@ export const depreciationHistoryApi = {
   create: (data: LichSuKhauHao) => apiClient.post('/LichSuKhauHao/create', data),
   update: (data: LichSuKhauHao) => apiClient.put('/LichSuKhauHao/update', data),
   delete: (id: number) => apiClient.delete(`/LichSuKhauHao/delete/${id}`),
+  getByAssetId: (assetId: number) => apiClient.get(`/LichSuKhauHao/get-by-asset/${assetId}`),
 };

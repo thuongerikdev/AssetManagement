@@ -1,5 +1,5 @@
 // Thay đổi URL này khi bạn deploy lên server thật
-const BASE_URL = 'https://7615-2405-4802-1d90-6ec0-2908-9043-26c-6557.ngrok-free.app/api';
+const BASE_URL = 'https://a166-113-178-32-23.ngrok-free.app/api';
 
 // 1. Hàm xử lý URL thông minh: Nếu endpoint bắt đầu bằng http thì giữ nguyên, ngược lại mới nối BASE_URL
 const buildUrl = (endpoint: string) => {

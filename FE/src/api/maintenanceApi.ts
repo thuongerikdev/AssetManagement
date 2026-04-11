@@ -20,4 +20,5 @@ export const maintenanceApi = {
   create: (data: BaoTriTaiSan) => apiClient.post('/BaoTriTaiSan/create', data),
   update: (data: BaoTriTaiSan) => apiClient.put('/BaoTriTaiSan/update', data),
   delete: (id: number) => apiClient.delete(`/BaoTriTaiSan/delete/${id}`),
+  getByAssetId: (assetId: number) => apiClient.get(`/BaoTriTaiSan/get-by-asset/${assetId}`),
 };

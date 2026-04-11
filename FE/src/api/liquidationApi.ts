@@ -23,4 +23,5 @@ export const liquidationApi = {
   create: (data: ThanhLyTaiSan) => apiClient.post('/ThanhLyTaiSan/create', data),
   update: (data: ThanhLyTaiSan) => apiClient.put('/ThanhLyTaiSan/update', data),
   delete: (id: number) => apiClient.delete(`/ThanhLyTaiSan/delete/${id}`),
+  getByAssetId: (assetId: number) => apiClient.get(`/ThanhLyTaiSan/get-by-asset/${assetId}`),
 };

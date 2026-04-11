@@ -19,6 +19,7 @@ namespace TH.Auth.Dtos.User
         // Nhận vào danh sách ID (ví dụ: [1, 2, 4])
         // Nếu null hoặc rỗng -> Sẽ lấy Role mặc định
         public List<int>? roleIds { get; set; }
+        public string? departmentID { get; set; }
 
         public string? firstName { get; set; }
         public string? lastName { get; set; }

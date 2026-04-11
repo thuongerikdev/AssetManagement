@@ -1,0 +1,59 @@
+đã sửa - mã ts tự sinh
+
+- cho dropdown user : trưởng phòng đầu tiên 
+	- trưởng phòng sẽ có ( trưởng phòng ) 
+- chọn phòng ban với user thì sẽ là chờ xác nhận 
+	không chọn thì sẽ là chờ cấp phát 
+
+đã sửa - Tài khoản kế toán cho thành drop down 
+
+đang sửa - Tính thời gian khấu theo ngày được cấp phát 
+
+đã sửa - Để mặc định khấu hao theo đường thẳng 
+
+đã sửa - Giao diện sửa theo tài liệu 
+
+đã sửa - Màn quản lý ts sắp xếp mặc định theo trạn thái tài sản 
+
+đã sửa -  Thao tác :  xem chi tiết điều chuyển, xoá, cấp phát 
+
+đã sửa -  Màn hình chi tiết làm giống tài liệu 
+- thông tin chung thêm file 
+- khi từ model sửa tắt thì phải về trang trước đó chứ không về danh sách 
+đã sửa - chỉnh sửa chỉ sửa thông tin tài sản thôi , 
+
+đã sửa - ở màn chi tiết tài sản thêm nút cấp phát, điều chuyển thanh lý , bảo trì 
+
+đã sửa -  đổi icon phù hợp 
+
+đã sửa -  chỉ có thể xoá tài sản đã thanh lý 
+
+đã sửa -  bỏ thu hồi 
+
+đã sửa -  chỉ hiển thị danh sách tài sản chưa cáp phát ở cấp phát 
+đã sửa - chỉ hiển thị danh sách tài sản đang sử dụng ở điều chuyển 
+
+đã sửa - lịch sử sử dụng thêm cả sửa chữa 
+ 
+
+đã sửa - Nội dung bảo trì: đổi thành ghi chú nếu có
+
+đã sửa - bỏ loại chi phí của sữa chữa 
+đã sửa - bỏ trạng thái 
+
+đã sửa - ghi tăng: thêm tài sản vào hệ thống và cấp phát 
+- sổ cái , nhật ký chung 
+
+
+
+==============
+Hỏi: lúc chỉnh sửa tài sản được chỉnh sửa mã ts không 
+
+
+
+
+
+
+
+
+

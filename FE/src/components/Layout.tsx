@@ -9,9 +9,9 @@ import {
   FileText, 
   BarChart3, 
   Settings,
-  Settings2, // Thêm icon cho menu Cấu hình
-  Building2, // Thêm icon cho menu Phòng ban
-  ChevronDown, // Thêm icon mũi tên
+  Settings2, 
+  Building2, 
+  ChevronDown, 
   Bell,
   User,
   LogOut,
@@ -19,7 +19,8 @@ import {
   FolderTree,
   BookOpen,
   X,
-  MonitorSmartphone
+  MonitorSmartphone,
+  RefreshCw // <-- Bổ sung icon Refresh
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -39,7 +40,6 @@ const navItems: NavItem[] = [
   { path: '/vouchers', label: 'Chứng từ Kế toán', icon: FileText },
   { path: '/reports', label: 'Báo cáo', icon: BarChart3 },
   { path: '/my-assets', label: 'Tài sản của tôi', icon: MonitorSmartphone },
-  // { path: '/admin', label: 'Quản trị', icon: Settings }, // Tạm thời comment lại nếu bạn chưa cần dùng
 ];
 
 export function Layout() {
@@ -198,14 +198,24 @@ export function Layout() {
               {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
+              {/* NÚT LÀM MỚI TRANG ĐƯỢC THÊM VÀO ĐÂY */}
+              <button 
+                onClick={() => window.location.reload()}
+                className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 bg-gray-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200 hover:border-blue-200"
+                title="Tải lại toàn bộ dữ liệu"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span className="hidden sm:block">Làm mới</span>
+              </button>
+
               <button className="relative text-gray-600 hover:text-gray-900 focus:outline-none">
                 <Bell className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
                   3
                 </span>
               </button>
-              <div className="text-right hidden sm:block">
+              <div className="text-right hidden sm:block border-l border-gray-200 pl-4 ml-1">
                 <p className="text-sm font-medium text-gray-900">Công ty TNHH ABC</p>
                 <p className="text-xs text-gray-500">Hôm nay: {new Date().toLocaleDateString('vi-VN')}</p>
               </div>

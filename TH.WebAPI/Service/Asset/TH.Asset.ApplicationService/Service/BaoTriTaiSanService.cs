@@ -20,6 +20,7 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<bool>> DeleteBaoTriTaiSanAsync(int id);
         Task<ResponseDto<List<BaoTriTaiSanResponse>>> GetAllBaoTriTaiSanAsync();
         Task<ResponseDto<BaoTriTaiSanResponse>> GetBaoTriTaiSanByIdAsync(int id);
+        Task<ResponseDto<List<BaoTriTaiSanResponse>>> GetByTaiSanIdAsync(int taiSanId);
     }
 
     public class BaoTriTaiSanService : AssetServiceBase, IBaoTriTaiSanService
@@ -331,6 +332,30 @@ namespace TH.Asset.ApplicationService.Service
                 _logger.LogError(ex, "Lỗi khi lấy chi tiết phiếu bảo trì. ID: {Id}", id);
                 return ResponseConst.Error<BaoTriTaiSanResponse>(500, "Lỗi hệ thống: " + ex.Message);
             }
+        }
+
+        public async Task<ResponseDto<List<BaoTriTaiSanResponse>>> GetByTaiSanIdAsync(int taiSanId)
+        {
+            var result = await _dbContext.baoTriTaiSans
+                .Where(x => x.TaiSanId == taiSanId)
+                .OrderByDescending(x => x.NgayThucHien)
+                .Select(x => new BaoTriTaiSanResponse
+                {
+                    id = x.Id,
+                    taiSanId = x.TaiSanId,
+                    ngayThucHien = x.NgayThucHien,
+                    loaiBaoTri = x.LoaiBaoTri,
+                    moTa = x.MoTa,
+                    coChiPhi = x.CoChiPhi,
+                    chiPhi = x.ChiPhi, // <--- QUAN TRỌNG NHẤT LÀ DÒNG NÀY!
+                    loaiChiPhi = x.LoaiChiPhi,
+                    nhaCungCap = x.NhaCungCap,
+                    ghiChu = x.GhiChu,
+                    trangThai = x.TrangThai
+                })
+                .ToListAsync();
+
+            return ResponseConst.Success("Thành công", result);
         }
     }
 }

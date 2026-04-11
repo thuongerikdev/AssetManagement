@@ -88,5 +88,19 @@ namespace TH.WebAPI.Controllers.Asset
             }
             return BadRequest(result);
         }
+        [HttpGet("get-by-asset/{taiSanId}")]
+        public async Task<IActionResult> GetBaoTriByAssetId(int taiSanId)
+        {
+            var result = await _baoTriService.GetByTaiSanIdAsync(taiSanId);
+            if (result.ErrorCode == 200)
+            {
+                return Ok(result);
+            }
+            if (result.ErrorCode == 404)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

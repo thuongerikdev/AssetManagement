@@ -19,6 +19,8 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<bool>> DeleteChungTuAsync(int id);
         Task<ResponseDto<List<ChungTuResponse>>> GetAllChungTuAsync();
         Task<ResponseDto<ChungTuResponse>> GetChungTuByIdAsync(int id);
+
+        Task<ResponseDto<List<ChungTuResponse>>> GetChungTuByTaiSanIdAsync(int taiSanId);
     }
 
     public class ChungTuService : AssetServiceBase, IChungTuService
@@ -303,5 +305,47 @@ namespace TH.Asset.ApplicationService.Service
                 return ResponseConst.Error<ChungTuResponse>(500, "Lỗi hệ thống: " + ex.Message);
             }
         }
+        public async Task<ResponseDto<List<ChungTuResponse>>> GetChungTuByTaiSanIdAsync(int taiSanId)
+        {
+            try
+            {
+                // Lọc các chứng từ có chứa TaiSanId trong các dòng chi tiết hạch toán
+                var result = await _dbContext.chungTus
+                    .Include(x => x.ChiTietChungTus)
+                    .Where(x => x.ChiTietChungTus!.Any(ct => ct.TaiSanId == taiSanId))
+                    .Select(x => new ChungTuResponse
+                    {
+                        id = x.Id,
+                        maChungTu = x.MaChungTu,
+                        ngayLap = x.NgayLap,
+                        loaiChungTu = x.LoaiChungTu,
+                        moTa = x.MoTa,
+                        tongTien = x.TongTien,
+                        trangThai = x.TrangThai,
+                        nguoiLapId = x.NguoiLapId,
+                        ngayTao = x.NgayTao,
+                        chiTietChungTus = x.ChiTietChungTus!.Select(ct => new ChiTietChungTuResponse
+                        {
+                            id = ct.Id,
+                            chungTuId = ct.ChungTuId,
+                            taiKhoanNo = ct.TaiKhoanNo,
+                            taiKhoanCo = ct.TaiKhoanCo,
+                            soTien = ct.SoTien,
+                            moTa = ct.MoTa,
+                            taiSanId = ct.TaiSanId
+                        }).ToList()
+                    })
+                    .OrderByDescending(x => x.ngayLap)
+                    .ToListAsync();
+
+                return ResponseConst.Success("Lấy danh sách chứng từ theo tài sản thành công.", result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy danh sách chứng từ theo tài sản.");
+                return ResponseConst.Error<List<ChungTuResponse>>(500, "Lỗi hệ thống: " + ex.Message);
+            }
+        }
+
     }
 }

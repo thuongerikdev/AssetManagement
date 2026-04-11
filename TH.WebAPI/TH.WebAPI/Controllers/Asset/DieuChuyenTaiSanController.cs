@@ -90,5 +90,21 @@ namespace TH.WebAPI.Controllers.Asset
             }
             return BadRequest(result);
         }
+
+        [HttpGet("get-by-asset/{taiSanId}")]
+        public async Task<IActionResult> GetDieuChuyenByTaiSanId(int taiSanId)
+        {
+            var result = await _dieuChuyenService.GetByTaiSanIdAsync(taiSanId);
+            if (result.ErrorCode == 200)
+            {
+                return Ok(result);
+            }
+            // Trả về NotFound nếu mã lỗi là 404
+            if (result.ErrorCode == 404)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

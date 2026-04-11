@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { Plus, Search, Filter, Wrench, Calendar, Trash2, Eye, X, Edit, Save } from 'lucide-react';
+import { Plus, Search, Wrench, Trash2, Eye, X, Edit, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { maintenanceApi, BaoTriTaiSan } from '../../api/maintenanceApi';
 import { assetApi, TaiSan } from '../../api/assetApi';
-
-// Map Enum trạng thái
-const statusConfig: Record<number, { label: string; color: string }> = {
-  0: { label: 'Chờ xử lý', color: 'bg-yellow-100 text-yellow-700' },
-  1: { label: 'Đang thực hiện', color: 'bg-blue-100 text-blue-700' },
-  2: { label: 'Hoàn thành', color: 'bg-green-100 text-green-700' },
-};
 
 // Map Enum Loại bảo trì
 const loaiBaoTriConfig: Record<string, string> = {
@@ -21,15 +14,8 @@ const loaiBaoTriConfig: Record<string, string> = {
   '4': 'Kiểm tra'
 };
 
-// Map Enum Loại chi phí
-const costTypeConfig: Record<string, { label: string; color: string }> = {
-  'sua_chua': { label: 'Sửa chữa', color: 'text-orange-600' },
-  'nang_cap': { label: 'Nâng cấp', color: 'text-blue-600' },
-};
-
 export function MaintenanceList() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
   
   const [records, setRecords] = useState<BaoTriTaiSan[]>([]);
   const [assets, setAssets] = useState<TaiSan[]>([]);
@@ -66,11 +52,11 @@ export function MaintenanceList() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa phiếu bảo trì này?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa bản ghi bảo trì này?')) {
       try {
         const response = await maintenanceApi.delete(id);
         if (response.errorCode === 200) {
-          toast.success('Xóa phiếu thành công');
+          toast.success('Xóa thành công');
           fetchData();
         } else {
           toast.error(response.message || 'Lỗi khi xóa');
@@ -81,7 +67,6 @@ export function MaintenanceList() {
     }
   };
 
-  // Mở modal (Có thể chọn mở ở chế độ Xem hoặc Sửa)
   const openModal = (record: BaoTriTaiSan, editMode: boolean = false) => {
     setSelectedRecord(record);
     setEditForm({
@@ -93,33 +78,36 @@ export function MaintenanceList() {
     setIsViewModalOpen(true);
   };
 
-  // Handle thay đổi dữ liệu trong Modal Sửa
   const handleModalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const numberFields = ['taiSanId', 'chiPhi', 'trangThai'];
+    const { name, value } = e.target;
+    const numberFields = ['taiSanId', 'chiPhi'];
     setEditForm(prev => ({
       ...prev,
       [name]: numberFields.includes(name) ? (value === '' ? undefined : Number(value)) : value
     }));
   };
 
-  // Submit cập nhật phiếu
   const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const payload = { ...editForm, coChiPhi: modalHasCost } as BaoTriTaiSan;
+      const payload = { 
+        ...editForm, 
+        coChiPhi: modalHasCost,
+        trangThai: 2 // Luôn chốt là hoàn thành
+      } as BaoTriTaiSan;
+
       if (!modalHasCost) {
         payload.chiPhi = 0;
-        payload.loaiChiPhi = "";
       }
+
       const response = await maintenanceApi.update(payload);
       if (response.errorCode === 200) {
-        toast.success('Cập nhật phiếu bảo trì thành công!');
+        toast.success('Cập nhật thông tin thành công!');
         setIsViewModalOpen(false);
-        fetchData(); // Load lại danh sách
+        fetchData();
       } else {
-        toast.error(response.message || 'Lỗi khi cập nhật phiếu.');
+        toast.error(response.message || 'Lỗi khi cập nhật.');
       }
     } catch (error) {
       toast.error('Lỗi kết nối đến máy chủ.');
@@ -133,9 +121,7 @@ export function MaintenanceList() {
   const filteredRecords = records.filter(record => {
     const asset = getAsset(record.taiSanId);
     const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
-    const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || record.trangThai.toString() === filterStatus;
-    return matchesSearch && matchesStatus;
+    return searchStr.includes(searchTerm.toLowerCase());
   });
 
   const formatCurrency = (value?: number) => {
@@ -147,19 +133,18 @@ export function MaintenanceList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-gray-900">Bảo trì - Bảo dưỡng</h1>
-          <p className="text-sm text-gray-500 mt-1">Quản lý bảo trì và sửa chữa tài sản</p>
+          <h1 className="font-bold text-gray-900">Lịch sử Bảo trì / Sửa chữa</h1>
+          <p className="text-sm text-gray-500 mt-1">Quản lý lịch sử sửa chữa tài sản</p>
         </div>
         <Link
           to="/maintenance/new"
-          className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Tạo Phiếu bảo trì
+          Ghi nhận sửa chữa
         </Link>
       </div>
 
-      {/* Stats và Filters giữ nguyên như cũ... */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 relative">
@@ -172,18 +157,6 @@ export function MaintenanceList() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="flex gap-2">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="0">Chờ xử lý</option>
-              <option value="1">Đang thực hiện</option>
-              <option value="2">Hoàn thành</option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -193,25 +166,22 @@ export function MaintenanceList() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày thực hiện</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Tài sản</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Loại bảo trì</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Loại chi phí</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Đơn vị thực hiện</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Chi phí</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase">Trạng thái</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase">Thao tác</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoading ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-500">Đang tải dữ liệu...</td></tr>
+                <tr><td colSpan={6} className="text-center py-8 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : filteredRecords.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-500">Không có dữ liệu phiếu bảo trì.</td></tr>
+                <tr><td colSpan={6} className="text-center py-8 text-gray-500">Không có lịch sử bảo trì.</td></tr>
               ) : (
                 filteredRecords.map((record) => {
                   const asset = getAsset(record.taiSanId);
-                  const statusInfo = statusConfig[record.trangThai] || statusConfig[0];
-                  const costInfo = record.loaiChiPhi ? costTypeConfig[record.loaiChiPhi] : null;
 
                   return (
                     <tr key={record.id} className="hover:bg-gray-50 transition-colors">
@@ -225,34 +195,21 @@ export function MaintenanceList() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">{loaiBaoTriConfig[record.loaiBaoTri]}</td>
-                      <td className="px-6 py-4">
-                        {costInfo ? (
-                          <span className={`text-sm font-medium ${costInfo.color}`}>{costInfo.label}</span>
-                        ) : <span className="text-sm text-gray-400">Không</span>}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
-                        {formatCurrency(record.chiPhi)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusInfo.color}`}>
-                          {statusInfo.label}
-                        </span>
+                      <td className="px-6 py-4 text-sm text-gray-600">{record.nhaCungCap || 'Nội bộ'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-red-600">
+                        {record.chiPhi && record.chiPhi > 0 ? formatCurrency(record.chiPhi) : '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => openModal(record, false)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Xem chi tiết">
                             <Eye className="w-4 h-4" />
                           </button>
-                          {record.trangThai === 0 && (
-                            <button onClick={() => openModal(record, true)} className="p-1 text-orange-600 hover:bg-orange-50 rounded" title="Sửa phiếu">
-                              <Edit className="w-4 h-4" />
-                            </button>
-                          )}
-                          {record.trangThai === 0 && (
-                            <button onClick={() => record.id && handleDelete(record.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Xóa phiếu">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
+                          <button onClick={() => openModal(record, true)} className="p-1 text-orange-600 hover:bg-orange-50 rounded" title="Sửa thông tin">
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => record.id && handleDelete(record.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Xóa lịch sử">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -272,8 +229,8 @@ export function MaintenanceList() {
             {/* Header Modal */}
             <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
               <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-                <Wrench className="w-5 h-5 text-orange-600" /> 
-                {isEditMode ? 'Cập nhật Phiếu bảo trì' : 'Chi tiết Phiếu bảo trì'}
+                <Wrench className="w-5 h-5 text-blue-600" /> 
+                {isEditMode ? 'Cập nhật thông tin' : 'Chi tiết sửa chữa'}
               </h3>
               <button onClick={() => setIsViewModalOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
@@ -290,12 +247,6 @@ export function MaintenanceList() {
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Ngày thực hiện</p>
                       <p className="font-semibold text-gray-900">{selectedRecord.ngayThucHien ? new Date(selectedRecord.ngayThucHien).toLocaleDateString('vi-VN') : 'N/A'}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-500 mb-1">Trạng thái</p>
-                      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${statusConfig[selectedRecord.trangThai]?.color}`}>
-                        {statusConfig[selectedRecord.trangThai]?.label}
-                      </span>
                     </div>
                   </div>
 
@@ -315,36 +266,25 @@ export function MaintenanceList() {
                         <p className="text-xs text-gray-500 mb-1">Đơn vị thực hiện / NCC</p>
                         <p className="text-sm font-medium text-gray-900">{selectedRecord.nhaCungCap || 'Nội bộ'}</p>
                       </div>
-                      <div className="col-span-2">
-                        <p className="text-xs text-gray-500 mb-1">Nội dung chi tiết</p>
-                        <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded border border-gray-100 whitespace-pre-wrap">{selectedRecord.moTa}</p>
-                      </div>
                     </div>
                   </div>
 
                   <div>
                     <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">Thông tin Chi phí</h4>
                     {selectedRecord.chiPhi && selectedRecord.chiPhi > 0 ? (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500 mb-1">Tổng chi phí</p>
-                          <p className="text-lg font-bold text-red-600">{formatCurrency(selectedRecord.chiPhi)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 mb-1">Hạch toán</p>
-                          <p className={`text-sm font-medium ${selectedRecord.loaiChiPhi ? costTypeConfig[selectedRecord.loaiChiPhi]?.color : ''}`}>
-                            {selectedRecord.loaiChiPhi ? costTypeConfig[selectedRecord.loaiChiPhi]?.label : 'Không xác định'}
-                          </p>
-                        </div>
+                      <div className="p-4 border border-red-100 bg-red-50 rounded-lg">
+                        <p className="text-xs text-red-600 mb-1">Tổng chi phí sửa chữa</p>
+                        <p className="text-lg font-bold text-red-700">{formatCurrency(selectedRecord.chiPhi)}</p>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-500 italic">Không phát sinh chi phí trong lần bảo trì này.</p>
+                      <p className="text-sm text-gray-500 italic">Không phát sinh chi phí.</p>
                     )}
                   </div>
+                  
                   {selectedRecord.ghiChu && (
                     <div>
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wider">Ghi chú thêm</h4>
-                      <p className="text-sm text-gray-700">{selectedRecord.ghiChu}</p>
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wider">Ghi chú</h4>
+                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded border border-gray-100">{selectedRecord.ghiChu}</p>
                     </div>
                   )}
                 </>
@@ -363,16 +303,14 @@ export function MaintenanceList() {
                       <input type="date" name="ngayThucHien" value={editForm.ngayThucHien || ''} onChange={handleModalChange} required className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái phiếu</label>
-                      <select name="trangThai" value={editForm.trangThai ?? 0} onChange={handleModalChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500">
-                        <option value={0}>Chờ xử lý</option>
-                        <option value={1}>Đang thực hiện</option>
-                        <option value={2}>Hoàn thành (Sinh chứng từ)</option>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Loại bảo trì</label>
+                      <select name="loaiBaoTri" value={editForm.loaiBaoTri ?? '0'} onChange={handleModalChange} required className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500">
+                        <option value="0">Bảo trì định kỳ</option>
+                        <option value="1">Sửa chữa</option>
+                        <option value="2">Nâng cấp</option>
+                        <option value="3">Vệ sinh</option>
+                        <option value="4">Kiểm tra</option>
                       </select>
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nội dung bảo trì <span className="text-red-500">*</span></label>
-                      <textarea name="moTa" value={editForm.moTa || ''} onChange={handleModalChange} required rows={2} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" />
                     </div>
 
                     <div className="col-span-2 pt-2 border-t">
@@ -380,22 +318,24 @@ export function MaintenanceList() {
                         <input type="checkbox" checked={modalHasCost} onChange={(e) => setModalHasCost(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
                         <span className="text-sm font-medium text-gray-900">Có phát sinh chi phí</span>
                       </label>
-                      {modalHasCost && (
-                        <div className="grid grid-cols-2 gap-4">
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        {modalHasCost && (
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Chi phí (VNĐ) <span className="text-red-500">*</span></label>
                             <input type="number" name="chiPhi" value={editForm.chiPhi || ''} onChange={handleModalChange} required min="0" className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" />
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Loại chi phí <span className="text-red-500">*</span></label>
-                            <select name="loaiChiPhi" value={editForm.loaiChiPhi ?? ''} onChange={handleModalChange} required className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500">
-                              <option value="">Chọn loại</option>
-                              <option value="sua_chua">Sửa chữa (Vào chi phí)</option>
-                              <option value="nang_cap">Nâng cấp (Tăng nguyên giá)</option>
-                            </select>
-                          </div>
+                        )}
+                        <div className={!modalHasCost ? "col-span-2" : ""}>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nhà cung cấp / Đơn vị sửa chữa</label>
+                          <input type="text" name="nhaCungCap" value={editForm.nhaCungCap || ''} onChange={handleModalChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" />
                         </div>
-                      )}
+                      </div>
+                    </div>
+
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                      <textarea name="ghiChu" value={editForm.ghiChu || ''} onChange={handleModalChange} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" />
                     </div>
                   </div>
                 </form>
@@ -418,12 +358,9 @@ export function MaintenanceList() {
                   <button onClick={() => setIsViewModalOpen(false)} className="px-6 py-2 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300">
                     Đóng
                   </button>
-                  {/* Nút sửa nhanh ngay trong màn hình Xem (nếu phiếu chưa Hoàn thành) */}
-                  {selectedRecord.trangThai === 0 && (
-                    <button onClick={() => setIsEditMode(true)} className="flex items-center gap-2 px-6 py-2 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700">
-                      <Edit className="w-4 h-4" /> Sửa phiếu này
-                    </button>
-                  )}
+                  <button onClick={() => setIsEditMode(true)} className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700">
+                    <Edit className="w-4 h-4" /> Sửa lịch sử này
+                  </button>
                 </>
               )}
             </div>

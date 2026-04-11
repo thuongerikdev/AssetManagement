@@ -20,6 +20,8 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<bool>> DeleteDieuChuyenTaiSanAsync(int id);
         Task<ResponseDto<List<DieuChuyenTaiSanResponse>>> GetAllDieuChuyenTaiSanAsync();
         Task<ResponseDto<DieuChuyenTaiSanResponse>> GetDieuChuyenTaiSanByIdAsync(int id);
+
+        Task<ResponseDto<List<DieuChuyenTaiSanResponse>>> GetByTaiSanIdAsync(int taiSanId);
     }
 
     public class DieuChuyenTaiSanService : AssetServiceBase, IDieuChuyenTaiSanService
@@ -65,7 +67,6 @@ namespace TH.Asset.ApplicationService.Service
                     TuNguoiDungId = request.tuNguoiDungId,
                     DenNguoiDungId = request.denNguoiDungId,
                     GhiChu = request.ghiChu,
-                    // SỬA: Phiếu mới tạo sẽ ở trạng thái chờ xử lý (chờ người dùng xác nhận)
                     TrangThai = "cho_xu_ly",
                     NgayTao = DateTime.UtcNow
                 };
@@ -77,18 +78,50 @@ namespace TH.Asset.ApplicationService.Service
                 taiSan.NguoiDungId = request.denNguoiDungId;
                 taiSan.TrangThai = TrangThaiTaiSan.ChoXacNhan;
 
-                // Nếu là cấp phát lần đầu, gán ngày cấp phát
+                // 5. NẾU LÀ CẤP PHÁT LẦN ĐẦU -> GÁN NGÀY VÀ TỰ ĐỘNG SINH CHỨNG TỪ
                 if (request.loaiDieuChuyen == LoaiDieuChuyen.CapPhat && !taiSan.NgayCapPhat.HasValue)
                 {
                     taiSan.NgayCapPhat = request.ngayThucHien ?? DateTime.UtcNow;
+
+                    // Tự động khởi tạo Chứng Từ và Chi Tiết Chứng Từ
+                    var chungTu = new ChungTu
+                    {
+                        MaChungTu = $"CP-{DateTime.UtcNow:yyyyMMddHHmmss}-{taiSan.Id}", // Tự sinh mã: CP-NămThángNgày-ID
+                        NgayLap = request.ngayThucHien ?? DateTime.UtcNow,
+                        LoaiChungTu = LoaiChungTu.GhiTang,
+                        MoTa = $"Chứng từ cấp phát lần đầu cho tài sản: {taiSan.TenTaiSan} ({taiSan.MaTaiSan})",
+                        TongTien = taiSan.NguyenGia ?? 0,
+                        TrangThai = "hoan_thanh", // Để trạng thái "nháp" để kế toán có thể vào duyệt/ghi sổ sau
+                        NguoiLapId = request.tuNguoiDungId ?? 1,
+                        NgayTao = DateTime.UtcNow,
+
+                        // Khởi tạo luôn Dòng chi tiết hạch toán
+                        ChiTietChungTus = new List<ChiTietChungTu>
+                        {
+                            new ChiTietChungTu
+                            {
+                                // SỬA LỖI TẠI ĐÂY: Đổi "" thành null
+                                TaiKhoanNo = null,
+
+                                TaiKhoanCo = taiSan.MaTaiKhoan, // Lấy TK của tài sản hiện tại
+                                SoTien = taiSan.NguyenGia ?? 0,
+                                MoTa = $"Ghi nhận cấp phát cho phòng ban {request.denPhongBanId}",
+                                TaiSanId = taiSan.Id
+                            }
+                        }
+                    };
+
+                    // Add thẳng vào dbContext
+                    _dbContext.chungTus.Add(chungTu);
                 }
 
                 _dbContext.taiSans.Update(taiSan);
 
                 // Lưu tất cả vào Database
+                // Nhờ EF Core xử lý, Phiếu Điều Chuyển + Cập nhật Tài Sản + Chứng từ Kế Toán sẽ được Commit trong cùng 1 luồng an toàn.
                 await _dbContext.SaveChangesAsync();
 
-                return ResponseConst.Success("Tạo phiếu điều chuyển tài sản thành công. Đang chờ người dùng xác nhận.", true);
+                return ResponseConst.Success("Tạo phiếu điều chuyển tài sản và sinh chứng từ thành công.", true);
             }
             catch (Exception ex)
             {
@@ -248,6 +281,29 @@ namespace TH.Asset.ApplicationService.Service
                 _logger.LogError(ex, "Lỗi khi lấy chi tiết phiếu điều chuyển. ID: {Id}", id);
                 return ResponseConst.Error<DieuChuyenTaiSanResponse>(500, "Lỗi hệ thống: " + ex.Message);
             }
+        }
+
+        public async Task<ResponseDto<List<DieuChuyenTaiSanResponse>>> GetByTaiSanIdAsync(int taiSanId)
+        {
+            var result = await _dbContext.dieuChuyenTaiSans
+                .Where(x => x.TaiSanId == taiSanId)
+                .OrderByDescending(x => x.NgayThucHien)
+                .Select(x => new DieuChuyenTaiSanResponse
+                {
+                    id = x.Id,
+                    taiSanId = x.TaiSanId,
+                    loaiDieuChuyen = x.LoaiDieuChuyen,
+                    ngayThucHien = x.NgayThucHien,
+                    tuPhongBanId = x.TuPhongBanId,
+                    denPhongBanId = x.DenPhongBanId,
+                    tuNguoiDungId = x.TuNguoiDungId,
+                    denNguoiDungId = x.DenNguoiDungId,
+                    trangThai = x.TrangThai,
+                    ghiChu = x.GhiChu,
+                    ngayTao = x.NgayTao
+                })
+                .ToListAsync();
+            return ResponseConst.Success("Thành công", result);
         }
     }
 }

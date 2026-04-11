@@ -28,6 +28,8 @@ namespace TH.Auth.Domain.User
         [MaxLength(32)]
         public string? phoneNumber { get; set; }
 
+        public string? departmentID { get; set; }
+
         [Required]
         public string? passwordHash { get; set; }
         public string? googleSub { get; set; }

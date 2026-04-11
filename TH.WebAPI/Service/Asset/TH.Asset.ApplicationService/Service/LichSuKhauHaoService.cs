@@ -20,6 +20,7 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<bool>> DeleteLichSuKhauHaoAsync(int id);
         Task<ResponseDto<List<LichSuKhauHaoResponse>>> GetAllLichSuKhauHaoAsync();
         Task<ResponseDto<LichSuKhauHaoResponse>> GetLichSuKhauHaoByIdAsync(int id);
+        Task<ResponseDto<List<LichSuKhauHaoResponse>>> GetByTaiSanIdAsync(int taiSanId);
     }
 
     public class LichSuKhauHaoService : AssetServiceBase, ILichSuKhauHaoService
@@ -302,6 +303,36 @@ namespace TH.Asset.ApplicationService.Service
             {
                 _logger.LogError(ex, "Lỗi khi lấy chi tiết lịch sử khấu hao. ID: {Id}", id);
                 return ResponseConst.Error<LichSuKhauHaoResponse>(500, "Lỗi hệ thống: " + ex.Message);
+            }
+        }
+
+
+        public async Task<ResponseDto<List<LichSuKhauHaoResponse>>> GetByTaiSanIdAsync(int taiSanId)
+        {
+            try
+            {
+                var result = await _dbContext.lichSuKhauHaos
+                    .Where(x => x.TaiSanId == taiSanId)
+                    .OrderByDescending(x => x.KyKhauHao) // Sắp xếp kỳ mới nhất lên đầu
+                    .Select(x => new LichSuKhauHaoResponse
+                    {
+                        id = x.Id,
+                        taiSanId = x.TaiSanId,
+                        chungTuId = x.ChungTuId,
+                        kyKhauHao = x.KyKhauHao,
+                        soTien = x.SoTien,
+                        luyKeSauKhauHao = x.LuyKeSauKhauHao,
+                        conLaiSauKhauHao = x.ConLaiSauKhauHao,
+                        ngayTao = x.NgayTao
+                    })
+                    .ToListAsync();
+
+                return ResponseConst.Success("Lấy lịch sử khấu hao thành công.", result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy lịch sử khấu hao theo tài sản.");
+                return ResponseConst.Error<List<LichSuKhauHaoResponse>>(500, "Lỗi hệ thống: " + ex.Message);
             }
         }
     }

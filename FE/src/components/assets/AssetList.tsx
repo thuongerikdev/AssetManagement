@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { Plus, Search, Eye, Trash2, Download, Package } from 'lucide-react';
+import { Plus, Search, Eye, Trash2, Download, Package, ArrowLeftRight, UserPlus } from 'lucide-react';
 import { toast } from "sonner";
 import { assetApi, TaiSan } from '../../api/assetApi';
 import { departmentApi, Department } from '../../api/departmentApi';
 import { assetCategoryApi, AssetCategory } from '../../api/assetCategoryApi';
 import * as XLSX from 'xlsx';
 
-// 1. ĐỒNG BỘ CONFIG TRẠNG THÁI (Khớp với chuỗi Enum C#)
-const statusConfig: Record<string, { label: string; color: string }> = {
-  'ChuaCapPhat': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700' },
-  'ChoXacNhan': { label: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-700' },
-  'DangSuDung': { label: 'Đang sử dụng', color: 'bg-green-100 text-green-700' },
-  'DaThanhLy': { label: 'Đã thanh lý', color: 'bg-red-100 text-red-700' },
+// 1. ĐỒNG BỘ CONFIG TRẠNG THÁI (Khớp với Enum C# là 0, 1, 2, 3)
+const statusConfig: Record<string, { label: string; color: string; value: number }> = {
+  '0': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700', value: 0 },
+  '1': { label: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-700', value: 1 },
+  '2': { label: 'Đang sử dụng', color: 'bg-green-100 text-green-700', value: 2 },
+  '3': { label: 'Đã thanh lý', color: 'bg-red-100 text-red-700', value: 3 },
+  // Dự phòng trường hợp API trả về chuỗi text
+  'ChuaCapPhat': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700', value: 0 },
+  'ChoXacNhan': { label: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-700', value: 1 },
+  'DangSuDung': { label: 'Đang sử dụng', color: 'bg-green-100 text-green-700', value: 2 },
+  'DaThanhLy': { label: 'Đã thanh lý', color: 'bg-red-100 text-red-700', value: 3 },
 };
 
 export function AssetList() {
@@ -23,16 +28,28 @@ export function AssetList() {
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getDeptName = (id?: number) => departments.find(d => d.id === id)?.tenPhongBan || 'Chưa cấp phát';
+  const getDeptName = (id?: number) => departments.find(d => d.id === id)?.tenPhongBan || 'Chưa phân bổ';
   const getCatName = (id?: number) => categories.find(c => c.id === id)?.tenDanhMuc || 'N/A';
 
-  const filteredAssets = assets.filter(asset => {
-    const searchStr = `${asset.maTaiSan} ${asset.tenTaiSan}`.toLowerCase();
-    const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
-    // 2. LỌC THEO CHUỖI TRẠNG THÁI
-    const matchesStatus = filterStatus === 'all' || asset.trangThai?.toString() === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  // 2. LỌC VÀ SẮP XẾP THEO TRẠNG THÁI
+  const filteredAssets = assets
+    .filter(asset => {
+      const searchStr = `${asset.maTaiSan} ${asset.tenTaiSan}`.toLowerCase();
+      const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
+      
+      const currentStatusStr = asset.trangThai?.toString() || '0';
+      const matchesStatus = filterStatus === 'all' || 
+                            currentStatusStr === filterStatus || 
+                            statusConfig[currentStatusStr]?.value.toString() === filterStatus;
+      
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      // Sắp xếp tự động: Chưa cấp phát (0) -> Chờ (1) -> Đang dùng (2) -> Thanh lý (3)
+      const valA = statusConfig[a.trangThai?.toString() || '0']?.value ?? 0;
+      const valB = statusConfig[b.trangThai?.toString() || '0']?.value ?? 0;
+      return valA - valB;
+    });
 
   const handleExportExcel = () => {
     if (filteredAssets.length === 0) {
@@ -48,8 +65,7 @@ export function AssetList() {
         "Phòng Ban": getDeptName(asset.phongBanId),
         "Nguyên Giá (VNĐ)": asset.nguyenGia || 0,
         "Giá Trị Còn Lại (VNĐ)": asset.giaTriConLai || 0,
-        // Cập nhật lấy nhãn trạng thái chuẩn
-        "Trạng Thái": statusConfig[asset.trangThai?.toString() || 'ChuaCapPhat']?.label || 'Không xác định',
+        "Trạng Thái": statusConfig[asset.trangThai?.toString() || '0']?.label || 'Không xác định',
         "Ngày Mua": asset.ngayMua ? new Date(asset.ngayMua).toLocaleDateString('vi-VN') : '',
         "Số Serial": asset.soSeri || '',
         "Nhà Sản Xuất": asset.nhaSanXuat || '',
@@ -99,7 +115,17 @@ export function AssetList() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa tài sản này?')) {
+    // 1. CHẶN LOGIC: Tìm tài sản đang muốn xóa để check trạng thái
+    const assetToDelete = assets.find(a => a.id === id);
+    const statusVal = statusConfig[assetToDelete?.trangThai?.toString() || '0']?.value;
+
+    if (statusVal !== 3) {
+      toast.error('Chỉ được phép xóa vĩnh viễn các tài sản "Đã thanh lý"!');
+      return;
+    }
+
+    // 2. Nếu đã thanh lý (value === 3) thì mới cho đi tiếp
+    if (window.confirm('Bạn có chắc chắn muốn xóa vĩnh viễn tài sản này khỏi hệ thống?')) {
       try {
         const response = await assetApi.delete(id);
         if (response.errorCode === 200) {
@@ -158,17 +184,16 @@ export function AssetList() {
             />
           </div>
           <div className="flex gap-2">
-            {/* 3. CẬP NHẬT SELECT OPTION THEO CHUỖI */}
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">Tất cả trạng thái</option>
-              <option value="ChuaCapPhat">Chưa cấp phát</option>
-              <option value="ChoXacNhan">Chờ xác nhận</option>
-              <option value="DangSuDung">Đang sử dụng</option>
-              <option value="DaThanhLy">Đã thanh lý</option>
+              <option value="0">Chưa cấp phát</option>
+              <option value="1">Chờ xác nhận</option>
+              <option value="2">Đang sử dụng</option>
+              <option value="3">Đã thanh lý</option>
             </select>
             <button 
               onClick={handleExportExcel}
@@ -204,9 +229,8 @@ export function AssetList() {
                 <tr><td colSpan={8} className="text-center py-6 text-gray-500">Không tìm thấy tài sản nào</td></tr>
               ) : (
                 filteredAssets.map((asset) => {
-                  // 4. LẤY LABEL/COLOR AN TOÀN TỪ CONFIG
-                  const assetStatusStr = asset.trangThai?.toString() || 'ChuaCapPhat';
-                  const currentStatus = statusConfig[assetStatusStr] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-500' };
+                  const assetStatusStr = asset.trangThai?.toString() || '0';
+                  const currentStatus = statusConfig[assetStatusStr] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-500', value: -1 };
 
                   return (
                     <tr key={asset.id} className="hover:bg-gray-50 transition-colors">
@@ -235,12 +259,39 @@ export function AssetList() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <Link to={`/assets/${asset.id}`} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Chi tiết">
+                          
+                          {/* Nút Cấp phát (Chỉ hiện khi chưa cấp phát - Trạng thái 0) */}
+                          {currentStatus.value === 0 && (
+                            <Link to={`/assets/${asset.id}/edit`} className="p-1 text-green-600 hover:bg-green-100 rounded" title="Cấp phát tài sản">
+                              <UserPlus className="w-4 h-4" />
+                            </Link>
+                          )}
+
+                          {/* Nút Điều chuyển (Chỉ hiện khi Đang sử dụng - Trạng thái 2) */}
+                          {currentStatus.value === 2 && (
+                            <Link to={`/allocation?assetId=${asset.id}`} className="p-1 text-orange-500 hover:bg-orange-100 rounded" title="Điều chuyển tài sản">
+                              <ArrowLeftRight className="w-4 h-4" />
+                            </Link>
+                          )}
+
+                          {/* Nút Xem chi tiết */}
+                          <Link to={`/assets/${asset.id}`} className="p-1 text-blue-600 hover:bg-blue-100 rounded" title="Xem chi tiết">
                             <Eye className="w-4 h-4" />
                           </Link>
-                          <button onClick={() => asset.id && handleDelete(asset.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Thanh lý/Xóa">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+
+                          {/* Nút Xóa/Thanh lý */}
+                          {currentStatus.value === 3 ? (
+                            // Nếu đã thanh lý (3) => Hiện nút đỏ cho phép Xóa
+                            <button onClick={() => asset.id && handleDelete(asset.id)} className="p-1 text-red-600 hover:bg-red-100 rounded transition-colors" title="Xóa tài sản vĩnh viễn">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            // Nếu chưa thanh lý => Hiện nút xám và khóa click (disabled)
+                            <button disabled className="p-1 text-gray-300 cursor-not-allowed rounded" title="Chỉ được phép xóa tài sản Đã thanh lý">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                          
                         </div>
                       </td>
                     </tr>

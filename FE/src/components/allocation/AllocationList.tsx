@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Send, ArrowLeftRight, Search, Filter, Clock, X, Save } from 'lucide-react';
+import { Send, ArrowLeftRight, Search, Clock, X, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
 import { assetApi, TaiSan } from '../../api/assetApi';
@@ -8,8 +8,7 @@ import { departmentApi, Department } from '../../api/departmentApi';
 // Mapping Loại điều chuyển bằng CHUỖI (String) khớp với Enum C#
 const typeConfig: Record<string, { label: string; color: string; icon: any }> = {
   'CapPhat': { label: 'Cấp phát', color: 'bg-green-100 text-green-700', icon: Send },
-  'ThuHoi': { label: 'Thu hồi', color: 'bg-orange-100 text-orange-700', icon: Send },
-  'LuanChuyen': { label: 'Luân chuyển', color: 'bg-blue-100 text-blue-700', icon: ArrowLeftRight },
+  'LuanChuyen': { label: 'Điều chuyển', color: 'bg-blue-100 text-blue-700', icon: ArrowLeftRight },
 };
 
 // Map TrangThai
@@ -27,9 +26,9 @@ export function AllocationList() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Modal states dùng kiểu chuỗi
+  // Modal states dùng kiểu chuỗi (Đã bỏ ThuHoi)
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<'CapPhat' | 'ThuHoi' | 'LuanChuyen'>('CapPhat');
+  const [modalType, setModalType] = useState<'CapPhat' | 'LuanChuyen'>('CapPhat');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
@@ -65,7 +64,7 @@ export function AllocationList() {
     fetchData();
   }, []);
 
-  const openModal = (type: 'CapPhat' | 'ThuHoi' | 'LuanChuyen') => {
+  const openModal = (type: 'CapPhat' | 'LuanChuyen') => {
     setModalType(type);
     setFormData({
       taiSanId: undefined,
@@ -79,7 +78,7 @@ export function AllocationList() {
     setShowModal(true);
   };
 
-  // Tự động load phòng ban gốc khi chọn Tài sản để Điều chuyển/Thu hồi
+  // Tự động load phòng ban gốc khi chọn Tài sản để Điều chuyển
   const handleAssetSelect = (assetIdStr: string) => {
     const assetId = Number(assetIdStr);
     const selectedAsset = assets.find(a => a.id === assetId);
@@ -87,7 +86,7 @@ export function AllocationList() {
     setFormData(prev => ({
       ...prev,
       taiSanId: assetId,
-      tuPhongBanId: (modalType === 'LuanChuyen' || modalType === 'ThuHoi') ? selectedAsset?.phongBanId : undefined,
+      tuPhongBanId: modalType === 'LuanChuyen' ? selectedAsset?.phongBanId : undefined,
     }));
   };
 
@@ -102,7 +101,7 @@ export function AllocationList() {
     try {
       const payload: any = {
         taiSanId: formData.taiSanId,
-        loaiDieuChuyen: modalType, // Gửi chuỗi 'CapPhat', 'ThuHoi', hoặc 'LuanChuyen'
+        loaiDieuChuyen: modalType, // Gửi chuỗi 'CapPhat' hoặc 'LuanChuyen'
         ngayThucHien: formData.ngayThucHien,
         tuPhongBanId: formData.tuPhongBanId || undefined,
         denPhongBanId: formData.denPhongBanId || undefined,
@@ -131,6 +130,9 @@ export function AllocationList() {
   const getDept = (id?: number) => departments.find(d => d.id === id)?.tenPhongBan || 'N/A';
 
   const filteredRecords = records.filter(record => {
+    // Ẩn Thu hồi khỏi danh sách phiếu (nếu database đang có lưu trước đó)
+    if (record.loaiDieuChuyen === 'ThuHoi') return false;
+
     const asset = getAsset(record.taiSanId!);
     const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
     const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
@@ -149,15 +151,11 @@ export function AllocationList() {
           <p className="text-sm text-gray-500 mt-1">Quản lý cấp phát và điều chuyển tài sản</p>
         </div>
         <div className="flex gap-2">
-          {/* Cập nhật sự kiện onClick bằng chữ */}
-          <button onClick={() => openModal('CapPhat')} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <button onClick={() => openModal('CapPhat')} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm">
             <Send className="w-5 h-5" /> Cấp phát
           </button>
-          <button onClick={() => openModal('LuanChuyen')} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button onClick={() => openModal('LuanChuyen')} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
             <ArrowLeftRight className="w-5 h-5" /> Điều chuyển
-          </button>
-          <button onClick={() => openModal('ThuHoi')} className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
-            <Send className="w-5 h-5 rotate-180" /> Thu hồi
           </button>
         </div>
       </div>
@@ -183,7 +181,6 @@ export function AllocationList() {
             >
               <option value="all">Tất cả loại</option>
               <option value="CapPhat">Cấp phát</option>
-              <option value="ThuHoi">Thu hồi</option>
               <option value="LuanChuyen">Điều chuyển</option>
             </select>
           </div>
@@ -198,7 +195,6 @@ export function AllocationList() {
       ) : (
         <div className="space-y-4">
           {filteredRecords.map((record) => {
-            // Lấy config bằng string
             const typeInfo = typeConfig[record.loaiDieuChuyen as string] || { label: 'Khác', color: 'bg-gray-100', icon: Send };
             const TypeIcon = typeInfo.icon;
             const assetInfo = getAsset(record.taiSanId!);
@@ -227,8 +223,7 @@ export function AllocationList() {
                       </h3>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        {/* Cập nhật điều kiện hiển thị theo chữ */}
-                        {(record.loaiDieuChuyen === 'ThuHoi' || record.loaiDieuChuyen === 'LuanChuyen') && (
+                        {record.loaiDieuChuyen === 'LuanChuyen' && (
                           <div>
                             <p className="text-gray-600">Từ phòng ban:</p>
                             <p className="text-gray-900 font-medium">{getDept(record.tuPhongBanId)}</p>
@@ -263,13 +258,13 @@ export function AllocationList() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Modal - Đã sửa lỗi đen màn hình bằng bg-gray-900/50 và backdrop-blur-sm */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto shadow-2xl">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
               <h3 className="font-bold text-gray-900 text-lg">
-                {modalType === 'CapPhat' ? 'Cấp phát Tài sản' : modalType === 'ThuHoi' ? 'Thu hồi Tài sản' : 'Điều chuyển Tài sản'}
+                {modalType === 'CapPhat' ? 'Cấp phát Tài sản' : 'Điều chuyển Tài sản'}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
@@ -286,17 +281,18 @@ export function AllocationList() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">-- Chọn tài sản --</option>
-                  {/* SỬA LẠI ĐIỀU KIỆN LỌC THÀNH CHUỖI TẠI ĐÂY */}
                   {assets.filter(a => {
-                    if (modalType === 'CapPhat') return a.trangThai === 'ChuaCapPhat'; 
-                    return a.trangThai === 'DangSuDung'; 
+                    // Cấp phát -> Chỉ chọn TS Chưa cấp phát (0)
+                    // Điều chuyển -> Chỉ chọn TS Đang sử dụng (2)
+                    if (modalType === 'CapPhat') return a.trangThai?.toString() === '0' || a.trangThai === 'ChuaCapPhat'; 
+                    return a.trangThai?.toString() === '2' || a.trangThai === 'DangSuDung'; 
                   }).map(asset => (
                     <option key={asset.id} value={asset.id}>{asset.maTaiSan} - {asset.tenTaiSan}</option>
                   ))}
                 </select>
               </div>
 
-              {(modalType === 'LuanChuyen' || modalType === 'ThuHoi') && (
+              {modalType === 'LuanChuyen' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Từ phòng ban (Tự động lấy)</label>
                   <input
@@ -308,28 +304,26 @@ export function AllocationList() {
                 </div>
               )}
 
-              {(modalType === 'CapPhat' || modalType === 'LuanChuyen') && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {modalType === 'LuanChuyen' ? 'Đến phòng ban' : 'Phòng ban nhận'} <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    required
-                    value={formData.denPhongBanId || ''}
-                    onChange={(e) => setFormData({...formData, denPhongBanId: Number(e.target.value)})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">-- Chọn phòng ban --</option>
-                    {departments.map(dept => (
-                      <option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {modalType === 'LuanChuyen' ? 'Đến phòng ban' : 'Phòng ban nhận'} <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  value={formData.denPhongBanId || ''}
+                  onChange={(e) => setFormData({...formData, denPhongBanId: Number(e.target.value)})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">-- Chọn phòng ban --</option>
+                  {departments.map(dept => (
+                    <option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>
+                  ))}
+                </select>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Mã Nhân viên nhận/trả</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mã Nhân viên nhận</label>
                   <input
                     type="number"
                     value={formData.denNguoiDungId || ''}

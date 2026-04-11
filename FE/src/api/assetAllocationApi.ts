@@ -22,4 +22,5 @@ export const assetAllocationApi = {
   create: (data: DieuChuyenTaiSan) => apiClient.post('/DieuChuyenTaiSan/create', data),
   update: (data: DieuChuyenTaiSan) => apiClient.put('/DieuChuyenTaiSan/update', data),
   delete: (id: number) => apiClient.delete(`/DieuChuyenTaiSan/delete/${id}`),
+  getByAssetId: (assetId: number) => apiClient.get(`/DieuChuyenTaiSan/get-by-asset/${assetId}`),
 };

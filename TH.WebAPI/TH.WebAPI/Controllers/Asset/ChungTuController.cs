@@ -87,5 +87,34 @@ namespace TH.WebAPI.Controllers.Asset
             }
             return BadRequest(result);
         }
+        //[HttpPost("post-voucher/{chungTuId}")]
+        //public async Task<IActionResult> PostVoucher(int chungTuId)
+        //{
+        //    var result = await _chungTuService.P(chungTuId);
+        //    if (result.ErrorCode == 200)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    if (result.ErrorCode == 404)
+        //    {
+        //        return NotFound(result);
+        //    }
+        //    return BadRequest(result);
+        //}
+
+        [HttpGet("get-by-asset/{taiSanId}")]
+        public async Task<IActionResult> GetChungTuByTaiSanId(int taiSanId)
+        {
+            var result = await _chungTuService.GetChungTuByTaiSanIdAsync(taiSanId);
+            if (result.ErrorCode == 200)
+            {
+                return Ok(result);
+            }
+            if (result.ErrorCode == 404)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

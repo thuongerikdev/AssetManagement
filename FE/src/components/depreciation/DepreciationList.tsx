@@ -15,11 +15,11 @@ interface DepreciationAsset {
   monthlyDepreciation: number;
   remainingValue: number;
   selected: boolean;
+  ngayCapPhatStr?: string; // Hiển thị thêm ngày cấp phát cho rõ ràng
 }
 
 export function DepreciationList() {
   const [selectedMonth, setSelectedMonth] = useState(() => {
-    // Mặc định chọn tháng hiện tại (YYYY-MM)
     const date = new Date();
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   });
@@ -28,15 +28,11 @@ export function DepreciationList() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Raw data từ API
   const [rawAssets, setRawAssets] = useState<TaiSan[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [history, setHistory] = useState<LichSuKhauHao[]>([]);
-
-  // Dữ liệu đã xử lý để hiển thị lên bảng
   const [tableAssets, setTableAssets] = useState<DepreciationAsset[]>([]);
 
-  // 1. Tải toàn bộ dữ liệu cần thiết
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -60,30 +56,55 @@ export function DepreciationList() {
     fetchData();
   }, []);
 
-  // 2. Tính toán lại danh sách tài sản HỢP LỆ mỗi khi đổi Tháng hoặc Data thay đổi
+  // 2. THUẬT TOÁN TÍNH KHẤU HAO THEO NGÀY CẤP PHÁT
   useEffect(() => {
     if (!rawAssets.length) return;
 
+    const [selYear, selMonth] = selectedMonth.split('-').map(Number);
+    // Lấy ngày cuối cùng của tháng đang chọn
+    const daysInSelectedMonth = new Date(selYear, selMonth, 0).getDate();
+    const endOfSelMonth = new Date(selYear, selMonth - 1, daysInSelectedMonth, 23, 59, 59);
+
     const validAssets = rawAssets
       .filter(asset => {
-        // Chỉ lấy tài sản Đang sử dụng (Enum là 2 hoặc chuỗi 'DangSuDung')
         const status = asset.trangThai?.toString();
+        // Chỉ lấy tài sản Đang sử dụng
         if (status !== '2' && status !== 'DangSuDung') return false; 
         
+        // Phải có ngày cấp phát và ngày cấp phát không được lớn hơn tháng đang chọn
+        if (!asset.ngayCapPhat) return false;
+        const capPhatDate = new Date(asset.ngayCapPhat);
+        if (capPhatDate > endOfSelMonth) return false;
+
         // Bỏ qua tài sản đã hết giá trị
         if ((asset.giaTriConLai || 0) <= 0) return false;
 
-        // Kiểm tra xem tháng này tài sản đã được khấu hao chưa
+        // Bỏ qua nếu tháng này đã khấu hao rồi
         const isAlreadyDepreciated = history.some(h => 
           h.taiSanId === asset.id && h.kyKhauHao === selectedMonth
         );
         return !isAlreadyDepreciated;
       })
       .map(asset => {
-        // Nếu API backend chưa tính KhauHaoHangThang, ta tự tính tạm trên UI
-        let monthlyAmt = asset.khauHaoHangThang || 0;
-        if (monthlyAmt === 0 && asset.nguyenGia && asset.thoiGianKhauHao) {
-          monthlyAmt = asset.nguyenGia / asset.thoiGianKhauHao;
+        // Tính mức khấu hao cứng 1 tháng
+        let standardMonthlyAmt = asset.khauHaoHangThang || 0;
+        if (standardMonthlyAmt === 0 && asset.nguyenGia && asset.thoiGianKhauHao) {
+          standardMonthlyAmt = asset.nguyenGia / asset.thoiGianKhauHao;
+        }
+
+        let finalMonthlyAmt = standardMonthlyAmt;
+        const capPhatDate = new Date(asset.ngayCapPhat!);
+
+        // LOGIC CHIA LẺ NGÀY: Nếu tài sản được cấp phát vào chính cái tháng đang tính
+        if (capPhatDate.getFullYear() === selYear && (capPhatDate.getMonth() + 1) === selMonth) {
+          const usedDays = daysInSelectedMonth - capPhatDate.getDate() + 1; // Số ngày sử dụng thực tế
+          finalMonthlyAmt = (standardMonthlyAmt / daysInSelectedMonth) * usedDays;
+        }
+
+        // Đảm bảo khấu hao không vượt quá giá trị còn lại
+        const remaining = asset.giaTriConLai || 0;
+        if (finalMonthlyAmt > remaining) {
+            finalMonthlyAmt = remaining;
         }
 
         return {
@@ -93,9 +114,10 @@ export function DepreciationList() {
           department: departments.find(d => d.id === asset.phongBanId)?.tenPhongBan || 'Chưa cấp phát',
           originalValue: asset.nguyenGia || 0,
           accumulatedDepreciation: asset.khauHaoLuyKe || 0,
-          monthlyDepreciation: monthlyAmt,
-          remainingValue: asset.giaTriConLai || 0,
-          selected: true // Mặc định chọn tất cả
+          monthlyDepreciation: Math.round(finalMonthlyAmt), // Làm tròn tránh số thập phân lẻ
+          remainingValue: remaining,
+          selected: true,
+          ngayCapPhatStr: capPhatDate.toLocaleDateString('vi-VN')
         };
       });
 
@@ -120,7 +142,6 @@ export function DepreciationList() {
   const selectedAssets = tableAssets.filter(a => a.selected);
   const totalDepreciation = selectedAssets.reduce((sum, a) => sum + a.monthlyDepreciation, 0);
 
-  // 3. Xử lý GHI SỔ KHẤU HAO
   const handleGhiSo = async () => {
     if (selectedAssets.length === 0) {
       toast.error('Vui lòng chọn ít nhất 1 tài sản để khấu hao.');
@@ -129,8 +150,6 @@ export function DepreciationList() {
 
     setIsSubmitting(true);
     try {
-      // Gửi request khấu hao cho từng tài sản đã chọn
-      // Backend sẽ tự động tính toán và sinh Chứng từ kế toán cho từng tài sản
       const promises = selectedAssets.map(asset => 
         depreciationHistoryApi.create({
           taiSanId: asset.id,
@@ -140,14 +159,12 @@ export function DepreciationList() {
       );
 
       const results = await Promise.all(promises);
-      
       const failedCount = results.filter(r => r.errorCode !== 200).length;
       
       if (failedCount === 0) {
-        // SỬA LẠI CÂU THÔNG BÁO Ở ĐÂY CHO RÕ RÀNG
         toast.success(`Đã ghi sổ và tự động sinh Chứng từ khấu hao cho ${selectedAssets.length} tài sản!`);
         setShowVoucher(false);
-        fetchData(); // Load lại data để cập nhật số liệu mới nhất
+        fetchData(); 
       } else {
         toast.warning(`Hoàn thành một phần. Có ${failedCount} tài sản bị lỗi.`);
         fetchData();
@@ -164,7 +181,7 @@ export function DepreciationList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-gray-900">Khấu hao Tài sản</h1>
-          <p className="text-sm text-gray-500 mt-1">Tính và ghi nhận khấu hao tài sản cố định</p>
+          <p className="text-sm text-gray-500 mt-1">Tính và ghi nhận khấu hao (Tự động chia lẻ theo ngày cấp phát)</p>
         </div>
       </div>
 
@@ -194,12 +211,10 @@ export function DepreciationList() {
               disabled={isLoading || tableAssets.length === 0}
               className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              <Calculator className="w-5 h-5" />
-              Tính Khấu hao
+              <Calculator className="w-5 h-5" /> Tính Khấu hao
             </button>
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              <Download className="w-5 h-5" />
-              Xuất Excel
+              <Download className="w-5 h-5" /> Xuất Excel
             </button>
           </div>
         </div>
@@ -211,8 +226,7 @@ export function DepreciationList() {
         <div className="flex-1">
           <p className="text-sm text-blue-900 font-medium">Thông tin khấu hao tháng {selectedMonth}</p>
           <p className="text-sm text-blue-700 mt-1">
-            Hệ thống tự động lọc ra các tài sản đang hoạt động và CHƯA được khấu hao trong tháng này.
-            Tổng khấu hao dự kiến kỳ này: <span className="font-semibold">{formatCurrency(totalDepreciation)}</span>
+            Hệ thống tự động lọc ra các tài sản đang hoạt động. <b>Lưu ý:</b> Tài sản mới cấp phát trong tháng này sẽ được tính khấu hao lẻ theo số ngày sử dụng thực tế.
           </p>
         </div>
       </div>
@@ -234,21 +248,19 @@ export function DepreciationList() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Mã TS</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Tên tài sản</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Phòng ban</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày cấp phát</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Nguyên giá</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">KH lũy kế</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase bg-blue-50">KH tháng này</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Còn lại</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoading ? (
-                <tr><td colSpan={8} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
+                <tr><td colSpan={7} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : tableAssets.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-6 text-gray-500">
+                  <td colSpan={7} className="text-center py-6 text-gray-500">
                     Không có tài sản nào cần khấu hao trong tháng {selectedMonth}. 
-                    Có thể tất cả tài sản đã được khấu hao hoặc không còn giá trị.
                   </td>
                 </tr>
               ) : (
@@ -264,11 +276,10 @@ export function DepreciationList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm font-medium text-blue-600">{asset.code}</span></td>
                     <td className="px-6 py-4"><span className="text-sm text-gray-900">{asset.name}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{asset.department}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{asset.ngayCapPhatStr}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.originalValue)}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-600">{formatCurrency(asset.accumulatedDepreciation)}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right bg-blue-50/30"><span className="text-sm font-bold text-blue-700">{formatCurrency(asset.monthlyDepreciation)}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm font-medium text-green-600">{formatCurrency(asset.remainingValue)}</span></td>
                   </tr>
                 ))
               )}
@@ -279,7 +290,7 @@ export function DepreciationList() {
                   <td colSpan={6} className="px-6 py-4 text-right font-semibold text-gray-900">
                     Tổng khấu hao dự tính (các mục đã chọn):
                   </td>
-                  <td colSpan={2} className="px-6 py-4 text-left font-bold text-blue-700 text-lg">
+                  <td className="px-6 py-4 text-right font-bold text-blue-700 text-lg">
                     {formatCurrency(totalDepreciation)}
                   </td>
                 </tr>
@@ -318,7 +329,6 @@ export function DepreciationList() {
                 </div>
               </div>
 
-              {/* Asset Details */}
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3">Chi tiết tài sản được trích khấu hao</h4>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -326,7 +336,7 @@ export function DepreciationList() {
                     <div key={asset.id} className="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
                       <div>
                         <p className="text-sm font-medium text-gray-900">{asset.code} - {asset.name}</p>
-                        <p className="text-xs text-gray-600">{asset.department}</p>
+                        <p className="text-xs text-gray-600">{asset.department} | Ngày cấp: {asset.ngayCapPhatStr}</p>
                       </div>
                       <p className="text-sm font-bold text-blue-600">+{formatCurrency(asset.monthlyDepreciation)}</p>
                     </div>
