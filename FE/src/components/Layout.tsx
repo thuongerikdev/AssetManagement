@@ -20,7 +20,7 @@ import {
   BookOpen,
   X,
   MonitorSmartphone,
-  RefreshCw // <-- Bổ sung icon Refresh
+  RefreshCw
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -63,16 +63,26 @@ export function Layout() {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <aside 
-          className={`relative bg-gradient-to-b from-blue-900 to-blue-800 text-white transition-all duration-300 ${
-            sidebarOpen ? 'w-64' : 'w-0'
-          } overflow-hidden shrink-0 flex flex-col`}
-        >
-        <div className="p-6 border-b border-blue-700">
-          <h1 className="font-bold text-xl whitespace-nowrap">TSCĐ Manager</h1>
-          <p className="text-blue-200 text-sm mt-1 whitespace-nowrap">Quản lý Tài sản Cố định</p>
+        className={`relative bg-gradient-to-b from-blue-900 to-blue-800 text-white transition-all duration-300 ${
+          sidebarOpen ? 'w-64' : 'w-0'
+        } overflow-hidden shrink-0 flex flex-col`}
+      >
+        {/* Nút Đóng (X) được đưa vào trong Sidebar */}
+        <div className="p-4 border-b border-blue-700 flex items-center justify-between">
+          <div className="overflow-hidden">
+            <h1 className="font-bold text-xl whitespace-nowrap">TSCĐ Manager</h1>
+            <p className="text-blue-200 text-sm mt-1 whitespace-nowrap">Quản lý Tài sản Cố định</p>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="text-blue-300 hover:text-white transition-colors focus:outline-none shrink-0"
+            title="Đóng menu"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
         
-       <nav className="p-4 space-y-1 flex-1 overflow-y-auto no-scrollbar">
+        <nav className="p-4 space-y-1 flex-1 overflow-y-auto no-scrollbar">
           {/* Các menu chính */}
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -165,7 +175,6 @@ export function Layout() {
                   <span>Tài khoản Kế toán</span>
                 </Link>
               </div>
-              
             </div>
           </div>
         </nav>
@@ -191,15 +200,21 @@ export function Layout() {
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none"
-            >
-              {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
             
-            <div className="flex items-center gap-5">
-              {/* NÚT LÀM MỚI TRANG ĐƯỢC THÊM VÀO ĐÂY */}
+            {/* Khu vực bên trái: Nút Menu nằm ngoài, CHỈ hiện khi Sidebar đóng */}
+            <div className="flex items-center">
+              {!sidebarOpen && (
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="text-gray-600 hover:text-gray-900 focus:outline-none mr-4 transition-all"
+                  title="Mở menu"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-5 ml-auto">
               <button 
                 onClick={() => window.location.reload()}
                 className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 bg-gray-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200 hover:border-blue-200"
