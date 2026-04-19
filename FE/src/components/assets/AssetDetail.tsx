@@ -4,11 +4,12 @@ import {
   ArrowLeft, Edit, Send, ArrowLeftRight, Trash2, Printer, 
   Wrench, DollarSign, TrendingDown, Calendar, Building2, 
   Settings, History, LineChart, FileText, Paperclip, Home, ChevronRight, X, Save, 
-  Package, AlertCircle, Calculator
+  Package, AlertCircle, Calculator, UserPlus
 } from 'lucide-react';
 import { toast } from "sonner";
 
 // APIs
+import { apiClient } from '../../api/client'; // <-- ĐÃ THÊM IMPORT apiClient NÀY
 import { assetApi, TaiSan } from '../../api/assetApi';
 import { departmentApi, Department } from '../../api/departmentApi';
 import { assetCategoryApi, AssetCategory } from '../../api/assetCategoryApi';
@@ -18,7 +19,6 @@ import { liquidationApi, ThanhLyTaiSan } from '../../api/liquidationApi';
 import { voucherApi } from '../../api/voucherApi';
 import { depreciationHistoryApi } from '../../api/depreciationHistoryApi';
 
-// CONFIG TRẠNG THÁI
 const statusConfig: Record<string, { label: string; color: string; value: number }> = {
   '0': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700', value: 0 },
   '1': { label: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-700', value: 1 },
@@ -50,20 +50,16 @@ export function AssetDetail() {
   const [historyTimeline, setHistoryTimeline] = useState<any[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  // --- STATE MODALS ---
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // 1. Cấp phát/Điều chuyển
   const [showAllocModal, setShowAllocModal] = useState(false);
   const [allocType, setAllocType] = useState<'CapPhat' | 'LuanChuyen'>('CapPhat');
   const [allocFormData, setAllocFormData] = useState<Partial<DieuChuyenTaiSan>>({});
 
-  // 2. Bảo trì
   const [showMaintModal, setShowMaintModal] = useState(false);
   const [maintFormData, setMaintFormData] = useState<Partial<BaoTriTaiSan>>({});
   const [maintHasCost, setMaintHasCost] = useState(false);
 
-  // 3. Thanh lý
   const [showLiqModal, setShowLiqModal] = useState(false);
   const [liqFormData, setLiqFormData] = useState<Partial<ThanhLyTaiSan>>({});
 
@@ -73,7 +69,34 @@ export function AssetDetail() {
   const [depreciations, setDepreciations] = useState<any[]>([]);
   const [isLoadingDepreciations, setIsLoadingDepreciations] = useState(false);
 
-  // Hook gọi API khi mở tab Lịch sử khấu hao
+  // === STATE & EFFECT CHO CHỨC NĂNG TÌM NHÂN VIÊN THEO PHÒNG BAN ===
+  const [usersInDept, setUsersInDept] = useState<any[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+
+  useEffect(() => {
+    const fetchUsersByDept = async () => {
+      if (!allocFormData.denPhongBanId) {
+        setUsersInDept([]);
+        return;
+      }
+      setIsLoadingUsers(true);
+      try {
+        const data = await apiClient.get(`/user/GetByDepartmentId/${allocFormData.denPhongBanId}`);
+        if (data.errorCode === 200) {
+          setUsersInDept(data.data);
+        } else {
+          setUsersInDept([]);
+        }
+      } catch (error) {
+        setUsersInDept([]);
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    };
+    fetchUsersByDept();
+  }, [allocFormData.denPhongBanId]);
+  // =================================================================
+
   useEffect(() => {
     if (activeTab === 'depreciation' && asset?.id) {
       const fetchDepreciations = async () => {
@@ -92,7 +115,6 @@ export function AssetDetail() {
       fetchDepreciations();
     }
   }, [activeTab, asset?.id]);
-
 
   useEffect(() => {
     if (activeTab === 'vouchers' && asset?.id) {
@@ -144,7 +166,6 @@ export function AssetDetail() {
     }
   }, [activeTab, asset?.id]);
 
-  // HÀM HỖ TRỢ XỬ LÝ LỊCH SỬ THÔNG MINH
   const getDeptName = (deptId?: number) => departments.find(d => d.id === deptId)?.tenPhongBan || 'Kho / Chưa xác định';
   
   const fetchHistoryData = async (assetId: number) => {
@@ -158,12 +179,9 @@ export function AssetDetail() {
 
       let timelineData: any[] = [];
 
-      // 1. LỊCH SỬ CẤP PHÁT / ĐIỀU CHUYỂN
       if (allocRes.errorCode === 200 && allocRes.data) {
         allocRes.data.forEach((item: any) => {
           let actionDesc = '';
-          
-          // Chuyển kiểu về chuỗi để kiểm tra an toàn (bắt cả số lẫn chữ)
           const type = item.loaiDieuChuyen?.toString();
           
           if (type === 'CapPhat' || type === '0') {
@@ -189,7 +207,6 @@ export function AssetDetail() {
         });
       }
 
-      // 2. LỊCH SỬ BẢO TRÌ / SỬA CHỮA
       if (maintRes.errorCode === 200 && maintRes.data) {
         maintRes.data.forEach((item: any) => {
           const mainDesc = item.moTa ? `Nội dung: ${item.moTa}.` : 'Thực hiện bảo trì/sửa chữa thiết bị.';
@@ -202,7 +219,6 @@ export function AssetDetail() {
             description: finalDesc,
             details: [
               `Đơn vị thực hiện: ${item.nhaCungCap || 'Nội bộ'}`,
-              // SỬA LẠI ĐIỀU KIỆN HIỂN THỊ CHI PHÍ: Cứ chiPhi > 0 là hiển thị định dạng tiền
               (item.chiPhi && item.chiPhi > 0) ? `Chi phí: ${formatCurrency(item.chiPhi)}` : 'Chi phí: Không phát sinh'
             ],
             icon: Wrench,
@@ -211,7 +227,6 @@ export function AssetDetail() {
         });
       }
 
-      // 3. LỊCH SỬ THANH LÝ
       if (liqRes.errorCode === 200 && liqRes.data) {
         liqRes.data.forEach((item: any) => {
           const reasonDesc = item.lyDo ? `Lý do: ${item.lyDo}.` : 'Tiến hành thanh lý tài sản.';
@@ -236,7 +251,6 @@ export function AssetDetail() {
         });
       }
 
-      // Sắp xếp timeline theo ngày mới nhất lên trên
       timelineData.sort((a, b) => b.date.getTime() - a.date.getTime());
       setHistoryTimeline(timelineData);
 
@@ -247,9 +261,6 @@ export function AssetDetail() {
     }
   };
 
-  // ==========================================
-  // HANDLERS CẤP PHÁT / ĐIỀU CHUYỂN
-  // ==========================================
   const openAllocModal = (type: 'CapPhat' | 'LuanChuyen') => {
     setAllocType(type);
     setAllocFormData({
@@ -261,11 +272,17 @@ export function AssetDetail() {
       ngayThucHien: new Date().toISOString().split('T')[0],
       ghiChu: '',
     });
+    setUsersInDept([]); // Reset users
     setShowAllocModal(true);
   };
 
   const handleAllocSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!allocFormData.taiSanId || !allocFormData.ngayThucHien || !allocFormData.denPhongBanId) {
+      toast.error('Vui lòng điền đủ thông tin bắt buộc!');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload: any = {
@@ -295,9 +312,6 @@ export function AssetDetail() {
     }
   };
 
-  // ==========================================
-  // HANDLERS BẢO TRÌ
-  // ==========================================
   const openMaintModal = () => {
     setMaintFormData({
       taiSanId: asset?.id,
@@ -341,9 +355,6 @@ export function AssetDetail() {
     }
   };
 
-  // ==========================================
-  // HANDLERS THANH LÝ
-  // ==========================================
   const openLiqModal = () => {
     setLiqFormData({
       taiSanId: asset?.id,
@@ -385,10 +396,11 @@ export function AssetDetail() {
   const getCatName = (catId?: number) => categories.find(c => c.id === catId)?.tenDanhMuc || 'Chưa phân loại';
 
   const handleDelete = async () => {
-    if (statusInfo.value !== 3) {
-      toast.error('Chỉ được phép xóa vĩnh viễn các tài sản "Đã thanh lý"!');
+    if (statusInfo.value !== 0 && statusInfo.value !== 3) {
+      toast.error('Chỉ được phép xóa tài sản khi Chưa cấp phát hoặc Đã thanh lý!');
       return;
     }
+    
     if (window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn tài sản [${asset?.maTaiSan}] khỏi hệ thống?`)) {
       try {
         const response = await assetApi.delete(asset!.id!);
@@ -426,7 +438,6 @@ export function AssetDetail() {
 
   return (
     <div className="max-w-full mx-auto space-y-4 pb-12 relative">
-      {/* Breadcrumb & Back Button */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center text-sm text-gray-500">
           <Home className="w-4 h-4 mr-2" />
@@ -444,7 +455,6 @@ export function AssetDetail() {
         </button>
       </div>
 
-      {/* Header: Title & Action Buttons */}
       <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-2">
         <div>
           <div className="flex items-center gap-3">
@@ -457,15 +467,16 @@ export function AssetDetail() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button 
-            onClick={handleDelete} 
-            disabled={statusInfo.value !== 3}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors border ${
-              statusInfo.value === 3 ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed'
-            }`}
-          >
-            <Trash2 className="w-4 h-4" /> Xóa
-          </button>
+          
+          {/* CHỈ RENDER NÚT XÓA KHI TRẠNG THÁI LÀ 0 HOẶC 3 */}
+          {(statusInfo.value === 0 || statusInfo.value === 3) && (
+            <button 
+              onClick={handleDelete} 
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors border bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+            >
+              <Trash2 className="w-4 h-4" /> Xóa
+            </button>
+          )}
 
           {statusInfo.value !== 3 && (
             <button 
@@ -513,7 +524,6 @@ export function AssetDetail() {
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
         <div className="p-5 flex items-center gap-4 hover:bg-gray-50 transition-colors">
           <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
@@ -553,7 +563,6 @@ export function AssetDetail() {
         </div>
       </div>
 
-      {/* Tabs Section */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
         <div className="flex items-center overflow-x-auto no-scrollbar border-b border-gray-200 px-2 pt-2">
           <button 
@@ -592,7 +601,6 @@ export function AssetDetail() {
 
         <div className="p-6 bg-gray-50/30">
           
-          {/* TAB 1: THÔNG TIN CHUNG */}
           {activeTab === 'general' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
               <div className="space-y-6">
@@ -675,7 +683,6 @@ export function AssetDetail() {
             </div>
           )}
 
-          {/* TAB 2: TIMELINE LỊCH SỬ */}
           {activeTab === 'usage' && (
             <div className="max-w-3xl mx-auto py-4">
               {isLoadingHistory ? (
@@ -723,7 +730,6 @@ export function AssetDetail() {
             </div>
           )}
 
-       {/* TAB 3: LỊCH SỬ KHẤU HAO */}
           {activeTab === 'depreciation' && (
             <div className="max-w-4xl mx-auto py-2">
               {isLoadingDepreciations ? (
@@ -787,7 +793,6 @@ export function AssetDetail() {
             </div>
           )}
 
-          {/* TAB 4: CHỨNG TỪ KẾ TOÁN */}
           {activeTab === 'vouchers' && (
             <div className="max-w-4xl mx-auto py-2">
               {isLoadingVouchers ? (
@@ -813,7 +818,6 @@ export function AssetDetail() {
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {vouchers.map((voucher, idx) => {
-                          // KIỂM TRA TRẠNG THÁI: Nếu là 'hoan_thanh' hoặc khác các giá trị nháp
                           const isGhiSo = voucher.trangThai === 'hoan_thanh' || 
                                           (voucher.trangThai !== 'nhap' && 
                                            voucher.trangThai !== 'Nhap' && 
@@ -822,7 +826,6 @@ export function AssetDetail() {
 
                           const detail = voucher.chiTietChungTus?.[0]; 
 
-                          // MAP LOẠI CHỨNG TỪ THEO SỐ VÀ CHỮ
                           let loaiChungTuLabel = 'Chứng từ khác';
                           const loaiCT = voucher.loaiChungTu?.toString();
                           if (loaiCT === '0' || loaiCT === 'GhiTang') loaiChungTuLabel = 'Ghi tăng TSCĐ';
@@ -877,10 +880,6 @@ export function AssetDetail() {
         </div>
       </div>
 
-      {/* ========================================================= */}
-      {/* ======================= MODALS TẠI CHỖ ================== */}
-      {/* ========================================================= */}
-
       {/* 1. MODAL CẤP PHÁT / ĐIỀU CHUYỂN */}
       {showAllocModal && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
@@ -911,7 +910,7 @@ export function AssetDetail() {
                     type="text"
                     disabled
                     value={getDeptName(allocFormData.tuPhongBanId)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed font-medium"
                   />
                 </div>
               )}
@@ -921,60 +920,68 @@ export function AssetDetail() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     {allocType === 'LuanChuyen' ? 'Đến phòng ban' : 'Phòng ban nhận'} <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    required
-                    value={allocFormData.denPhongBanId || ''}
-                    onChange={(e) => setAllocFormData({...allocFormData, denPhongBanId: Number(e.target.value)})}
+                  <select 
+                    required 
+                    value={allocFormData.denPhongBanId || ''} 
+                    onChange={(e) => {
+                      setAllocFormData({
+                        ...allocFormData, 
+                        denPhongBanId: Number(e.target.value),
+                        denNguoiDungId: undefined // Reset Nhân viên khi đổi phòng ban
+                      });
+                    }} 
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value="">-- Chọn phòng ban --</option>
-                    {departments.map(dept => (
-                      <option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>
-                    ))}
+                    {departments.map((dept: any) => (<option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>))}
+                  </select>
+                </div>
+
+                {/* SỬA INPUT SỐ THÀNH SELECT NHÂN VIÊN */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Nhân viên nhận {isLoadingUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
+                  </label>
+                  <select
+                    value={allocFormData.denNguoiDungId || ''}
+                    onChange={(e) => setAllocFormData({...allocFormData, denNguoiDungId: Number(e.target.value)})}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                    disabled={!allocFormData.denPhongBanId || usersInDept.length === 0}
+                  >
+                    <option value="">
+                      {!allocFormData.denPhongBanId 
+                        ? '-- Chọn phòng ban trước --' 
+                        : (usersInDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
+                    </option>
+                    {usersInDept.map((user: any) => {
+                      // Kết hợp firstName và lastName, nếu không có profile thì fallback về userName
+                      const fullName = user.profile 
+                        ? `${user.profile.firstName} ${user.profile.lastName}` 
+                        : user.userName;
+
+                      return (
+                        <option key={user.userID} value={user.userID}>
+                          {fullName} ({user.email})
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Mã nhân viên nhận</label>
-                  <input
-                    type="number"
-                    value={allocFormData.denNguoiDungId || ''}
-                    onChange={(e) => setAllocFormData({...allocFormData, denNguoiDungId: Number(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="VD: 102"
-                  />
-                </div>
-
-                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Ngày thực hiện <span className="text-red-500">*</span></label>
-                  <input
-                    type="date"
-                    required
-                    value={allocFormData.ngayThucHien}
-                    onChange={(e) => setAllocFormData({...allocFormData, ngayThucHien: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
+                  <input type="date" required value={allocFormData.ngayThucHien} onChange={(e) => setAllocFormData({...allocFormData, ngayThucHien: e.target.value})} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Ghi chú thêm</label>
-                <textarea
-                  rows={2}
-                  value={allocFormData.ghiChu || ''}
-                  onChange={(e) => setAllocFormData({...allocFormData, ghiChu: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Lý do cấp phát, tình trạng máy lúc giao..."
-                />
+                <textarea rows={2} value={allocFormData.ghiChu || ''} onChange={(e) => setAllocFormData({...allocFormData, ghiChu: e.target.value})} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Lý do cấp phát, tình trạng máy lúc giao..." />
               </div>
 
               <div className="pt-2 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowAllocModal(false)} className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-100 font-medium text-gray-700">
-                  Hủy bỏ
-                </button>
-                <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium shadow-sm">
-                  <Save className="w-4 h-4" /> {isSubmitting ? 'Đang xử lý...' : 'Lưu lại'}
-                </button>
+                <button type="button" onClick={() => setShowAllocModal(false)} className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-100 font-medium text-gray-700">Hủy bỏ</button>
+                <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium shadow-sm"><Save className="w-4 h-4" /> {isSubmitting ? 'Đang xử lý...' : 'Lưu lại'}</button>
               </div>
             </form>
           </div>

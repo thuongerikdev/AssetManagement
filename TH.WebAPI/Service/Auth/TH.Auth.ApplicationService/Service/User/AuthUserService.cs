@@ -26,6 +26,7 @@ namespace TH.Auth.ApplicationService.Service.User
 
         Task<ResponseDto<UserSlimDto?>> GetSlimUserWhereScopeUserByID(int userID, CancellationToken ct);
         Task<ResponseDto<List<GetUserResponseDto?>>> GetAllUserWhereScopeUserAsync(CancellationToken ct);
+        Task<ResponseDto<List<GetUserResponseDto>>> GetByDepartmentID (int departmentID, CancellationToken ct);
     }
     public class AuthUserService : IAuthUserService
     {
@@ -246,6 +247,27 @@ namespace TH.Auth.ApplicationService.Service.User
 
         }
 
+        public async Task<ResponseDto<List<GetUserResponseDto>>> GetByDepartmentID(int departmentID, CancellationToken ct)
+        {
+            _logger.LogInformation("Fetching users by department ID: {DepartmentID}", departmentID);
+            try
+            {
+                var users = await _users.FindByDepartmentID(departmentID, ct);
+                if (users == null || users.Count == 0)
+                {
+                    _logger.LogWarning("No users found for department ID: {DepartmentID}", departmentID);
+                    return ResponseConst.Error<List<GetUserResponseDto>>(404, "No users found for this department");
+                }
+                _logger.LogInformation("Successfully fetched users for department ID: {DepartmentID}", departmentID);
+                return ResponseConst.Success("Fetched users successfully", users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching users for department ID: {DepartmentID}", departmentID);
+                return ResponseConst.Error<List<GetUserResponseDto>>(500, "Internal error");
+            }
 
+
+        }
     }
 }

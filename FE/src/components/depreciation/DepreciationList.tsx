@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calculator, FileText, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { Calculator, FileText, Download, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from "sonner";
 import { assetApi, TaiSan } from '../../api/assetApi';
 import { departmentApi, Department } from '../../api/departmentApi';
@@ -15,7 +15,8 @@ interface DepreciationAsset {
   monthlyDepreciation: number;
   remainingValue: number;
   selected: boolean;
-  ngayCapPhatStr?: string; // Hiển thị thêm ngày cấp phát cho rõ ràng
+  ngayCapPhatStr?: string;
+  isAlreadyDepreciated: boolean; // Cờ nhận biết tài sản đã được tính khấu hao trong kỳ này
 }
 
 export function DepreciationList() {
@@ -32,6 +33,12 @@ export function DepreciationList() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [history, setHistory] = useState<LichSuKhauHao[]>([]);
   const [tableAssets, setTableAssets] = useState<DepreciationAsset[]>([]);
+
+  // Lấy giá trị max (Tháng hiện tại) để chặn chọn tháng tương lai
+  const getMaxMonth = () => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -56,7 +63,7 @@ export function DepreciationList() {
     fetchData();
   }, []);
 
-  // 2. THUẬT TOÁN TÍNH KHẤU HAO THEO NGÀY CẤP PHÁT
+  // THUẬT TOÁN TÍNH KHẤU HAO THEO NGÀY CẤP PHÁT
   useEffect(() => {
     if (!rawAssets.length) return;
 
@@ -79,13 +86,14 @@ export function DepreciationList() {
         // Bỏ qua tài sản đã hết giá trị
         if ((asset.giaTriConLai || 0) <= 0) return false;
 
-        // Bỏ qua nếu tháng này đã khấu hao rồi
+        return true; // GIỮ LẠI TẤT CẢ (Kể cả đã khấu hao)
+      })
+      .map(asset => {
+        // KIỂM TRA ĐÃ KHẤU HAO TRONG THÁNG NÀY CHƯA
         const isAlreadyDepreciated = history.some(h => 
           h.taiSanId === asset.id && h.kyKhauHao === selectedMonth
         );
-        return !isAlreadyDepreciated;
-      })
-      .map(asset => {
+
         // Tính mức khấu hao cứng 1 tháng
         let standardMonthlyAmt = asset.khauHaoHangThang || 0;
         if (standardMonthlyAmt === 0 && asset.nguyenGia && asset.thoiGianKhauHao) {
@@ -114,14 +122,15 @@ export function DepreciationList() {
           department: departments.find(d => d.id === asset.phongBanId)?.tenPhongBan || 'Chưa cấp phát',
           originalValue: asset.nguyenGia || 0,
           accumulatedDepreciation: asset.khauHaoLuyKe || 0,
-          monthlyDepreciation: Math.round(finalMonthlyAmt), // Làm tròn tránh số thập phân lẻ
+          monthlyDepreciation: Math.round(finalMonthlyAmt),
           remainingValue: remaining,
-          selected: true,
-          ngayCapPhatStr: capPhatDate.toLocaleDateString('vi-VN')
+          selected: !isAlreadyDepreciated, // Tự động bỏ chọn nếu đã khấu hao
+          ngayCapPhatStr: capPhatDate.toLocaleDateString('vi-VN'),
+          isAlreadyDepreciated // Cờ để render UI
         };
       });
 
-    setTableAssets(validAssets);
+    setTableAssets(validAssets as any[]);
   }, [rawAssets, history, selectedMonth, departments]);
 
   const formatCurrency = (value: number) => {
@@ -129,19 +138,35 @@ export function DepreciationList() {
   };
 
   const toggleSelect = (id: number) => {
-    setTableAssets(tableAssets.map(asset => 
-      asset.id === id ? { ...asset, selected: !asset.selected } : asset
-    ));
+    setTableAssets(tableAssets.map(asset => {
+      // Chặn không cho toggle nếu đã khấu hao
+      if (asset.id === id && !asset.isAlreadyDepreciated) {
+        return { ...asset, selected: !asset.selected };
+      }
+      return asset;
+    }));
   };
 
   const toggleSelectAll = () => {
-    const allSelected = tableAssets.every(a => a.selected);
-    setTableAssets(tableAssets.map(asset => ({ ...asset, selected: !allSelected })));
+    // Chỉ tính những tài sản chưa khấu hao
+    const selectableAssets = tableAssets.filter(a => !a.isAlreadyDepreciated);
+    if (selectableAssets.length === 0) return;
+
+    const allSelected = selectableAssets.every(a => a.selected);
+    setTableAssets(tableAssets.map(asset => {
+      if (!asset.isAlreadyDepreciated) {
+        return { ...asset, selected: !allSelected };
+      }
+      return asset;
+    }));
   };
 
-  const selectedAssets = tableAssets.filter(a => a.selected);
+  const selectedAssets = tableAssets.filter(a => a.selected && !a.isAlreadyDepreciated);
   const totalDepreciation = selectedAssets.reduce((sum, a) => sum + a.monthlyDepreciation, 0);
 
+  // ==========================================
+  // HÀM XỬ LÝ GHI SỔ KHẤU HAO (BULK CREATE)
+  // ==========================================
   const handleGhiSo = async () => {
     if (selectedAssets.length === 0) {
       toast.error('Vui lòng chọn ít nhất 1 tài sản để khấu hao.');
@@ -150,24 +175,24 @@ export function DepreciationList() {
 
     setIsSubmitting(true);
     try {
-      const promises = selectedAssets.map(asset => 
-        depreciationHistoryApi.create({
+      // ĐÓNG GÓI DỮ LIỆU THÀNH 1 PAYLOAD CHUẨN CỦA API BULK
+      const payload = {
+        kyKhauHao: selectedMonth,
+        danhSachTaiSan: selectedAssets.map(asset => ({
           taiSanId: asset.id,
-          kyKhauHao: selectedMonth,
           soTien: asset.monthlyDepreciation
-        })
-      );
+        }))
+      };
 
-      const results = await Promise.all(promises);
-      const failedCount = results.filter(r => r.errorCode !== 200).length;
+      // GỌI API ĐÚNG 1 LẦN DUY NHẤT
+      const response = await depreciationHistoryApi.createBulk(payload);
       
-      if (failedCount === 0) {
-        toast.success(`Đã ghi sổ và tự động sinh Chứng từ khấu hao cho ${selectedAssets.length} tài sản!`);
+      if (response.errorCode === 200) {
+        toast.success(`Đã ghi sổ Chứng từ tổng cho ${selectedAssets.length} tài sản!`);
         setShowVoucher(false);
-        fetchData(); 
+        fetchData(); // Tải lại giao diện để các checkbox tự động bị khóa
       } else {
-        toast.warning(`Hoàn thành một phần. Có ${failedCount} tài sản bị lỗi.`);
-        fetchData();
+        toast.error(response.message || 'Lỗi khi ghi sổ khấu hao.');
       }
     } catch (error) {
       toast.error('Lỗi hệ thống khi ghi sổ khấu hao.');
@@ -195,6 +220,7 @@ export function DepreciationList() {
             <input
               type="month"
               value={selectedMonth}
+              max={getMaxMonth()} // Chặn người dùng chọn tháng trong tương lai
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -203,12 +229,12 @@ export function DepreciationList() {
             <button
               onClick={() => {
                 if (selectedAssets.length === 0) {
-                  toast.error("Không có tài sản nào được chọn!");
+                  toast.error("Không có tài sản nào hợp lệ được chọn!");
                   return;
                 }
                 setShowVoucher(true);
               }}
-              disabled={isLoading || tableAssets.length === 0}
+              disabled={isLoading || tableAssets.length === 0 || selectedAssets.length === 0}
               className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               <Calculator className="w-5 h-5" /> Tính Khấu hao
@@ -240,10 +266,10 @@ export function DepreciationList() {
                 <th className="px-6 py-3 text-left">
                   <input
                     type="checkbox"
-                    checked={tableAssets.length > 0 && tableAssets.every(a => a.selected)}
+                    checked={tableAssets.filter(a => !a.isAlreadyDepreciated).length > 0 && tableAssets.filter(a => !a.isAlreadyDepreciated).every(a => a.selected)}
                     onChange={toggleSelectAll}
-                    disabled={tableAssets.length === 0}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    disabled={tableAssets.filter(a => !a.isAlreadyDepreciated).length === 0}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Mã TS</th>
@@ -264,27 +290,44 @@ export function DepreciationList() {
                   </td>
                 </tr>
               ) : (
-                tableAssets.map((asset) => (
-                  <tr key={asset.id} className={`hover:bg-gray-50 transition-colors ${!asset.selected ? 'opacity-50' : ''}`}>
+                tableAssets.map((asset: any) => (
+                  <tr key={asset.id} className={`hover:bg-gray-50 transition-colors ${(!asset.selected && !asset.isAlreadyDepreciated) ? 'opacity-50' : ''} ${asset.isAlreadyDepreciated ? 'bg-gray-50/50' : ''}`}>
                     <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={asset.selected}
-                        onChange={() => toggleSelect(asset.id)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
+                      {asset.isAlreadyDepreciated ? (
+                        <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300 flex items-center justify-center" title="Đã tính khấu hao">
+                          <CheckCircle className="w-3 h-3 text-gray-500" />
+                        </div>
+                      ) : (
+                        <input
+                          type="checkbox"
+                          checked={asset.selected}
+                          onChange={() => toggleSelect(asset.id)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm font-medium text-blue-600">{asset.code}</span></td>
-                    <td className="px-6 py-4"><span className="text-sm text-gray-900">{asset.name}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className={`text-sm font-medium ${asset.isAlreadyDepreciated ? 'text-gray-500' : 'text-blue-600'}`}>{asset.code}</span></td>
+                    <td className="px-6 py-4">
+                      <span className={`text-sm ${asset.isAlreadyDepreciated ? 'text-gray-500' : 'text-gray-900'}`}>{asset.name}</span>
+                      {asset.isAlreadyDepreciated && (
+                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                          Đã tính kỳ này
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{asset.ngayCapPhatStr}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.originalValue)}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-600">{formatCurrency(asset.accumulatedDepreciation)}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right bg-blue-50/30"><span className="text-sm font-bold text-blue-700">{formatCurrency(asset.monthlyDepreciation)}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right bg-blue-50/30">
+                      <span className={`text-sm font-bold ${asset.isAlreadyDepreciated ? 'text-gray-500 line-through' : 'text-blue-700'}`}>
+                        {formatCurrency(asset.monthlyDepreciation)}
+                      </span>
+                    </td>
                   </tr>
                 ))
               )}
             </tbody>
-            {tableAssets.length > 0 && (
+            {tableAssets.length > 0 && selectedAssets.length > 0 && (
               <tfoot className="bg-gray-50 border-t-2 border-gray-300">
                 <tr>
                   <td colSpan={6} className="px-6 py-4 text-right font-semibold text-gray-900">
@@ -331,7 +374,7 @@ export function DepreciationList() {
 
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3">Chi tiết tài sản được trích khấu hao</h4>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
                   {selectedAssets.map((asset) => (
                     <div key={asset.id} className="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
                       <div>

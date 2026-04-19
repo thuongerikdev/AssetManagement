@@ -372,4 +372,17 @@ namespace TH.Asset.Dtos
         public decimal? conLaiSauKhauHao { get; set; }
         public DateTime? ngayTao { get; set; }
     }
+
+
+    public class KhauHaoHangLoatRequestDto
+    {
+        public string KyKhauHao { get; set; }
+        public List<ChiTietKhauHaoDto> DanhSachTaiSan { get; set; }
+    }
+
+    public class ChiTietKhauHaoDto
+    {
+        public int TaiSanId { get; set; }
+        public decimal SoTien { get; set; }
+    }
 }

@@ -1,267 +1,650 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TH.Auth.Domain.Role;
 using TH.Auth.Domain.User;
-using TH.Auth.Infrastructure.Repository.User;
-using TH.Constant;
 
-namespace TH.Auth.Infrastructure
+namespace TH.Auth.Infrastructure.SeedData
 {
-    public static class AuthDataSeeder
+    public static class AuthSeedData
     {
-        public static async Task SeedPermissionsAsync(AuthDbContext context)
+        // Mật khẩu mặc định đã hash: "Password123!" 
+        // (Trong thực tế, bạn cần hash bằng PasswordHasher của hệ thống)
+        private const string DEFAULT_PASSWORD_HASH = "$2a$11$X7vK5Q8Z9Z8Z9Z8Z9Z8Z9OqJ8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z";
+
+        public static void SeedRoles(ModelBuilder modelBuilder)
         {
-            // =========================================================
-            // STEP 0: CLEANUP - DỌN DẸP QUYỀN SAI
-            // =========================================================
-            var staffRoleIds = new List<int> { 2, 3, 4 };
-
-            var badLinks = await context.authRolePermissions
-                .Include(rp => rp.permission)
-                .Where(rp => staffRoleIds.Contains(rp.roleID) && rp.permission.code.EndsWith(".admin"))
-                .ToListAsync();
-
-            if (badLinks.Any())
-            {
-                context.authRolePermissions.RemoveRange(badLinks);
-                await context.SaveChangesAsync();
-            }
-
-            // =========================================================
-            // STEP 1: ĐỒNG BỘ PERMISSION TỪ CODE -> DB
-            // =========================================================
-            var allConstantPermissions = PermissionConstants.Permissions;
-            var existingPermissions = await context.authPermissions.ToListAsync();
-            var newPermissionsToAdd = new List<AuthPermission>();
-
-            foreach (var kvp in allConstantPermissions)
-            {
-                if (!existingPermissions.Any(p => p.code == kvp.Value))
+            modelBuilder.Entity<AuthRole>().HasData(
+                // Admin hệ thống
+                new AuthRole
                 {
-                    string scope = "user";
-                    if ((kvp.Value.Contains("manage") || kvp.Value.Contains("delete") ||
-                         kvp.Value.Contains("upload") || kvp.Value.Contains("read_all") ||
-                         kvp.Value.Contains(".admin"))
-                        && !kvp.Value.Contains("_own"))
-                    {
-                        scope = "staff";
-                    }
+                    roleID = 1,
+                    roleName = "admin_he_thong",
+                    roleDescription = "Quản trị viên hệ thống",
+                    scope = "staff",
+                    isDefault = false
+                },
 
-                    newPermissionsToAdd.Add(new AuthPermission
-                    {
-                        permissionName = kvp.Key,
-                        code = kvp.Value,
-                        permissionDescription = kvp.Key,
-                        scope = scope
-                    });
-                }
-            }
-
-            if (newPermissionsToAdd.Any())
-            {
-                await context.authPermissions.AddRangeAsync(newPermissionsToAdd);
-                await context.SaveChangesAsync();
-            }
-
-            // =========================================================
-            // STEP 2: ĐỊNH NGHĨA NHÓM QUYỀN
-            // =========================================================
-
-            var guestCodes = new HashSet<string> { "auth.login", "auth.login_google", "auth.register", "auth.forgot_password", "system.health", "payment.callback", "subtitle.callback" };
-
-            var customerFreeCodes = new HashSet<string> {
-                "account.mfa_setup", "account.change_password", "auth.logout", "auth.refresh", "auth.mfa_verify",
-                "comment.read", "episode.read", "movie.read_details", "movie.browse", "movie_person.read", "movie_tag.read",
-                "person.read", "tag.read",
-                "user.read_profile", "user.update_profile", "user.read_details",
-                "rating.read",
-                "plan.read", "price.read", "region.read", "search.movie", "search.suggest", "search.person",
-                "subscription.read_own", "subscription.cancel", "order.read_own", "invoice.read_own", "payment.checkout", "image.read"
-            };
-
-            var customerVipCodes = new HashSet<string> {
-                "comment.create", "comment.update_own", "comment.delete_own",
-                "source.read", "progress.track", "progress.read",
-                "movie.watch_stream", "movie.watch_vip", "subtitle.read",
-                "saved_movie.manage", "saved_movie.read",
-                "rating.create", "rating.update", "rating.delete"
-            };
-
-            // Danh sách các nhóm chức năng dành cho Staff
-            var staffCodes = new HashSet<string> {
-                "upload.archive", "upload.vimeo", "upload.youtube",
-                "episode.manage", "source.manage", "image.manage",
-                "invoice.read_all", "movie.manage", "movie_person.manage", "movie_tag.manage",
-                "subtitle.upload", "subtitle.translate", "subtitle.manage",
-                "order.read_all", "permission.read", "person.manage", "plan.manage", "price.manage", "region.manage",
-                "subscription.read_all", "subscription.manage", "tag.manage",
-                "user.read_list", "user.read_details",
-                "search.advanced",
-                "role.assign", "permission.assign",
-                // --- THÊM 2 QUYỀN NÀY ---
-                "audit_log.manage", "usersession.manage"
-            };
-
-            // =========================================================
-            // STEP 3: GÁN QUYỀN VÀO ROLE
-            // =========================================================
-
-            var allPermissionsInDb = await context.authPermissions.ToListAsync();
-            var allRolePermissionsInDb = await context.authRolePermissions.ToListAsync();
-
-            int adminRoleId = 1;
-            int contentMgrId = 2;
-            int userMgrId = 3;
-            int financeMgrId = 4;
-            int customerId = 10;
-            int vipId = 11;
-
-            var linksToAdd = new List<AuthRolePermission>();
-
-            void AddLinkIfNotExist(int rId, int pId)
-            {
-                bool existsInDb = allRolePermissionsInDb.Any(rp => rp.roleID == rId && rp.permissionID == pId);
-                bool existsInPending = linksToAdd.Any(rp => rp.roleID == rId && rp.permissionID == pId);
-
-                if (!existsInDb && !existsInPending)
+                // Kế toán TSCĐ - Actor chính
+                new AuthRole
                 {
-                    linksToAdd.Add(new AuthRolePermission { roleID = rId, permissionID = pId });
-                }
-            }
+                    roleID = 2,
+                    roleName = "ke_toan_tscd",
+                    roleDescription = "Kế toán tài sản cố định",
+                    scope = "staff",
+                    isDefault = false
+                },
 
-            foreach (var perm in allPermissionsInDb)
-            {
-                if (guestCodes.Contains(perm.code)) continue;
-
-                // --- 1. ADMIN ---
-                AddLinkIfNotExist(adminRoleId, perm.permissionID);
-
-                // --- 2. STAFF ROLES ---
-                // Logic: Phải nằm trong staffCodes HOẶC chứa từ khóa quản lý
-                bool isStaffPerm = staffCodes.Contains(perm.code) ||
-                                   (perm.code.Contains("manage") || perm.code.Contains("read_list"));
-
-                // CHẶN QUYỀN ADMIN
-                if (isStaffPerm && !perm.code.EndsWith(".admin"))
+                // Trưởng phòng kế toán
+                new AuthRole
                 {
-                    // A. Content Manager
-                    if (perm.code.StartsWith("movie") || perm.code.StartsWith("episode") ||
-                        perm.code.StartsWith("person") || perm.code.StartsWith("tag") ||
-                        perm.code.StartsWith("image") || perm.code.StartsWith("source") ||
-                        perm.code.StartsWith("subtitle") || perm.code.StartsWith("upload"))
-                    {
-                        AddLinkIfNotExist(contentMgrId, perm.permissionID);
-                    }
+                    roleID = 3,
+                    roleName = "truong_phong_ke_toan",
+                    roleDescription = "Trưởng phòng kế toán",
+                    scope = "staff",
+                    isDefault = false
+                },
 
-                    // B. User Manager
-                    // - usersession.manage bắt đầu bằng "user" nên tự động được nhận.
-                    // - audit_log.manage cần check thêm.
-                    if (perm.code.StartsWith("user") ||
-                        perm.code.StartsWith("role.assign") ||
-                        perm.code.StartsWith("permission.assign") ||
-                        perm.code.StartsWith("audit_log")) // <--- THÊM AUDIT LOG
-                    {
-                        AddLinkIfNotExist(userMgrId, perm.permissionID);
-                    }
-
-                    // C. Finance Manager
-                    if (perm.code.StartsWith("order") || perm.code.StartsWith("invoice") ||
-                        perm.code.StartsWith("plan") || perm.code.StartsWith("price") ||
-                        perm.code.StartsWith("subscription"))
-                    {
-                        AddLinkIfNotExist(financeMgrId, perm.permissionID);
-                    }
-
-                    // D. Shared Staff
-                    if (perm.code == "permission.read" || perm.code == "search.advanced")
-                    {
-                        AddLinkIfNotExist(contentMgrId, perm.permissionID);
-                        AddLinkIfNotExist(userMgrId, perm.permissionID);
-                        AddLinkIfNotExist(financeMgrId, perm.permissionID);
-                    }
-                }
-
-                // --- 3. CUSTOMER RIGHTS ---
-                if (customerFreeCodes.Contains(perm.code))
+                // Bộ phận kỹ thuật
+                new AuthRole
                 {
-                    AddLinkIfNotExist(customerId, perm.permissionID);
-                    AddLinkIfNotExist(vipId, perm.permissionID);
-                    AddLinkIfNotExist(contentMgrId, perm.permissionID);
-                    AddLinkIfNotExist(userMgrId, perm.permissionID);
-                    AddLinkIfNotExist(financeMgrId, perm.permissionID);
-                }
+                    roleID = 4,
+                    roleName = "ky_thuat_vien",
+                    roleDescription = "Kỹ thuật viên",
+                    scope = "staff",
+                    isDefault = false
+                },
 
-                // --- 4. VIP RIGHTS ---
-                if (customerVipCodes.Contains(perm.code))
+                new AuthRole
                 {
-                    AddLinkIfNotExist(vipId, perm.permissionID);
-                }
-            }
+                    roleID = 5,
+                    roleName = "truong_phong_ky_thuat",
+                    roleDescription = "Trưởng phòng kỹ thuật",
+                    scope = "staff",
+                    isDefault = false
+                },
 
-            if (linksToAdd.Any())
-            {
-                await context.authRolePermissions.AddRangeAsync(linksToAdd);
-                await context.SaveChangesAsync();
-            }
+                // Ban giám đốc
+                new AuthRole
+                {
+                    roleID = 6,
+                    roleName = "giam_doc",
+                    roleDescription = "Giám đốc",
+                    scope = "staff",
+                    isDefault = false
+                },
+
+                new AuthRole
+                {
+                    roleID = 7,
+                    roleName = "pho_giam_doc",
+                    roleDescription = "Phó giám đốc",
+                    scope = "staff",
+                    isDefault = false
+                },
+
+                // Trưởng phòng ban (chung)
+                new AuthRole
+                {
+                    roleID = 8,
+                    roleName = "truong_phong_ban",
+                    roleDescription = "Trưởng phòng ban",
+                    scope = "staff",
+                    isDefault = false
+                },
+
+                // Nhân viên sử dụng tài sản (default)
+                new AuthRole
+                {
+                    roleID = 9,
+                    roleName = "nhan_vien",
+                    roleDescription = "Nhân viên",
+                    scope = "staff",
+                    isDefault = true
+                },
+
+                // Nhân viên nhân sự
+                new AuthRole
+                {
+                    roleID = 10,
+                    roleName = "nhan_vien_nhan_su",
+                    roleDescription = "Nhân viên nhân sự",
+                    scope = "staff",
+                    isDefault = false
+                }
+            );
         }
 
-        public static async Task SeedAdminUserAsync(AuthDbContext context, IServiceProvider serviceProvider)
+        public static void SeedUsers(ModelBuilder modelBuilder)
         {
-            var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("SeederAdmin");
-            try
+            var now = DateTime.UtcNow;
+            var users = new List<AuthUser>();
+            int userId = 1;
+
+            // ===== BAN GIÁM ĐỐC (Dept 1) =====
+            users.Add(new AuthUser
             {
-                var adminEmail = "admin@fz.com";
-                var adminUserExists = await context.authUsers.IgnoreQueryFilters().AnyAsync(u => u.email == adminEmail);
-                if (adminUserExists)
-                {
-                    logger.LogInformation("⚠️ Admin user already exists. Skipping.");
-                    return;
-                }
+                userID = userId++,
+                userName = "gd.nguyen",
+                email = "gd.nguyen@thtech.vn",
+                phoneNumber = "0901000001",
+                departmentID = "1",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
 
-                var adminRole = await context.authRoles.FirstOrDefaultAsync(r => r.roleName == "admin");
-                if (adminRole == null)
-                {
-                    adminRole = new AuthRole { roleName = "admin", roleDescription = "Admin (Auto Generated)", scope = "staff" };
-                    context.authRoles.Add(adminRole);
-                    await context.SaveChangesAsync();
-                }
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "pgd.tran",
+                email = "pgd.tran@thtech.vn",
+                phoneNumber = "0901000002",
+                departmentID = "1",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
 
-                var passwordHasher = serviceProvider.GetRequiredService<IPasswordHasher>();
-                string hashedPassword = passwordHasher.Hash("Admin@123");
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "la.bgd",
+                email = "la.bgd@thtech.vn",
+                phoneNumber = "0901000003",
+                departmentID = "1",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
 
-                var adminUser = new AuthUser
+            // ===== PHÒNG KẾ TOÁN (Dept 2) =====
+            // Trưởng phòng
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.le.kt",
+                email = "tp.le.kt@thtech.vn",
+                phoneNumber = "0902000001",
+                departmentID = "2",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            // Kế toán TSCĐ
+            for (int i = 1; i <= 3; i++)
+            {
+                users.Add(new AuthUser
                 {
-                    userName = "admin",
-                    email = adminEmail,
-                    phoneNumber = "0999999999",
-                    passwordHash = hashedPassword,
+                    userID = userId++,
+                    userName = $"kt.tscd{i}",
+                    email = $"kt.tscd{i}@thtech.vn",
+                    phoneNumber = $"090200000{i + 1}",
+                    departmentID = "2",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
                     isEmailVerified = true,
-                    status = "active",
+                    status = "Active",
                     tokenVersion = 1,
                     scope = "staff",
-                    createdAt = DateTime.UtcNow,
-                    updatedAt = DateTime.UtcNow,
-                    profile = new AuthProfile { firstName = "System", lastName = "Administrator", gender = "other", dateOfBirth = DateTime.UtcNow, avatar = "https://ui-avatars.com/api/?name=System+Admin" }
-                };
-
-                context.authUsers.Add(adminUser);
-                await context.SaveChangesAsync();
-
-                context.authUserRoles.Add(new AuthUserRole { userID = adminUser.userID, roleID = adminRole.roleID, assignedAt = DateTime.UtcNow });
-                await context.SaveChangesAsync();
-                logger.LogInformation("✅ Created Admin User.");
+                    createdAt = now,
+                    updatedAt = now
+                });
             }
-            catch (Exception ex)
+
+            // Kế toán khác
+            for (int i = 1; i <= 7; i++)
             {
-                logger.LogError(ex, "❌ Failed to seed Admin User");
-                throw;
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"nv.kt{i}",
+                    email = $"nv.kt{i}@thtech.vn",
+                    phoneNumber = $"090200001{i}",
+                    departmentID = "2",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
             }
+
+            // ===== PHÒNG NHÂN SỰ (Dept 3) =====
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.pham.ns",
+                email = "tp.pham.ns@thtech.vn",
+                phoneNumber = "0903000001",
+                departmentID = "3",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"nv.ns{i}",
+                    email = $"nv.ns{i}@thtech.vn",
+                    phoneNumber = $"090300000{i + 1}",
+                    departmentID = "3",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
+            }
+
+            // ===== PHÒNG KỸ THUẬT (Dept 4) =====
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.vu.kt",
+                email = "tp.vu.kt@thtech.vn",
+                phoneNumber = "0904000001",
+                departmentID = "4",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"ktv{i}",
+                    email = $"ktv{i}@thtech.vn",
+                    phoneNumber = $"090400000{i + 1}",
+                    departmentID = "4",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
+            }
+
+            // ===== PHÒNG SẢN PHẨM (Dept 5) =====
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.hoang.sp",
+                email = "tp.hoang.sp@thtech.vn",
+                phoneNumber = "0905000001",
+                departmentID = "5",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"pm{i}",
+                    email = $"pm{i}@thtech.vn",
+                    phoneNumber = $"090500000{i + 1}",
+                    departmentID = "5",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
+            }
+
+            // ===== PHÒNG PHÁT TRIỂN PHẦN MỀM (Dept 6) =====
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.minh.dev",
+                email = "tp.minh.dev@thtech.vn",
+                phoneNumber = "0906000001",
+                departmentID = "6",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"dev{i}",
+                    email = $"dev{i}@thtech.vn",
+                    phoneNumber = $"090600000{i + 1}",
+                    departmentID = "6",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
+            }
+
+            // ===== PHÒNG QUẢN LÝ DỰ ÁN (Dept 7) =====
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.quan.pm",
+                email = "tp.quan.pm@thtech.vn",
+                phoneNumber = "0907000001",
+                departmentID = "7",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"prjm{i}",
+                    email = $"prjm{i}@thtech.vn",
+                    phoneNumber = $"090700000{i + 1}",
+                    departmentID = "7",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
+            }
+
+            // ===== PHÒNG THIẾT KẾ UI/UX (Dept 8) =====
+            users.Add(new AuthUser
+            {
+                userID = userId++,
+                userName = "tp.linh.ux",
+                email = "tp.linh.ux@thtech.vn",
+                phoneNumber = "0908000001",
+                departmentID = "8",
+                passwordHash = DEFAULT_PASSWORD_HASH,
+                isEmailVerified = true,
+                status = "Active",
+                tokenVersion = 1,
+                scope = "staff",
+                createdAt = now,
+                updatedAt = now
+            });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                users.Add(new AuthUser
+                {
+                    userID = userId++,
+                    userName = $"designer{i}",
+                    email = $"designer{i}@thtech.vn",
+                    phoneNumber = $"090800000{i + 1}",
+                    departmentID = "8",
+                    passwordHash = DEFAULT_PASSWORD_HASH,
+                    isEmailVerified = true,
+                    status = "Active",
+                    tokenVersion = 1,
+                    scope = "staff",
+                    createdAt = now,
+                    updatedAt = now
+                });
+            }
+
+            modelBuilder.Entity<AuthUser>().HasData(users);
+        }
+
+        public static void SeedProfiles(ModelBuilder modelBuilder)
+        {
+            var profiles = new List<AuthProfile>();
+            int profileId = 1;
+
+            // BGD
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 1, firstName = "Nguyễn Văn", lastName = "A", gender = "Nam" });
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 2, firstName = "Trần Thị", lastName = "B", gender = "Nữ" });
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 3, firstName = "Lê Văn", lastName = "C", gender = "Nam" });
+
+            // Phòng Kế Toán
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 4, firstName = "Lê Thị", lastName = "D", gender = "Nữ" });
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 5, firstName = "Hoàng Văn", lastName = "E", gender = "Nam" });
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 6, firstName = "Phạm Thị", lastName = "F", gender = "Nữ" });
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 7, firstName = "Vũ Văn", lastName = "G", gender = "Nam" });
+
+            for (int i = 8; i <= 14; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"Nhân viên",
+                    lastName = $"KT{i - 7}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            // Phòng Nhân Sự
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 15, firstName = "Phạm Văn", lastName = "H", gender = "Nam" });
+            for (int i = 16; i <= 25; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"Nhân viên",
+                    lastName = $"NS{i - 15}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            // Phòng Kỹ Thuật
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 26, firstName = "Vũ Thị", lastName = "I", gender = "Nữ" });
+            for (int i = 27; i <= 36; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"Kỹ thuật viên",
+                    lastName = $"{i - 26}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            // Phòng Sản Phẩm
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 37, firstName = "Hoàng Thị", lastName = "J", gender = "Nữ" });
+            for (int i = 38; i <= 47; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"PM",
+                    lastName = $"{i - 37}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            // Phòng Phát Triển
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 48, firstName = "Minh Văn", lastName = "K", gender = "Nam" });
+            for (int i = 49; i <= 58; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"Developer",
+                    lastName = $"{i - 48}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            // Phòng Quản Lý Dự Án
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 59, firstName = "Quân Văn", lastName = "L", gender = "Nam" });
+            for (int i = 60; i <= 69; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"Project Manager",
+                    lastName = $"{i - 59}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            // Phòng Thiết Kế
+            profiles.Add(new AuthProfile { profileID = profileId++, userID = 70, firstName = "Linh Thị", lastName = "M", gender = "Nữ" });
+            for (int i = 71; i <= 80; i++)
+            {
+                profiles.Add(new AuthProfile
+                {
+                    profileID = profileId++,
+                    userID = i,
+                    firstName = $"Designer",
+                    lastName = $"{i - 70}",
+                    gender = i % 2 == 0 ? "Nam" : "Nữ"
+                });
+            }
+
+            modelBuilder.Entity<AuthProfile>().HasData(profiles);
+        }
+
+        public static void SeedUserRoles(ModelBuilder modelBuilder)
+        {
+            var now = DateTime.UtcNow;
+            var userRoles = new List<AuthUserRole>();
+
+            // BGD: Giám đốc (userID 1)
+            userRoles.Add(new AuthUserRole { userID = 1, roleID = 6, assignedAt = now });
+
+            // BGD: Phó giám đốc (userID 2)
+            userRoles.Add(new AuthUserRole { userID = 2, roleID = 7, assignedAt = now });
+
+            // BGD: Lãnh đạo (userID 3)
+            userRoles.Add(new AuthUserRole { userID = 3, roleID = 7, assignedAt = now });
+
+            // Phòng Kế Toán: Trưởng phòng (userID 4)
+            userRoles.Add(new AuthUserRole { userID = 4, roleID = 3, assignedAt = now });
+
+            // Phòng Kế Toán: Kế toán TSCĐ (userID 5-7)
+            userRoles.Add(new AuthUserRole { userID = 5, roleID = 2, assignedAt = now });
+            userRoles.Add(new AuthUserRole { userID = 6, roleID = 2, assignedAt = now });
+            userRoles.Add(new AuthUserRole { userID = 7, roleID = 2, assignedAt = now });
+
+            // Phòng Kế Toán: Nhân viên khác (userID 8-14)
+            for (int i = 8; i <= 14; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 9, assignedAt = now });
+            }
+
+            // Phòng Nhân Sự: Trưởng phòng (userID 15)
+            userRoles.Add(new AuthUserRole { userID = 15, roleID = 8, assignedAt = now });
+            userRoles.Add(new AuthUserRole { userID = 15, roleID = 10, assignedAt = now });
+
+            // Phòng Nhân Sự: Nhân viên (userID 16-25)
+            for (int i = 16; i <= 25; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 10, assignedAt = now });
+            }
+
+            // Phòng Kỹ Thuật: Trưởng phòng (userID 26)
+            userRoles.Add(new AuthUserRole { userID = 26, roleID = 5, assignedAt = now });
+
+            // Phòng Kỹ Thuật: Kỹ thuật viên (userID 27-36)
+            for (int i = 27; i <= 36; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 4, assignedAt = now });
+            }
+
+            // Phòng Sản Phẩm: Trưởng phòng (userID 37)
+            userRoles.Add(new AuthUserRole { userID = 37, roleID = 8, assignedAt = now });
+
+            // Phòng Sản Phẩm: Nhân viên (userID 38-47)
+            for (int i = 38; i <= 47; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 9, assignedAt = now });
+            }
+
+            // Phòng Phát Triển: Trưởng phòng (userID 48)
+            userRoles.Add(new AuthUserRole { userID = 48, roleID = 8, assignedAt = now });
+
+            // Phòng Phát Triển: Dev (userID 49-58)
+            for (int i = 49; i <= 58; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 9, assignedAt = now });
+            }
+
+            // Phòng Quản Lý Dự Án: Trưởng phòng (userID 59)
+            userRoles.Add(new AuthUserRole { userID = 59, roleID = 8, assignedAt = now });
+
+            // Phòng Quản Lý Dự Án: PM (userID 60-69)
+            for (int i = 60; i <= 69; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 9, assignedAt = now });
+            }
+
+            // Phòng Thiết Kế: Trưởng phòng (userID 70)
+            userRoles.Add(new AuthUserRole { userID = 70, roleID = 8, assignedAt = now });
+
+            // Phòng Thiết Kế: Designer (userID 71-80)
+            for (int i = 71; i <= 80; i++)
+            {
+                userRoles.Add(new AuthUserRole { userID = i, roleID = 9, assignedAt = now });
+            }
+
+            modelBuilder.Entity<AuthUserRole>().HasData(userRoles);
         }
     }
 }

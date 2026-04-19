@@ -6,7 +6,7 @@ using TH.Auth.Dtos.User;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("user")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
     {
@@ -59,7 +59,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("getAllUsers")]
-        [Authorize(Policy = "UserReadDetails")]
+        //[Authorize(Policy = "UserReadDetails")]
         public async Task<IActionResult> GetAllUsersFull(CancellationToken ct)
         {
             var result = await _userService.GetAllUserWhereScopeUserAsync(ct);
@@ -93,7 +93,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("admin/getAllUsers")]
-        [Authorize(Policy = "UserReadDetailsAdmin")]
+        //[Authorize(Policy = "UserReadDetailsAdmin")]
         public async Task<IActionResult> GetAllUsersAdminFull(CancellationToken ct)
         {
             var result = await _userService.GetAllUserAsync(ct);
@@ -139,6 +139,18 @@ namespace TH.WebAPI.Controllers.Auth
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+
+        [HttpGet("GetByDepartmentId/{departmentID}")]
+        public async Task<IActionResult> GetByDepartmentId(int departmentID, CancellationToken ct)
+        {
+            var result = await _userService.GetByDepartmentID(departmentID, ct);
+            if (result.ErrorCode != 200)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+
         }
     }
 }

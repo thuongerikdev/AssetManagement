@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Send, ArrowLeftRight, Search, Clock, X, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import { apiClient } from '../../api/client'; // <-- ĐÃ THÊM IMPORT apiClient NÀY
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
 import { assetApi, TaiSan } from '../../api/assetApi';
 import { departmentApi, Department } from '../../api/departmentApi';
@@ -26,10 +27,14 @@ export function AllocationList() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Modal states dùng kiểu chuỗi (Đã bỏ ThuHoi)
+  // Modal states
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'CapPhat' | 'LuanChuyen'>('CapPhat');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // === STATE & EFFECT CHO CHỨC NĂNG TÌM NHÂN VIÊN THEO PHÒNG BAN ===
+  const [usersInDept, setUsersInDept] = useState<any[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState<Partial<DieuChuyenTaiSan>>({
@@ -64,6 +69,31 @@ export function AllocationList() {
     fetchData();
   }, []);
 
+  // GỌI API LẤY USER THEO PHÒNG BAN
+  useEffect(() => {
+    const fetchUsersByDept = async () => {
+      if (!formData.denPhongBanId) {
+        setUsersInDept([]);
+        return;
+      }
+      setIsLoadingUsers(true);
+      try {
+        const data = await apiClient.get(`/user/GetByDepartmentId/${formData.denPhongBanId}`);
+        if (data.errorCode === 200) {
+          setUsersInDept(data.data);
+        } else {
+          setUsersInDept([]);
+        }
+      } catch (error) {
+        setUsersInDept([]);
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    };
+    fetchUsersByDept();
+  }, [formData.denPhongBanId]);
+  // =================================================================
+
   const openModal = (type: 'CapPhat' | 'LuanChuyen') => {
     setModalType(type);
     setFormData({
@@ -75,10 +105,10 @@ export function AllocationList() {
       ngayThucHien: new Date().toISOString().split('T')[0],
       ghiChu: '',
     });
+    setUsersInDept([]);
     setShowModal(true);
   };
 
-  // Tự động load phòng ban gốc khi chọn Tài sản để Điều chuyển
   const handleAssetSelect = (assetIdStr: string) => {
     const assetId = Number(assetIdStr);
     const selectedAsset = assets.find(a => a.id === assetId);
@@ -90,10 +120,19 @@ export function AllocationList() {
     }));
   };
 
+  const handleDeptSelect = (deptIdStr: string) => {
+    const deptId = deptIdStr ? Number(deptIdStr) : undefined;
+    setFormData(prev => ({
+      ...prev,
+      denPhongBanId: deptId,
+      denNguoiDungId: undefined 
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.taiSanId || !formData.ngayThucHien) {
-      toast.error('Vui lòng chọn tài sản và ngày thực hiện!');
+    if (!formData.taiSanId || !formData.ngayThucHien || !formData.denPhongBanId) {
+      toast.error('Vui lòng điền đủ các thông tin bắt buộc (*)!');
       return;
     }
 
@@ -101,7 +140,7 @@ export function AllocationList() {
     try {
       const payload: any = {
         taiSanId: formData.taiSanId,
-        loaiDieuChuyen: modalType, // Gửi chuỗi 'CapPhat' hoặc 'LuanChuyen'
+        loaiDieuChuyen: modalType, 
         ngayThucHien: formData.ngayThucHien,
         tuPhongBanId: formData.tuPhongBanId || undefined,
         denPhongBanId: formData.denPhongBanId || undefined,
@@ -114,7 +153,7 @@ export function AllocationList() {
       if (response.errorCode === 200) {
         toast.success('Lưu phiếu thành công!');
         setShowModal(false);
-        fetchData(); // Reload list
+        fetchData(); 
       } else {
         toast.error(response.message || 'Có lỗi xảy ra.');
       }
@@ -125,19 +164,16 @@ export function AllocationList() {
     }
   };
 
-  // Helpers
   const getAsset = (id: number) => assets.find(a => a.id === id);
   const getDept = (id?: number) => departments.find(d => d.id === id)?.tenPhongBan || 'N/A';
 
   const filteredRecords = records.filter(record => {
-    // Ẩn Thu hồi khỏi danh sách phiếu (nếu database đang có lưu trước đó)
     if (record.loaiDieuChuyen === 'ThuHoi') return false;
 
     const asset = getAsset(record.taiSanId!);
     const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
     const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
     
-    // So sánh bằng chuỗi
     const matchesType = filterType === 'all' || record.loaiDieuChuyen === filterType;
     
     return matchesSearch && matchesType;
@@ -160,7 +196,6 @@ export function AllocationList() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 relative">
@@ -187,7 +222,6 @@ export function AllocationList() {
         </div>
       </div>
 
-      {/* Records List */}
       {isLoading ? (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">Đang tải dữ liệu...</div>
       ) : filteredRecords.length === 0 ? (
@@ -258,12 +292,12 @@ export function AllocationList() {
         </div>
       )}
 
-      {/* Modal - Đã sửa lỗi đen màn hình bằng bg-gray-900/50 và backdrop-blur-sm */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto shadow-2xl">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
-              <h3 className="font-bold text-gray-900 text-lg">
+              <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                {modalType === 'CapPhat' ? <Send className="w-5 h-5 text-green-600" /> : <ArrowLeftRight className="w-5 h-5 text-blue-600" />}
                 {modalType === 'CapPhat' ? 'Cấp phát Tài sản' : 'Điều chuyển Tài sản'}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
@@ -271,19 +305,17 @@ export function AllocationList() {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Chọn tài sản <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Chọn tài sản <span className="text-red-500">*</span></label>
                 <select 
                   required 
                   value={formData.taiSanId || ''} 
                   onChange={(e) => handleAssetSelect(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                 >
                   <option value="">-- Chọn tài sản --</option>
                   {assets.filter(a => {
-                    // Cấp phát -> Chỉ chọn TS Chưa cấp phát (0)
-                    // Điều chuyển -> Chỉ chọn TS Đang sử dụng (2)
                     if (modalType === 'CapPhat') return a.trangThai?.toString() === '0' || a.trangThai === 'ChuaCapPhat'; 
                     return a.trangThai?.toString() === '2' || a.trangThai === 'DangSuDung'; 
                   }).map(asset => (
@@ -294,73 +326,86 @@ export function AllocationList() {
 
               {modalType === 'LuanChuyen' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Từ phòng ban (Tự động lấy)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Từ phòng ban</label>
                   <input
                     type="text"
                     disabled
                     value={getDept(formData.tuPhongBanId)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed font-medium"
                   />
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {modalType === 'LuanChuyen' ? 'Đến phòng ban' : 'Phòng ban nhận'} <span className="text-red-500">*</span>
-                </label>
-                <select
-                  required
-                  value={formData.denPhongBanId || ''}
-                  onChange={(e) => setFormData({...formData, denPhongBanId: Number(e.target.value)})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- Chọn phòng ban --</option>
-                  {departments.map(dept => (
-                    <option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>
-                  ))}
-                </select>
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    {modalType === 'LuanChuyen' ? 'Đến phòng ban' : 'Phòng ban nhận'} <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={formData.denPhongBanId || ''}
+                    onChange={(e) => handleDeptSelect(e.target.value)}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">-- Chọn phòng ban --</option>
+                    {departments.map(dept => (
+                      <option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Mã Nhân viên nhận</label>
-                  <input
-                    type="number"
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Nhân viên nhận {isLoadingUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
+                  </label>
+                  <select
                     value={formData.denNguoiDungId || ''}
                     onChange={(e) => setFormData({...formData, denNguoiDungId: Number(e.target.value)})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Nhập ID (nếu có)"
-                  />
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                    disabled={!formData.denPhongBanId || usersInDept.length === 0}
+                  >
+                    <option value="">
+                      {!formData.denPhongBanId 
+                        ? '-- Chọn phòng ban trước --' 
+                        : (usersInDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
+                    </option>
+                    {usersInDept.map((user: any) => (
+                      <option key={user.userID} value={user.userID}>
+                        {user.profile?.lastName} {user.profile?.firstName} ({user.userName})
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Ngày thực hiện <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Ngày thực hiện <span className="text-red-500">*</span></label>
                   <input
                     type="date"
                     required
                     value={formData.ngayThucHien}
                     onChange={(e) => setFormData({...formData, ngayThucHien: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Ghi chú</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Ghi chú</label>
                 <textarea
                   rows={3}
                   value={formData.ghiChu || ''}
                   onChange={(e) => setFormData({...formData, ghiChu: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Nhập ghi chú hoặc lý do..."
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Lý do cấp phát, tình trạng máy lúc giao..."
                 />
               </div>
 
               <div className="pt-4 border-t border-gray-200 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium text-gray-700 transition-colors">
                   Hủy
                 </button>
-                <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
-                  <Save className="w-5 h-5" /> {isSubmitting ? 'Đang lưu...' : 'Lưu lại'}
+                <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium shadow-sm transition-colors">
+                  <Save className="w-5 h-5" /> {isSubmitting ? 'Đang xử lý...' : 'Lưu lại'}
                 </button>
               </div>
             </form>

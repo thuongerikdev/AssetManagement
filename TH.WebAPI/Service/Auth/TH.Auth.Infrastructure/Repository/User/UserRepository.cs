@@ -27,6 +27,8 @@ namespace TH.Auth.Infrastructure.Repository.User
         Task<AuthUser?> FindByIdAsync(int id, CancellationToken ct);
         Task<AuthUser?> FindByUserNameAsync(string userName, CancellationToken ct);
         Task<AuthUser?> FindByEmailAsync(string email, CancellationToken ct);
+
+        Task<List<GetUserResponseDto?>> FindByDepartmentID(int departmentID, CancellationToken ct);
         Task<bool> ExistsByEmailAsync(string email, CancellationToken ct);
         Task<bool> ExistsByUserNameAsync(string userName, CancellationToken ct);
         Task UpdateAsync(AuthUser user, CancellationToken ct);
@@ -190,6 +192,10 @@ namespace TH.Auth.Infrastructure.Repository.User
                 ))
                 .ToListAsync(ct);
         }
+
+
+
+
         public async Task<UserSlimDto?> GetSlimUserByID(int userID, CancellationToken ct)
         {
             var now = DateTime.UtcNow;
@@ -459,6 +465,31 @@ namespace TH.Auth.Infrastructure.Repository.User
                     }
                 })
                 .ToListAsync(ct);
+            return user;
+        }
+
+        public async Task<List<GetUserResponseDto?>> FindByDepartmentID(int departmentID, CancellationToken ct)
+        {
+            var user  =  await _db.authUsers
+                .Where( z => z.departmentID == departmentID.ToString())
+                .Select(u => new GetUserResponseDto
+                {
+                    userID = u.userID,
+                    userName = u.userName,
+                    email = u.email,
+                    status = u.status,
+                    isEmailVerified = u.isEmailVerified,
+                    profile = u.profile == null ? null : new ProfileResponseDto
+                    {
+                        firstName = u.profile.firstName,
+                        lastName = u.profile.lastName,
+                        avatar = u.profile.avatar,
+                        gender = u.profile.gender,
+                        dateOfBirth = u.profile.dateOfBirth
+                    }
+                })
+                .ToListAsync(ct);
+            ;
             return user;
         }
 

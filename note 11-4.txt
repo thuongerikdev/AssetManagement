@@ -1,0 +1,21 @@
+khấu hao tính chọn tháng phải nhỏ hơn hoặc bằng tháng hiện tại 
+
+sửa list view các button 
+
+khấu hao: khấu hao tổng chứ không phải tự tài sản 
+
+tháng tính khấu hao rồi vẫn cho hiện 
+
+CHứng kế toàn khấu hao ; màn danh sách chỉ hiện chứng từ cha, 
+trong màn chi tiết chứng từ cha , sẽ có thông tin chung và danh sách các chứng con trong mỗi chứng 
+từ con sẽ hiển thị thông tin chi tiết khấu hao ( nợ, có , số tiền ) 
+
+quyền duyệt thanh lý là kế toán trưởng 
+
+thêm tìm kiếm trong màn chi tiết chứng từ khấu hao cha 
+
+thêm luồng duyệt thanh lý tài sản 
+
+chỉ được xoá khi chưa cấp phát và thanh lý 
+
+báo cáo gồn : báo cáo thống kê, sổ cái , nhật ký chung 

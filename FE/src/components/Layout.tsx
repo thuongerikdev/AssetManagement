@@ -24,6 +24,9 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+// BẮT BUỘC PHẢI CÓ IMPORT NÀY (Đảm bảo bạn đã tạo file src/context/GlobalContext.tsx nhé)
+import { GlobalProvider, useGlobalData } from '../context/GlobalContext';
+
 interface NavItem {
   path: string;
   label: string;
@@ -42,17 +45,18 @@ const navItems: NavItem[] = [
   { path: '/my-assets', label: 'Tài sản của tôi', icon: MonitorSmartphone },
 ];
 
-export function Layout() {
+// TÁCH PHẦN RUỘT RA ĐỂ DÙNG ĐƯỢC KHO DỮ LIỆU (useGlobalData)
+function LayoutInner() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Kiểm tra xem URL hiện tại có thuộc menu cấu hình không
   const isSettingsActive = location.pathname.startsWith('/settings');
-  
-  // Tự động mở dropdown nếu đang ở trang cấu hình
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsActive);
 
-  // Cập nhật lại trạng thái mở khi URL thay đổi
+  // === MÓC DỮ LIỆU TỪ KHO CHUNG RA ĐÂY ===
+  // refreshData sẽ gọi API ngầm, không làm chớp trang
+  const { isLoadingGlobal, refreshData } = useGlobalData();
+
   useEffect(() => {
     if (location.pathname.startsWith('/settings')) {
       setIsSettingsOpen(true);
@@ -215,13 +219,15 @@ export function Layout() {
             </div>
             
             <div className="flex items-center gap-5 ml-auto">
+              {/* === NÚT LÀM MỚI SIÊU MƯỢT (KHÔNG DÙNG WINDOW.RELOAD) === */}
               <button 
-                onClick={() => window.location.reload()}
-                className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 bg-gray-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200 hover:border-blue-200"
-                title="Tải lại toàn bộ dữ liệu"
+                onClick={() => refreshData()}
+                disabled={isLoadingGlobal}
+                className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 bg-gray-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200 hover:border-blue-200 disabled:opacity-50"
+                title="Tải lại dữ liệu hệ thống"
               >
-                <RefreshCw className="w-4 h-4" />
-                <span className="hidden sm:block">Làm mới</span>
+                <RefreshCw className={`w-4 h-4 ${isLoadingGlobal ? 'animate-spin text-blue-600' : ''}`} />
+                <span className="hidden sm:block">{isLoadingGlobal ? 'Đang đồng bộ...' : 'Làm mới'}</span>
               </button>
 
               <button className="relative text-gray-600 hover:text-gray-900 focus:outline-none">
@@ -244,5 +250,14 @@ export function Layout() {
         </main>
       </div>
     </div>
+  );
+}
+
+// BỌC LAYOUT INNER BẰNG GLOBAL PROVIDER ĐỂ CUNG CẤP DỮ LIỆU TOÀN CỤC
+export function Layout() {
+  return (
+    <GlobalProvider>
+      <LayoutInner />
+    </GlobalProvider>
   );
 }

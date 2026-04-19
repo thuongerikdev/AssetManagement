@@ -21,6 +21,8 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<List<LichSuKhauHaoResponse>>> GetAllLichSuKhauHaoAsync();
         Task<ResponseDto<LichSuKhauHaoResponse>> GetLichSuKhauHaoByIdAsync(int id);
         Task<ResponseDto<List<LichSuKhauHaoResponse>>> GetByTaiSanIdAsync(int taiSanId);
+
+        Task<ResponseDto<bool>> CreateKhauHaoHangLoatAsync(KhauHaoHangLoatRequestDto request);
     }
 
     public class LichSuKhauHaoService : AssetServiceBase, ILichSuKhauHaoService
@@ -334,6 +336,95 @@ namespace TH.Asset.ApplicationService.Service
                 _logger.LogError(ex, "Lỗi khi lấy lịch sử khấu hao theo tài sản.");
                 return ResponseConst.Error<List<LichSuKhauHaoResponse>>(500, "Lỗi hệ thống: " + ex.Message);
             }
+        }
+
+        public async Task<ResponseDto<bool>> CreateKhauHaoHangLoatAsync(KhauHaoHangLoatRequestDto request)
+        {
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    if (request.DanhSachTaiSan == null || !request.DanhSachTaiSan.Any())
+                        return ResponseConst.Error<bool>(400, "Danh sách tài sản trống.");
+
+                    // 1. TÍNH TỔNG TIỀN & TẠO 1 CHỨNG TỪ TỔNG (MASTER) DUY NHẤT
+                    decimal tongTienKhauHao = request.DanhSachTaiSan.Sum(x => x.SoTien);
+
+                    var chungTuTong = new ChungTu
+                    {
+                        MaChungTu = $"KH-{request.KyKhauHao}-{DateTime.Now:ddHHmmss}",
+                        NgayLap = DateTime.UtcNow,
+
+                        // SỬA LỖI TẠI ĐÂY: Dùng trực tiếp Enum thay vì số nguyên
+                        LoaiChungTu = LoaiChungTu.KhauHao,
+
+                        MoTa = $"Trích khấu hao TSCĐ kỳ {request.KyKhauHao} cho {request.DanhSachTaiSan.Count} tài sản",
+                        TongTien = tongTienKhauHao,
+                        TrangThai = "hoan_thanh",
+                        NgayTao = DateTime.UtcNow
+                    };
+
+                    _dbContext.chungTus.Add(chungTuTong);
+                    await _dbContext.SaveChangesAsync(); // Lưu để lấy ID Chứng từ Cha
+
+                    // 2. DUYỆT TỪNG TÀI SẢN ĐỂ SINH DÒNG CHI TIẾT & CẬP NHẬT
+                    var chiTietList = new List<ChiTietChungTu>();
+                    var lichSuList = new List<LichSuKhauHao>();
+
+                    foreach (var item in request.DanhSachTaiSan)
+                    {
+                        var taiSan = await _dbContext.taiSans.FindAsync(item.TaiSanId);
+                        if (taiSan == null) continue;
+
+                        // Tính toán Lũy kế mới
+                        decimal luyKeMoi = (taiSan.KhauHaoLuyKe ?? 0) + item.SoTien;
+                        decimal giaTriConLaiMoi = (taiSan.NguyenGia ?? 0) - luyKeMoi;
+
+                        if (giaTriConLaiMoi < 0)
+                        {
+                            item.SoTien = taiSan.GiaTriConLai ?? 0;
+                            luyKeMoi = taiSan.NguyenGia ?? 0;
+                            giaTriConLaiMoi = 0;
+                        }
+
+                        // Xác định TK Kế toán
+                        string taiKhoanNo = "642";
+                        if (taiSan.MaTaiKhoan == "2112") taiKhoanNo = "627";
+                        else if (taiSan.MaTaiKhoan == "2113") taiKhoanNo = "641";
+                        string taiKhoanCo = taiSan.MaTaiKhoan?.StartsWith("213") == true ? "2143" : "2141";
+
+                        // Sinh dòng Detail: Gắn vào ID Chứng Từ Cha
+                        chiTietList.Add(new ChiTietChungTu { ChungTuId = chungTuTong.Id, TaiSanId = taiSan.Id, TaiKhoanNo = taiKhoanNo, SoTien = item.SoTien, MoTa = $"Chi phí KH kỳ {request.KyKhauHao}" });
+                        chiTietList.Add(new ChiTietChungTu { ChungTuId = chungTuTong.Id, TaiSanId = taiSan.Id, TaiKhoanCo = taiKhoanCo, SoTien = item.SoTien, MoTa = $"Hao mòn TSCĐ kỳ {request.KyKhauHao}" });
+
+                        // Sinh dòng Lịch sử: Gắn vào ID Chứng Từ Cha
+                        lichSuList.Add(new LichSuKhauHao { TaiSanId = taiSan.Id, ChungTuId = chungTuTong.Id, KyKhauHao = request.KyKhauHao, SoTien = item.SoTien, LuyKeSauKhauHao = luyKeMoi, ConLaiSauKhauHao = giaTriConLaiMoi, NgayTao = DateTime.UtcNow });
+
+                        // Cập nhật Tài sản
+                        taiSan.KhauHaoLuyKe = luyKeMoi;
+                        taiSan.GiaTriConLai = giaTriConLaiMoi;
+                        _dbContext.taiSans.Update(taiSan);
+                    }
+
+                    // Ghi toàn bộ vào DB 1 lần (Bulk Insert)
+                    _dbContext.chiTietChungTus.AddRange(chiTietList);
+                    _dbContext.lichSuKhauHaos.AddRange(lichSuList);
+
+                    await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return ResponseConst.Success($"Đã sinh Chứng từ tổng {chungTuTong.MaChungTu} thành công.", true);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Lỗi khi tính khấu hao hàng loạt.");
+                    return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
+                }
+            });
         }
     }
 }

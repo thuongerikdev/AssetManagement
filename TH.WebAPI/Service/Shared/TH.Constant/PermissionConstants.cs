@@ -44,84 +44,107 @@ namespace TH.Constant
             { "AuditLogManage", "audit_log.manage" },
             { "UserSessionManage", "usersession.manage" },
 
-            // --- Movie & Content ---
-            { "MovieReadDetails", "movie.read_details" },
-            { "MovieBrowse", "movie.browse" },
-            { "MovieWatchStream", "movie.watch_stream" },
-            { "MovieManage", "movie.manage" },
-            { "MovieWatchVip", "movie.watch_vip" },
-            { "SavedMovieManage", "saved_movie.manage" },
-            { "SavedMovieRead", "saved_movie.read" },
+            // ============================================
+            // ASSET MANAGEMENT PERMISSIONS
+            // ============================================
 
-            // --- Episode ---
-            { "EpisodeRead", "episode.read" },
-            { "EpisodeManage", "episode.manage" },
+            // --- Tài sản (Assets) ---
+            { "AssetView", "asset.view" },                      // Xem danh sách tài sản (all users)
+            { "AssetViewOwn", "asset.view_own" },              // Xem tài sản được phân bổ cho mình
+            { "AssetViewDepartment", "asset.view_department" }, // Xem tài sản của phòng ban
+            { "AssetViewAll", "asset.view_all" },              // Xem tất cả tài sản (kế toán, quản lý)
+            { "AssetCreate", "asset.create" },                 // Tạo tài sản mới
+            { "AssetUpdate", "asset.update" },                 // Cập nhật thông tin tài sản
+            { "AssetDelete", "asset.delete" },                 // Xóa tài sản
+            { "AssetImport", "asset.import" },                 // Import tài sản hàng loạt
+            { "AssetExport", "asset.export" },                 // Export danh sách tài sản
 
-            // --- Person (Actor/Director) ---
-            { "PersonRead", "person.read" },
-            { "PersonManage", "person.manage" },
-            { "MoviePersonRead", "movie_person.read" },
-            { "MoviePersonManage", "movie_person.manage" },
+            // --- Danh mục tài sản (Asset Categories) ---
+            { "CategoryView", "category.view" },
+            { "CategoryManage", "category.manage" },
 
-            // --- Tags ---
-            { "TagRead", "tag.read" },
-            { "TagManage", "tag.manage" },
-            { "MovieTagRead", "movie_tag.read" },
-            { "MovieTagManage", "movie_tag.manage" },
+            // --- Phòng ban (Departments) ---
+            { "DepartmentView", "department.view" },
+            { "DepartmentManage", "department.manage" },
 
-            // --- Subtitles ---
-            { "SubtitleRead", "subtitle.read" },
-            { "SubtitleCallback", "subtitle.callback" },
-            { "SubtitleUpload", "subtitle.upload" },
-            { "SubtitleTranslate", "subtitle.translate" },
-            { "SubtitleManage", "subtitle.manage" },
+            // --- Tài khoản kế toán (Accounting Accounts) ---
+            { "AccountingAccountView", "accounting_account.view" },
+            { "AccountingAccountManage", "accounting_account.manage" },
 
-            // --- Comment & Rating ---
-            { "CommentRead", "comment.read" },
-            { "CommentCreate", "comment.create" },
-            { "CommentUpdateOwn", "comment.update_own" },
-            { "CommentDeleteOwn", "comment.delete_own" },
-            { "RatingRead", "rating.read" },
-            { "RatingCreate", "rating.create" },
-            { "RatingUpdate", "rating.update" },
-            { "RatingDelete", "rating.delete" },
+            // --- Lô tài sản (Asset Batches) ---
+            { "BatchView", "batch.view" },
+            { "BatchCreate", "batch.create" },
+            { "BatchManage", "batch.manage" },
 
-            // --- Subscription & Payment ---
-            { "SubscriptionReadAll", "subscription.read_all" },
-            { "SubscriptionManage", "subscription.manage" },
-            { "SubscriptionReadOwn", "subscription.read_own" },
-            { "SubscriptionCancel", "subscription.cancel" },
-            { "OrderReadOwn", "order.read_own" },
-            { "OrderReadAll", "order.read_all" },
-            { "InvoiceReadOwn", "invoice.read_own" },
-            { "InvoiceReadAll", "invoice.read_all" },
-            { "PaymentCheckout", "payment.checkout" },
-            { "PaymentCallback", "payment.callback" },
-            { "PlanRead", "plan.read" },
-            { "PlanManage", "plan.manage" },
-            { "PriceRead", "price.read" },
-            { "PriceManage", "price.manage" },
+            // --- Khấu hao (Depreciation) ---
+            { "DepreciationView", "depreciation.view" },           // Xem lịch sử khấu hao
+            { "DepreciationCalculate", "depreciation.calculate" }, // Tính khấu hao
+            { "DepreciationRun", "depreciation.run" },            // Chạy khấu hao tự động
+            { "DepreciationManage", "depreciation.manage" },       // Quản lý toàn bộ khấu hao
 
-            // --- System & Upload ---
+            // --- Chứng từ (Documents/Vouchers) ---
+            { "DocumentView", "document.view" },
+            { "DocumentCreate", "document.create" },
+            { "DocumentUpdate", "document.update" },
+            { "DocumentDelete", "document.delete" },
+            { "DocumentApprove", "document.approve" },            // Duyệt chứng từ
+
+            // --- Hạch toán (Accounting Entries) ---
+            { "AccountingEntryView", "accounting_entry.view" },
+            { "AccountingEntryCreate", "accounting_entry.create" },
+            { "AccountingEntryUpdate", "accounting_entry.update" },
+            { "AccountingEntryDelete", "accounting_entry.delete" },
+
+            // --- Cấp phát tài sản (Asset Allocation) ---
+            { "AllocationRequest", "allocation.request" },         // Tạo yêu cầu cấp phát
+            { "AllocationView", "allocation.view" },
+            { "AllocationApprove", "allocation.approve" },         // Duyệt cấp phát
+            { "AllocationManage", "allocation.manage" },           // Quản lý cấp phát
+
+            // --- Điều chuyển tài sản (Asset Transfer) ---
+            { "TransferRequest", "transfer.request" },             // Tạo yêu cầu điều chuyển
+            { "TransferView", "transfer.view" },
+            { "TransferApprove", "transfer.approve" },             // Duyệt điều chuyển
+            { "TransferManage", "transfer.manage" },
+
+            // --- Bảo trì tài sản (Asset Maintenance) ---
+            { "MaintenanceRequest", "maintenance.request" },       // Tạo yêu cầu bảo trì/sửa chữa
+            { "MaintenanceView", "maintenance.view" },
+            { "MaintenanceViewAll", "maintenance.view_all" },
+            { "MaintenanceProcess", "maintenance.process" },       // Xử lý bảo trì (kỹ thuật)
+            { "MaintenanceUpdateCost", "maintenance.update_cost" }, // Cập nhật chi phí bảo trì
+            { "MaintenanceApprove", "maintenance.approve" },       // Duyệt bảo trì
+            { "MaintenanceManage", "maintenance.manage" },
+
+            // --- Thanh lý tài sản (Asset Disposal) ---
+            { "DisposalRequest", "disposal.request" },             // Đề xuất thanh lý
+            { "DisposalView", "disposal.view" },
+            { "DisposalApprove", "disposal.approve" },             // Duyệt thanh lý
+            { "DisposalManage", "disposal.manage" },
+            { "DisposalAccountingEntry", "disposal.accounting_entry" }, // Ghi sổ thanh lý
+
+            // --- Kiểm kê (Inventory/Stocktaking) ---
+            { "InventoryView", "inventory.view" },
+            { "InventoryCreate", "inventory.create" },             // Tạo phiếu kiểm kê
+            { "InventoryExecute", "inventory.execute" },           // Thực hiện kiểm kê
+            { "InventoryApprove", "inventory.approve" },           // Duyệt kiểm kê
+            { "InventoryManage", "inventory.manage" },
+
+            // --- Báo cáo (Reports) ---
+            { "ReportAssetList", "report.asset_list" },           // Báo cáo danh sách tài sản
+            { "ReportAssetByDepartment", "report.asset_by_department" },
+            { "ReportAssetByCategory", "report.asset_by_category" },
+            { "ReportDepreciation", "report.depreciation" },       // Báo cáo khấu hao
+            { "ReportMaintenance", "report.maintenance" },         // Báo cáo bảo trì
+            { "ReportDisposal", "report.disposal" },              // Báo cáo thanh lý
+            { "ReportFinancial", "report.financial" },            // Báo cáo tài chính
+            { "ReportDashboard", "report.dashboard" },            // Dashboard tổng quan
+            { "ReportExport", "report.export" },                  // Xuất báo cáo
+
+            // --- Cấu hình hệ thống (System Configuration) ---
+            { "SystemConfigView", "system_config.view" },
+            { "SystemConfigManage", "system_config.manage" },     // Cấu hình hệ thống
             { "SystemHealth", "system.health" },
-            { "UploadArchive", "upload.archive" },
-            { "UploadVimeo", "upload.vimeo" },
-            { "UploadYoutube", "upload.youtube" },
-            { "ImageRead", "image.read" },
-            { "ImageManage", "image.manage" },
-            { "SourceRead", "source.read" },
-            { "SourceManage", "source.manage" },
-            { "RegionRead", "region.read" },
-            { "RegionManage", "region.manage" },
-
-            // --- Search & Progress ---
-            { "SearchManage", "search.manage" },
-            { "SearchMovie", "search.movie" },
-            { "SearchSuggest", "search.suggest" },
-            { "SearchPerson", "search.person" },
-            { "SearchAdvanced", "search.advanced" },
-            { "ProgressTrack", "progress.track" },
-            { "ProgressRead", "progress.read" }
         };
     }
 }

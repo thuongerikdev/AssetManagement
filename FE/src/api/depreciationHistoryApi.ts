@@ -19,4 +19,6 @@ export const depreciationHistoryApi = {
   update: (data: LichSuKhauHao) => apiClient.put('/LichSuKhauHao/update', data),
   delete: (id: number) => apiClient.delete(`/LichSuKhauHao/delete/${id}`),
   getByAssetId: (assetId: number) => apiClient.get(`/LichSuKhauHao/get-by-asset/${assetId}`),
+
+  createBulk: (data: any) => apiClient.post('/LichSuKhauHao/create-bulk', data),
 };

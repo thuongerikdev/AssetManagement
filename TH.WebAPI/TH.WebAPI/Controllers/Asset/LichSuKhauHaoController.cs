@@ -106,5 +106,16 @@ namespace TH.WebAPI.Controllers.Asset
             }
             return BadRequest(result);
         }
+
+        [HttpPost("create-bulk")]
+        public async Task<IActionResult> CreateLichSuKhauHaoBulk([FromBody] KhauHaoHangLoatRequestDto request)
+        {
+            var result = await _lichSuKhauHaoService.CreateKhauHaoHangLoatAsync(request);
+            if (result.ErrorCode == 200)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

@@ -469,11 +469,11 @@ namespace TH.Auth.ApplicationService.StartUp
                     //await AuthDataSeeder.SyncRolesAsync(context);
 
                     // 2. Chạy Seeder
-                    logger.LogInformation("Starting Permission Seeding...");
-                    await AuthDataSeeder.SeedPermissionsAsync(context);
-                    logger.LogInformation("Seeding completed successfully.");
-                    logger.LogInformation("Seeding Admin User...");
-                    await AuthDataSeeder.SeedAdminUserAsync(context, services);
+                    //logger.LogInformation("Starting Permission Seeding...");
+                    //await AuthDataSeeder.SeedPermissionsAsync(context);
+                    //logger.LogInformation("Seeding completed successfully.");
+                    //logger.LogInformation("Seeding Admin User...");
+                    //await AuthDataSeeder.SeedAdminUserAsync(context, services);
                 }
                 catch (Exception ex)
                 {
