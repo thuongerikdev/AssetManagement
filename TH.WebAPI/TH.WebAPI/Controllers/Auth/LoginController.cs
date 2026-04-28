@@ -15,7 +15,7 @@ using TH.Constant;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("login")]
+    [Route("api/[controller]")]
     [ApiController]
     public class LoginController : Controller
     {

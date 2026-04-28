@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Send, ArrowLeftRight, Search, Clock, X, Save } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Send, ArrowLeftRight, Search, Clock, X, Save, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
-import { apiClient } from '../../api/client'; // <-- ĐÃ THÊM IMPORT apiClient NÀY
+import { apiClient } from '../../api/client';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
-import { assetApi, TaiSan } from '../../api/assetApi';
-import { departmentApi, Department } from '../../api/departmentApi';
+import { useGlobalData } from '../../context/GlobalContext'; // <-- SỬ DỤNG GLOBAL CONTEXT
 
-// Mapping Loại điều chuyển bằng CHUỖI (String) khớp với Enum C#
+// Mapping Loại điều chuyển
 const typeConfig: Record<string, { label: string; color: string; icon: any }> = {
   'CapPhat': { label: 'Cấp phát', color: 'bg-green-100 text-green-700', icon: Send },
   'LuanChuyen': { label: 'Điều chuyển', color: 'bg-blue-100 text-blue-700', icon: ArrowLeftRight },
@@ -18,21 +17,28 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   'cho_xu_ly': { label: 'Chờ xử lý', color: 'bg-yellow-100 text-yellow-700' },
 };
 
+// ==========================================
+// 1. BIẾN CACHE CỤC BỘ TRÊN RAM (Chỉ lưu Phiếu điều chuyển)
+// ==========================================
+let cachedRecords: DieuChuyenTaiSan[] | null = null;
+
 export function AllocationList() {
+  // 2. Móc Tài sản và Phòng ban từ KHO CHUNG (Tải 0 giây)
+  const { assets, departments, isLoadingGlobal, refreshData } = useGlobalData();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   
-  const [records, setRecords] = useState<DieuChuyenTaiSan[]>([]);
-  const [assets, setAssets] = useState<TaiSan[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // State quản lý Phiếu điều chuyển
+  const [records, setRecords] = useState<DieuChuyenTaiSan[]>(cachedRecords || []);
+  const [isLoadingRecords, setIsLoadingRecords] = useState(!cachedRecords);
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'CapPhat' | 'LuanChuyen'>('CapPhat');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // === STATE & EFFECT CHO CHỨC NĂNG TÌM NHÂN VIÊN THEO PHÒNG BAN ===
+  // Users lookup states
   const [usersInDept, setUsersInDept] = useState<any[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
 
@@ -47,29 +53,34 @@ export function AllocationList() {
     ghiChu: '',
   });
 
-  const fetchData = async () => {
-    setIsLoading(true);
+  // ==========================================
+  // 3. HÀM TẢI PHIẾU ĐIỀU CHUYỂN CÓ TÍCH HỢP CACHE
+  // ==========================================
+  const fetchRecords = async (forceRefresh = false) => {
+    if (!forceRefresh && cachedRecords) {
+      setRecords(cachedRecords);
+      return;
+    }
+
+    setIsLoadingRecords(true);
     try {
-      const [recRes, assetRes, deptRes] = await Promise.all([
-        assetAllocationApi.getAll(),
-        assetApi.getAll(),
-        departmentApi.getAll()
-      ]);
-      if (recRes.errorCode === 200) setRecords(recRes.data);
-      if (assetRes.errorCode === 200) setAssets(assetRes.data);
-      if (deptRes.errorCode === 200) setDepartments(deptRes.data);
+      const res = await assetAllocationApi.getAll();
+      if (res.errorCode === 200) {
+        cachedRecords = res.data;
+        setRecords(res.data);
+      }
     } catch (error) {
-      toast.error('Lỗi khi tải dữ liệu.');
+      toast.error('Lỗi khi tải dữ liệu phiếu điều chuyển.');
     } finally {
-      setIsLoading(false);
+      setIsLoadingRecords(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchRecords();
   }, []);
 
-  // GỌI API LẤY USER THEO PHÒNG BAN
+  // GỌI API LẤY USER THEO PHÒNG BAN KHI MỞ MODAL
   useEffect(() => {
     const fetchUsersByDept = async () => {
       if (!formData.denPhongBanId) {
@@ -92,7 +103,6 @@ export function AllocationList() {
     };
     fetchUsersByDept();
   }, [formData.denPhongBanId]);
-  // =================================================================
 
   const openModal = (type: 'CapPhat' | 'LuanChuyen') => {
     setModalType(type);
@@ -111,7 +121,7 @@ export function AllocationList() {
 
   const handleAssetSelect = (assetIdStr: string) => {
     const assetId = Number(assetIdStr);
-    const selectedAsset = assets.find(a => a.id === assetId);
+    const selectedAsset = assets.find((a: any) => a.id === assetId);
     
     setFormData(prev => ({
       ...prev,
@@ -127,6 +137,14 @@ export function AllocationList() {
       denPhongBanId: deptId,
       denNguoiDungId: undefined 
     }));
+  };
+
+  // Hàm gộp chung làm mới toàn bộ hệ thống
+  const handleRefreshAll = async () => {
+    await Promise.all([
+      refreshData(),      // Làm mới Tài sản & Phòng ban từ Global
+      fetchRecords(true)  // Làm mới Phiếu cấp phát
+    ]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -153,7 +171,7 @@ export function AllocationList() {
       if (response.errorCode === 200) {
         toast.success('Lưu phiếu thành công!');
         setShowModal(false);
-        fetchData(); 
+        handleRefreshAll(); // Ép hệ thống lấy data mới nhất sau khi tạo phiếu
       } else {
         toast.error(response.message || 'Có lỗi xảy ra.');
       }
@@ -164,20 +182,27 @@ export function AllocationList() {
     }
   };
 
-  const getAsset = (id: number) => assets.find(a => a.id === id);
-  const getDept = (id?: number) => departments.find(d => d.id === id)?.tenPhongBan || 'N/A';
+  const getAsset = (id: number) => assets.find((a: any) => a.id === id);
+  const getDept = (id?: number) => departments.find((d: any) => d.id === id)?.tenPhongBan || 'N/A';
 
-  const filteredRecords = records.filter(record => {
-    if (record.loaiDieuChuyen === 'ThuHoi') return false;
+  // ==========================================
+  // 4. USE_MEMO BỘ LỌC ĐỂ RENDER MƯỢT MÀ
+  // ==========================================
+  const filteredRecords = useMemo(() => {
+    return records.filter(record => {
+      if (record.loaiDieuChuyen === 'ThuHoi') return false;
 
-    const asset = getAsset(record.taiSanId!);
-    const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
-    const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
-    
-    const matchesType = filterType === 'all' || record.loaiDieuChuyen === filterType;
-    
-    return matchesSearch && matchesType;
-  });
+      const asset = getAsset(record.taiSanId!);
+      const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
+      const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
+      
+      const matchesType = filterType === 'all' || record.loaiDieuChuyen === filterType;
+      
+      return matchesSearch && matchesType;
+    });
+  }, [records, assets, searchTerm, filterType]);
+
+  const isScreenLoading = isLoadingGlobal || isLoadingRecords;
 
   return (
     <div className="space-y-6">
@@ -186,7 +211,19 @@ export function AllocationList() {
           <h1 className="font-bold text-gray-900">Cấp phát & Điều chuyển</h1>
           <p className="text-sm text-gray-500 mt-1">Quản lý cấp phát và điều chuyển tài sản</p>
         </div>
+        
         <div className="flex gap-2">
+          {/* Nút Làm mới (Đồng nhất UI) */}
+          <button 
+            onClick={handleRefreshAll}
+            disabled={isScreenLoading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            title="Tải lại dữ liệu"
+          >
+            <RefreshCw className={`w-4 h-4 ${isScreenLoading ? 'animate-spin text-blue-600' : ''}`} />
+            <span className="hidden sm:block">Làm mới</span>
+          </button>
+
           <button onClick={() => openModal('CapPhat')} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm">
             <Send className="w-5 h-5" /> Cấp phát
           </button>
@@ -222,7 +259,7 @@ export function AllocationList() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isScreenLoading && filteredRecords.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">Đang tải dữ liệu...</div>
       ) : filteredRecords.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">Không có dữ liệu phiếu nào.</div>
@@ -292,6 +329,7 @@ export function AllocationList() {
         </div>
       )}
 
+      {/* Modal Cấp phát / Điều chuyển */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto shadow-2xl">
@@ -315,10 +353,10 @@ export function AllocationList() {
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                 >
                   <option value="">-- Chọn tài sản --</option>
-                  {assets.filter(a => {
+                  {assets.filter((a: any) => {
                     if (modalType === 'CapPhat') return a.trangThai?.toString() === '0' || a.trangThai === 'ChuaCapPhat'; 
                     return a.trangThai?.toString() === '2' || a.trangThai === 'DangSuDung'; 
-                  }).map(asset => (
+                  }).map((asset: any) => (
                     <option key={asset.id} value={asset.id}>{asset.maTaiSan} - {asset.tenTaiSan}</option>
                   ))}
                 </select>
@@ -348,7 +386,7 @@ export function AllocationList() {
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value="">-- Chọn phòng ban --</option>
-                    {departments.map(dept => (
+                    {departments.map((dept: any) => (
                       <option key={dept.id} value={dept.id}>{dept.tenPhongBan}</option>
                     ))}
                   </select>

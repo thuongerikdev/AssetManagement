@@ -5,7 +5,7 @@ using TH.Auth.Dtos.User;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("register")]
+    [Route("api/[controller]")]
     [ApiController]
     public class RegisterController : Controller
     {
@@ -36,7 +36,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpPost("createUser")]
-        [Authorize(Policy = "RoleManage")]
+        //[Authorize(Policy = "RoleManage")]
         public async Task<IActionResult> CreateUser(SimpleCreateUserRequest createUserRequest, CancellationToken ct)
         {
             var result = await _authRegisterService.CreateSimpleUserAsync(createUserRequest, ct);

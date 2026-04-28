@@ -4,7 +4,7 @@ using TH.Auth.ApplicationService.Service.MFA;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("userSession")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "UserSessionManage")]
     public class UserSessionController : Controller

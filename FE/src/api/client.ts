@@ -1,64 +1,73 @@
-// Thay đổi URL này khi bạn deploy lên server thật
-const BASE_URL = 'https://68f1-2405-4802-1c99-5780-a882-b9cc-61cf-bc35.ngrok-free.app/api';
+// src/utils/apiClient.ts
 
-// 1. Hàm xử lý URL thông minh: Nếu endpoint bắt đầu bằng http thì giữ nguyên, ngược lại mới nối BASE_URL
+// Thay đổi URL này khi bạn deploy lên server thật
+const BASE_URL = 'https://93e9-42-116-165-221.ngrok-free.app/api';
+
 const buildUrl = (endpoint: string) => {
-  if (endpoint.startsWith('http')) {
-    return endpoint;
-  }
+  if (endpoint.startsWith('http')) return endpoint;
   return `${BASE_URL}${endpoint}`;
 };
 
-// 2. Hàm tự động lấy Token nhét vào Header (Thay cho interceptor của Axios)
 const getHeaders = () => {
-  const headers: Record<string, string> = {
+  return {
     'Content-Type': 'application/json',
     'accept': '*/*',
-    // Bỏ qua màn hình cảnh báo của ngrok bản miễn phí để không bị lỗi CORS
     'ngrok-skip-browser-warning': 'true' 
   };
-  
-  const token = localStorage.getItem('access_token');
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
-  return headers;
 };
 
-// Hàm hỗ trợ gọi API cơ bản
+// Hàm xử lý chung cho Response
+const handleResponse = async (response: Response) => {
+  if (response.status === 401 || response.status === 403) {
+    // Bắn một event toàn cục để React (AuthContext) bắt được và hiện Modal
+    window.dispatchEvent(new CustomEvent('unauthorized-access', { 
+        detail: { status: response.status } 
+    }));
+    throw new Error('Unauthorized or Forbidden');
+  }
+
+  if (!response.ok) {
+    throw new Error('API Request Failed');
+  }
+  return response.json();
+};
+
 export const apiClient = {
   get: async (endpoint: string) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'GET',
-      headers: getHeaders(), // Nhét token và ngrok header vào đây
+      headers: getHeaders(),
+      credentials: 'include', // BẮT BUỘC: Để trình duyệt gửi kèm Cookie
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   post: async (endpoint: string, data: any) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'POST',
-      headers: getHeaders(), // Nhét token và ngrok header vào đây
+      headers: getHeaders(),
+      credentials: 'include',
       body: JSON.stringify(data),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   put: async (endpoint: string, data: any) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'PUT',
-      headers: getHeaders(), // Nhét token và ngrok header vào đây
+      headers: getHeaders(),
+      credentials: 'include',
       body: JSON.stringify(data),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   delete: async (endpoint: string) => {
     const response = await fetch(buildUrl(endpoint), {
       method: 'DELETE',
-      headers: getHeaders(), // Nhét token và ngrok header vào đây
+      headers: getHeaders(),
+      credentials: 'include',
     });
-    return response.json();
+    return handleResponse(response);
   }
 };

@@ -5,7 +5,7 @@ using TH.Auth.Dtos.Role;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("roles")]
+    [Route("api/[controller]")]
     [ApiController]
     public class RoleController : Controller
     {
@@ -15,7 +15,7 @@ namespace TH.WebAPI.Controllers.Auth
             _roleService = roleService;
         }
         [HttpGet("getall")]
-        [Authorize(Policy = "RoleRead")]
+        //[Authorize(Policy = "RoleRead")]
         public async Task<IActionResult> GetAllRoles(CancellationToken ct)
         {
             var result = await _roleService.GetAllRolesAsync(ct);

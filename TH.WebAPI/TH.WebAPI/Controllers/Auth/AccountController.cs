@@ -8,7 +8,7 @@ using TH.Auth.Dtos.Account;
 namespace TH.WebAPI.Controllers.Auth
 {
     [ApiController]
-    [Route("account")]
+    [Route("api/[controller]")]
     //[Authorize] // yêu cầu user đăng nhập (JWT)
     public sealed class AccountController : ControllerBase
     {

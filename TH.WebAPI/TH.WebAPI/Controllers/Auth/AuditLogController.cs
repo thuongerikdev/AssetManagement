@@ -5,7 +5,7 @@ using TH.Auth.ApplicationService.Service.MFA;
 namespace TH.WebAPI.Controllers.Auth
 {
 
-    [Route("auditlogs")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "AuditLogManage")]
     public class AuditLogController : Controller

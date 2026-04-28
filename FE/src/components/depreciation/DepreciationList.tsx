@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Calculator, FileText, Download, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Calculator, FileText, Download, AlertCircle, Loader2, CheckCircle, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
-import { assetApi, TaiSan } from '../../api/assetApi';
-import { departmentApi, Department } from '../../api/departmentApi';
+import { useGlobalData } from '../../context/GlobalContext';
 import { depreciationHistoryApi, LichSuKhauHao } from '../../api/depreciationHistoryApi';
 
 interface DepreciationAsset {
@@ -16,85 +15,93 @@ interface DepreciationAsset {
   remainingValue: number;
   selected: boolean;
   ngayCapPhatStr?: string;
-  isAlreadyDepreciated: boolean; // Cờ nhận biết tài sản đã được tính khấu hao trong kỳ này
+  isAlreadyDepreciated: boolean;
 }
 
+// Giữ lại Cache cục bộ CHỈ DÀNH RIÊNG cho lịch sử khấu hao 
+// (Vì Tài sản và Phòng ban đã có GlobalContext lo)
+let cachedHistory: LichSuKhauHao[] | null = null;
+
 export function DepreciationList() {
+  // 1. Lấy Tài sản và Phòng ban siêu tốc từ kho chung (Giống hệt trang AssetList)
+  const { assets: rawAssets, departments, isLoadingGlobal, refreshData } = useGlobalData();
+
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const date = new Date();
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   });
   
   const [showVoucher, setShowVoucher] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [rawAssets, setRawAssets] = useState<TaiSan[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [history, setHistory] = useState<LichSuKhauHao[]>([]);
-  const [tableAssets, setTableAssets] = useState<DepreciationAsset[]>([]);
+  // State quản lý riêng cho Lịch sử khấu hao
+  const [history, setHistory] = useState<LichSuKhauHao[]>(cachedHistory || []);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(!cachedHistory);
+  const [manualSelection, setManualSelection] = useState<Record<number, boolean>>({});
 
-  // Lấy giá trị max (Tháng hiện tại) để chặn chọn tháng tương lai
   const getMaxMonth = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
   };
 
-  const fetchData = async () => {
-    setIsLoading(true);
+  // 2. Chỉ tải duy nhất Lịch sử khấu hao (nhẹ hơn rất nhiều)
+  const fetchHistory = async (forceRefresh = false) => {
+    if (!forceRefresh && cachedHistory) {
+      setHistory(cachedHistory);
+      return;
+    }
+    setIsLoadingHistory(true);
     try {
-      const [assetRes, deptRes, historyRes] = await Promise.all([
-        assetApi.getAll(),
-        departmentApi.getAll(),
-        depreciationHistoryApi.getAll()
-      ]);
-
-      if (assetRes.errorCode === 200) setRawAssets(assetRes.data);
-      if (deptRes.errorCode === 200) setDepartments(deptRes.data);
-      if (historyRes.errorCode === 200) setHistory(historyRes.data);
+      const res = await depreciationHistoryApi.getAll();
+      if (res.errorCode === 200) {
+        cachedHistory = res.data;
+        setHistory(res.data);
+      }
     } catch (error) {
-      toast.error('Lỗi khi tải dữ liệu từ máy chủ.');
+      toast.error('Lỗi tải lịch sử khấu hao.');
     } finally {
-      setIsLoading(false);
+      setIsLoadingHistory(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchHistory();
   }, []);
 
-  // THUẬT TOÁN TÍNH KHẤU HAO THEO NGÀY CẤP PHÁT
-  useEffect(() => {
-    if (!rawAssets.length) return;
+  // ==========================================
+  // 3. THUẬT TOÁN TÍNH TOÁN (DÙNG USE_MEMO ĐỂ KHÔNG BỊ KHỰNG TRANG)
+  // useMemo sẽ tính toán ngay lập tức khi render, không tạo ra khoảng trễ như useEffect
+  // ==========================================
+  const tableAssets = useMemo(() => {
+    if (!rawAssets || rawAssets.length === 0) return [];
 
     const [selYear, selMonth] = selectedMonth.split('-').map(Number);
-    // Lấy ngày cuối cùng của tháng đang chọn
     const daysInSelectedMonth = new Date(selYear, selMonth, 0).getDate();
     const endOfSelMonth = new Date(selYear, selMonth - 1, daysInSelectedMonth, 23, 59, 59);
 
-    const validAssets = rawAssets
+    // TỐI ƯU HÓA: Tạo Set() để tra cứu lịch sử cực nhanh, bỏ vòng lặp lồng nhau
+    const depreciatedAssetIdsThisMonth = new Set(
+      history
+        .filter(h => h.kyKhauHao === selectedMonth)
+        .map(h => h.taiSanId)
+    );
+
+    return rawAssets
       .filter(asset => {
         const status = asset.trangThai?.toString();
-        // Chỉ lấy tài sản Đang sử dụng
         if (status !== '2' && status !== 'DangSuDung') return false; 
-        
-        // Phải có ngày cấp phát và ngày cấp phát không được lớn hơn tháng đang chọn
         if (!asset.ngayCapPhat) return false;
+        
         const capPhatDate = new Date(asset.ngayCapPhat);
         if (capPhatDate > endOfSelMonth) return false;
-
-        // Bỏ qua tài sản đã hết giá trị
         if ((asset.giaTriConLai || 0) <= 0) return false;
 
-        return true; // GIỮ LẠI TẤT CẢ (Kể cả đã khấu hao)
+        return true; 
       })
       .map(asset => {
-        // KIỂM TRA ĐÃ KHẤU HAO TRONG THÁNG NÀY CHƯA
-        const isAlreadyDepreciated = history.some(h => 
-          h.taiSanId === asset.id && h.kyKhauHao === selectedMonth
-        );
+        // Tra cứu nhanh bằng Set thay vì dùng history.some()
+        const isAlreadyDepreciated = depreciatedAssetIdsThisMonth.has(asset.id!);
 
-        // Tính mức khấu hao cứng 1 tháng
         let standardMonthlyAmt = asset.khauHaoHangThang || 0;
         if (standardMonthlyAmt === 0 && asset.nguyenGia && asset.thoiGianKhauHao) {
           standardMonthlyAmt = asset.nguyenGia / asset.thoiGianKhauHao;
@@ -103,70 +110,73 @@ export function DepreciationList() {
         let finalMonthlyAmt = standardMonthlyAmt;
         const capPhatDate = new Date(asset.ngayCapPhat!);
 
-        // LOGIC CHIA LẺ NGÀY: Nếu tài sản được cấp phát vào chính cái tháng đang tính
         if (capPhatDate.getFullYear() === selYear && (capPhatDate.getMonth() + 1) === selMonth) {
-          const usedDays = daysInSelectedMonth - capPhatDate.getDate() + 1; // Số ngày sử dụng thực tế
+          const usedDays = daysInSelectedMonth - capPhatDate.getDate() + 1; 
           finalMonthlyAmt = (standardMonthlyAmt / daysInSelectedMonth) * usedDays;
         }
 
-        // Đảm bảo khấu hao không vượt quá giá trị còn lại
         const remaining = asset.giaTriConLai || 0;
         if (finalMonthlyAmt > remaining) {
             finalMonthlyAmt = remaining;
         }
 
+        // Ưu tiên trạng thái chọn thủ công (manualSelection), nếu không thì mặc định chọn những cái chưa khấu hao
+        const isSelected = manualSelection[asset.id!] !== undefined 
+            ? manualSelection[asset.id!] 
+            : !isAlreadyDepreciated;
+
         return {
           id: asset.id!,
           code: asset.maTaiSan,
           name: asset.tenTaiSan,
-          department: departments.find(d => d.id === asset.phongBanId)?.tenPhongBan || 'Chưa cấp phát',
+          department: departments.find((d: any) => d.id === asset.phongBanId)?.tenPhongBan || 'Chưa cấp phát',
           originalValue: asset.nguyenGia || 0,
           accumulatedDepreciation: asset.khauHaoLuyKe || 0,
           monthlyDepreciation: Math.round(finalMonthlyAmt),
           remainingValue: remaining,
-          selected: !isAlreadyDepreciated, // Tự động bỏ chọn nếu đã khấu hao
+          selected: isSelected, 
           ngayCapPhatStr: capPhatDate.toLocaleDateString('vi-VN'),
-          isAlreadyDepreciated // Cờ để render UI
+          isAlreadyDepreciated 
         };
       });
-
-    setTableAssets(validAssets as any[]);
-  }, [rawAssets, history, selectedMonth, departments]);
+  }, [rawAssets, history, selectedMonth, departments, manualSelection]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
   const toggleSelect = (id: number) => {
-    setTableAssets(tableAssets.map(asset => {
-      // Chặn không cho toggle nếu đã khấu hao
-      if (asset.id === id && !asset.isAlreadyDepreciated) {
-        return { ...asset, selected: !asset.selected };
-      }
-      return asset;
-    }));
+    const asset = tableAssets.find(a => a.id === id);
+    if (asset && !asset.isAlreadyDepreciated) {
+      setManualSelection(prev => ({ ...prev, [id]: !asset.selected }));
+    }
   };
 
   const toggleSelectAll = () => {
-    // Chỉ tính những tài sản chưa khấu hao
     const selectableAssets = tableAssets.filter(a => !a.isAlreadyDepreciated);
     if (selectableAssets.length === 0) return;
 
     const allSelected = selectableAssets.every(a => a.selected);
-    setTableAssets(tableAssets.map(asset => {
-      if (!asset.isAlreadyDepreciated) {
-        return { ...asset, selected: !allSelected };
-      }
-      return asset;
-    }));
+    const newSelection = { ...manualSelection };
+    
+    selectableAssets.forEach(asset => {
+      newSelection[asset.id] = !allSelected;
+    });
+    
+    setManualSelection(newSelection);
   };
 
   const selectedAssets = tableAssets.filter(a => a.selected && !a.isAlreadyDepreciated);
   const totalDepreciation = selectedAssets.reduce((sum, a) => sum + a.monthlyDepreciation, 0);
 
-  // ==========================================
-  // HÀM XỬ LÝ GHI SỔ KHẤU HAO (BULK CREATE)
-  // ==========================================
+  // Gộp chung hàm làm mới cả hệ thống lẫn lịch sử
+  const handleRefreshAll = async () => {
+    await Promise.all([
+      refreshData(), // Cập nhật lại kho Tài sản & Phòng ban
+      fetchHistory(true) // Cập nhật lại kho Lịch sử Khấu hao
+    ]);
+  };
+
   const handleGhiSo = async () => {
     if (selectedAssets.length === 0) {
       toast.error('Vui lòng chọn ít nhất 1 tài sản để khấu hao.');
@@ -175,7 +185,6 @@ export function DepreciationList() {
 
     setIsSubmitting(true);
     try {
-      // ĐÓNG GÓI DỮ LIỆU THÀNH 1 PAYLOAD CHUẨN CỦA API BULK
       const payload = {
         kyKhauHao: selectedMonth,
         danhSachTaiSan: selectedAssets.map(asset => ({
@@ -184,13 +193,13 @@ export function DepreciationList() {
         }))
       };
 
-      // GỌI API ĐÚNG 1 LẦN DUY NHẤT
       const response = await depreciationHistoryApi.createBulk(payload);
       
       if (response.errorCode === 200) {
         toast.success(`Đã ghi sổ Chứng từ tổng cho ${selectedAssets.length} tài sản!`);
         setShowVoucher(false);
-        fetchData(); // Tải lại giao diện để các checkbox tự động bị khóa
+        setManualSelection({}); // Reset lựa chọn
+        handleRefreshAll(); // Ép làm mới toàn bộ để khóa các checkbox lại
       } else {
         toast.error(response.message || 'Lỗi khi ghi sổ khấu hao.');
       }
@@ -201,6 +210,9 @@ export function DepreciationList() {
     }
   };
 
+  // Cờ trạng thái loading tổng
+  const isScreenLoading = isLoadingGlobal || isLoadingHistory;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -208,9 +220,16 @@ export function DepreciationList() {
           <h1 className="font-bold text-gray-900">Khấu hao Tài sản</h1>
           <p className="text-sm text-gray-500 mt-1">Tính và ghi nhận khấu hao (Tự động chia lẻ theo ngày cấp phát)</p>
         </div>
+        <button 
+          onClick={handleRefreshAll}
+          disabled={isScreenLoading}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 ${isScreenLoading ? 'animate-spin text-blue-600' : ''}`} />
+          Làm mới dữ liệu
+        </button>
       </div>
 
-      {/* Period Selection */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
           <div className="flex-1">
@@ -220,8 +239,11 @@ export function DepreciationList() {
             <input
               type="month"
               value={selectedMonth}
-              max={getMaxMonth()} // Chặn người dùng chọn tháng trong tương lai
-              onChange={(e) => setSelectedMonth(e.target.value)}
+              max={getMaxMonth()}
+              onChange={(e) => {
+                setSelectedMonth(e.target.value);
+                setManualSelection({}); // Reset checkbox khi đổi tháng
+              }}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -234,7 +256,7 @@ export function DepreciationList() {
                 }
                 setShowVoucher(true);
               }}
-              disabled={isLoading || tableAssets.length === 0 || selectedAssets.length === 0}
+              disabled={isScreenLoading || tableAssets.length === 0 || selectedAssets.length === 0}
               className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               <Calculator className="w-5 h-5" /> Tính Khấu hao
@@ -246,7 +268,6 @@ export function DepreciationList() {
         </div>
       </div>
 
-      {/* Info Alert */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
         <div className="flex-1">
@@ -257,7 +278,6 @@ export function DepreciationList() {
         </div>
       </div>
 
-      {/* Asset List */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -281,7 +301,7 @@ export function DepreciationList() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {isLoading ? (
+              {isScreenLoading && tableAssets.length === 0 ? (
                 <tr><td colSpan={7} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : tableAssets.length === 0 ? (
                 <tr>
@@ -290,7 +310,7 @@ export function DepreciationList() {
                   </td>
                 </tr>
               ) : (
-                tableAssets.map((asset: any) => (
+                tableAssets.map((asset) => (
                   <tr key={asset.id} className={`hover:bg-gray-50 transition-colors ${(!asset.selected && !asset.isAlreadyDepreciated) ? 'opacity-50' : ''} ${asset.isAlreadyDepreciated ? 'bg-gray-50/50' : ''}`}>
                     <td className="px-6 py-4">
                       {asset.isAlreadyDepreciated ? (
@@ -343,10 +363,9 @@ export function DepreciationList() {
         </div>
       </div>
 
-      {/* Voucher Preview Modal */}
       {showVoucher && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto shadow-2xl">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-gray-900">Xác nhận & Ghi sổ Khấu hao</h3>
@@ -397,14 +416,14 @@ export function DepreciationList() {
               <button
                 onClick={() => setShowVoucher(false)}
                 disabled={isSubmitting}
-                className="px-4 py-2 border border-gray-300 bg-white rounded-lg hover:bg-gray-100 transition-colors"
+                className="px-4 py-2 border border-gray-300 bg-white rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700"
               >
                 Hủy
               </button>
               <button 
                 onClick={handleGhiSo}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-70"
+                className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-70 font-medium"
               >
                 {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                 {isSubmitting ? 'Đang xử lý...' : 'Xác nhận Ghi sổ'}

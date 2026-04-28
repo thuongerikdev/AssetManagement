@@ -5,7 +5,7 @@ using TH.Auth.Dtos.Role;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("permissions")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PermissionController : Controller
     {
@@ -75,7 +75,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("getall")]
-        [Authorize(Policy = "PermissionRead")]
+        //[Authorize(Policy = "PermissionRead")]
         public async Task<IActionResult> GetAllPermissions(CancellationToken ct)
         {
             var result = await _permissionService.GetAllPermissionsAsynWhereScopeUserc(ct);

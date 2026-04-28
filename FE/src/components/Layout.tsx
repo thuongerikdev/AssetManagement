@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from 'react-router';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { 
   LayoutDashboard, 
   Package, 
@@ -19,13 +19,19 @@ import {
   FolderTree,
   BookOpen,
   X,
+  BookOpenCheck,
   MonitorSmartphone,
-  RefreshCw
+  RefreshCw,
+  Shield,
+  Key
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-// BẮT BUỘC PHẢI CÓ IMPORT NÀY (Đảm bảo bạn đã tạo file src/context/GlobalContext.tsx nhé)
+// Import Global Context
 import { GlobalProvider, useGlobalData } from '../context/GlobalContext';
+
+// MỚI: Import useAuth từ AuthContext để gọi hàm logout
+import { useAuth } from './AuthContext';
 
 interface NavItem {
   path: string;
@@ -41,27 +47,44 @@ const navItems: NavItem[] = [
   { path: '/maintenance', label: 'Bảo trì - Bảo dưỡng', icon: Wrench },
   { path: '/liquidation', label: 'Thanh lý', icon: Trash2 },
   { path: '/vouchers', label: 'Chứng từ Kế toán', icon: FileText },
+  { path: '/ledger', label: 'Sổ cái - Nhật ký chung', icon: BookOpenCheck },
   { path: '/reports', label: 'Báo cáo', icon: BarChart3 },
   { path: '/my-assets', label: 'Tài sản của tôi', icon: MonitorSmartphone },
 ];
 
-// TÁCH PHẦN RUỘT RA ĐỂ DÙNG ĐƯỢC KHO DỮ LIỆU (useGlobalData)
 function LayoutInner() {
   const location = useLocation();
+  const navigate = useNavigate(); // Dùng để chuyển hướng khi đăng xuất
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const isSettingsActive = location.pathname.startsWith('/settings');
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsActive);
 
-  // === MÓC DỮ LIỆU TỪ KHO CHUNG RA ĐÂY ===
-  // refreshData sẽ gọi API ngầm, không làm chớp trang
+  // Móc dữ liệu từ kho chung
   const { isLoadingGlobal, refreshData } = useGlobalData();
+  
+  // Móc hàm logout từ AuthContext
+  const { logout } = useAuth(); 
+
+  // === XỬ LÝ ĐĂNG XUẤT ===
+  const handleLogout = () => {
+    logout(); // Cập nhật state hệ thống
+    localStorage.removeItem('access_token'); // Xóa token
+    localStorage.removeItem('user_info'); // Xóa thông tin user
+    navigate('/login', { replace: true }); // Đá về trang đăng nhập
+  };
 
   useEffect(() => {
     if (location.pathname.startsWith('/settings')) {
       setIsSettingsOpen(true);
     }
   }, [location.pathname]);
+
+  // Lấy thông tin User từ LocalStorage để hiển thị (nếu không có thì để mặc định)
+  const userInfoStr = localStorage.getItem('user_info');
+  const userInfo = userInfoStr 
+    ? JSON.parse(userInfoStr) 
+    : { userName: 'Người dùng', email: 'Đang tải...' };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -127,7 +150,7 @@ function LayoutInner() {
             {/* Menu con của Cấu hình */}
             <div 
               className={`overflow-hidden transition-all duration-300 ${
-                isSettingsOpen ? 'max-h-60 mt-1 opacity-100' : 'max-h-0 opacity-0'
+                isSettingsOpen ? 'max-h-96 mt-1 opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
               <div className="ml-4 pl-4 border-l border-blue-700/50 space-y-1">
@@ -178,21 +201,67 @@ function LayoutInner() {
                   <BookOpen className="w-4 h-4 shrink-0" />
                   <span>Tài khoản Kế toán</span>
                 </Link>
+
+                <Link
+                  to="/settings/users"
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm whitespace-nowrap ${
+                    location.pathname.startsWith('/settings/users')
+                      ? 'bg-white text-blue-900 font-medium shadow-sm' 
+                      : 'text-blue-200 hover:bg-blue-800 hover:text-white'
+                  }`}
+                >
+                  <User className="w-4 h-4 shrink-0" />
+                  <span>Người dùng</span>
+                </Link>
+
+                <Link
+                  to="/settings/roles"
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm whitespace-nowrap ${
+                    location.pathname.startsWith('/settings/roles')
+                      ? 'bg-white text-blue-900 font-medium shadow-sm' 
+                      : 'text-blue-200 hover:bg-blue-800 hover:text-white'
+                  }`}
+                >
+                  <Shield className="w-4 h-4 shrink-0" />
+                  <span>Vai trò</span>
+                </Link>
+
+                <Link
+                  to="/settings/permissions"
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm whitespace-nowrap ${
+                    location.pathname.startsWith('/settings/permissions')
+                      ? 'bg-white text-blue-900 font-medium shadow-sm' 
+                      : 'text-blue-200 hover:bg-blue-800 hover:text-white'
+                  }`}
+                >
+                  <Key className="w-4 h-4 shrink-0" />
+                  <span>Quyền hạn</span>
+                </Link>
               </div>
             </div>
           </div>
         </nav>
 
+        {/* THÔNG TIN NGƯỜI DÙNG & ĐĂNG XUẤT */}
         <div className="p-4 border-t border-blue-700 shrink-0">
           <div className="flex items-center gap-3 px-4 py-2 whitespace-nowrap">
             <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center shrink-0">
               <User className="w-4 h-4" />
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-medium truncate">Nguyễn Văn A</p>
-              <p className="text-xs text-blue-200 truncate">Kế toán trưởng</p>
+              <p className="text-sm font-medium truncate" title={userInfo.userName}>
+                {userInfo.userName}
+              </p>
+              <p className="text-xs text-blue-200 truncate" title={userInfo.email}>
+                {userInfo.email}
+              </p>
             </div>
-            <button className="text-blue-200 hover:text-white shrink-0">
+            {/* Nút Đăng Xuất đã gắn sự kiện */}
+            <button 
+              onClick={handleLogout}
+              className="text-blue-200 hover:text-white hover:bg-blue-800 shrink-0 p-1.5 rounded transition-colors"
+              title="Đăng xuất"
+            >
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -219,7 +288,7 @@ function LayoutInner() {
             </div>
             
             <div className="flex items-center gap-5 ml-auto">
-              {/* === NÚT LÀM MỚI SIÊU MƯỢT (KHÔNG DÙNG WINDOW.RELOAD) === */}
+              {/* Nút Làm Mới */}
               <button 
                 onClick={() => refreshData()}
                 disabled={isLoadingGlobal}

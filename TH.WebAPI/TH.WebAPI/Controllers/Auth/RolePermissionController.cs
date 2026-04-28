@@ -5,7 +5,7 @@ using TH.Auth.Dtos.Role;
 
 namespace TH.WebAPI.Controllers.Auth
 {
-    [Route("role-permissions")]
+    [Route("api/[controller]")]
     [ApiController]
     public class RolePermissionController : Controller
     {

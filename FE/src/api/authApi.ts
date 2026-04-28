@@ -29,10 +29,24 @@ export interface LoginResponse {
 }
 
 export const authApi = {
-  login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const rootUrl = (import.meta as any).env.VITE_API_BASE_URL?.replace(/\/api\/?$/, '') || 'https://localhost:7029';
-    
-    // apiClient bây giờ sẽ dùng nguyên link này vì thấy có chữ https ở đầu
-    return await apiClient.post(`${rootUrl}/login/userLogin`, data);
-  }
+  login: async (credentials: { userName: string; password: string }) => {
+    // Gọi thẳng vào API mới của bạn
+    return await apiClient.post('/Login/userLogin', credentials);
+  },
+  getAllUsers: () => apiClient.get('/user/admin/getAllUsers'),
+  deleteUser: (id: number) => apiClient.delete(`/user/deleteUser?userId=${id}`),
+  
+  // --- ROLES ---
+  getAllRoles: () => apiClient.get('/Role/getall'),
+  addRole: (data: any) => apiClient.post('/Role/addRole', data),
+  updateRole: (data: any) => apiClient.put('/Role/updateRole', data),
+  deleteRole: (id: number) => apiClient.delete(`/Role/deleteRole/${id}`),
+  cloneRole: (data: any) => apiClient.post('/Role/clonerole', data),
+  
+  // --- PERMISSIONS ---
+  getAllPermissions: () => apiClient.get('/permission/getall'),
+  addPermission: (data: any) => apiClient.post('/permission/BulkCreate', [data]),
+  updatePermission: (data: any) => apiClient.put('/permission/updatePermission', data),
+  deletePermission: (id: number) => apiClient.delete(`/permission/delete?permissionId=${id}`),
+
 };

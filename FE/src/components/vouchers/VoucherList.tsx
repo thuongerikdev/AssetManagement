@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import { Search, FileText, Eye, Lock, Unlock, Download } from 'lucide-react';
+import { Search, FileText, Eye, Lock, Unlock, Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { voucherApi, ChungTu } from '../../api/voucherApi';
 import * as XLSX from 'xlsx'; 
@@ -8,11 +8,10 @@ import * as XLSX from 'xlsx';
 // ==========================================
 // 1. CHUẨN HÓA DỮ LIỆU ĐẦU VÀO TỪ BACKEND
 // ==========================================
-// Gom tất cả các thể loại (chữ, số, viết hoa, viết thường) về 1 mã chuẩn
 const getStandardType = (type: any): string => {
   const t = type?.toString();
   if (t === '0' || t === 'GhiTang') return '0';
-  if (t === '1' || t === '4' || t === 'KhauHao') return '1'; // Bắt cả số 4 bị nhầm lẫn ở BE
+  if (t === '1' || t === '4' || t === 'KhauHao') return '1';
   if (t === '2' || t === 'BaoTri' || t === 'SuaChua') return '2';
   if (t === '3' || t === 'ThanhLy') return '3';
   if (t === 'DieuChuyen') return '4';
@@ -24,14 +23,11 @@ const getStandardStatus = (status: any): string => {
   if (s === '0' || s === 'nhap') return 'nhap';
   if (s === '1' || s === 'hoan_thanh' || s === 'daghiso') return 'hoan_thanh';
   if (s === '2' || s === 'da_khoa') return 'da_khoa';
-  // Nếu có trạng thái lạ nhưng khác nháp, mặc định coi như hoàn thành
   if (s && s !== 'nhap' && s !== '0') return 'hoan_thanh'; 
-  return 'nhap'; // Default
+  return 'nhap'; 
 };
 
-// ==========================================
-// 2. CẤU HÌNH GIAO DIỆN THEO MÃ CHUẨN
-// ==========================================
+// Cấu hình UI
 const typeConfig: Record<string, { label: string; color: string }> = {
   '0': { label: 'Ghi tăng', color: 'bg-green-100 text-green-700 border-green-200' },
   '1': { label: 'Khấu hao', color: 'bg-orange-100 text-orange-700 border-orange-200' },
@@ -47,19 +43,34 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   'da_khoa': { label: 'Đã khóa', color: 'bg-red-100 text-red-700', icon: Lock },
 };
 
+// ==========================================
+// 2. BIẾN CACHE CỤC BỘ TRÊN RAM (Chỉ lưu Chứng từ)
+// ==========================================
+let cachedVouchers: ChungTu[] | null = null;
+
 export function VoucherList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   
-  const [vouchers, setVouchers] = useState<ChungTu[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // State quản lý Chứng từ
+  const [vouchers, setVouchers] = useState<ChungTu[]>(cachedVouchers || []);
+  const [isLoading, setIsLoading] = useState(!cachedVouchers);
 
-  const fetchVouchers = async () => {
+  // ==========================================
+  // 3. HÀM TẢI CHỨNG TỪ CÓ TÍCH HỢP CACHE
+  // ==========================================
+  const fetchVouchers = async (forceRefresh = false) => {
+    if (!forceRefresh && cachedVouchers) {
+      setVouchers(cachedVouchers);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await voucherApi.getAll();
       if (response.errorCode === 200) {
+        cachedVouchers = response.data;
         setVouchers(response.data);
       }
     } catch (error) {
@@ -69,7 +80,55 @@ export function VoucherList() {
     }
   };
 
-  useEffect(() => { fetchVouchers(); }, []);
+  useEffect(() => { 
+    fetchVouchers(); 
+  }, []);
+
+  const handlePostVoucher = async (id: number) => {
+    if (window.confirm('Bạn có chắc chắn muốn ghi sổ chứng từ này?')) {
+      try {
+        const response = await voucherApi.postVoucher(id);
+        if (response.errorCode === 200) {
+          toast.success('Ghi sổ thành công!');
+          fetchVouchers(true); // Ép làm mới để cập nhật trạng thái mới nhất
+        }
+      } catch (error) {
+        toast.error('Lỗi kết nối đến máy chủ.');
+      }
+    }
+  };
+
+  // ==========================================
+  // 4. USE_MEMO BỘ LỌC ĐỂ RENDER MƯỢT MÀ
+  // ==========================================
+  const filteredVouchers = useMemo(() => {
+    return vouchers.filter(voucher => {
+      const searchStr = `${voucher.maChungTu} ${voucher.moTa}`.toLowerCase();
+      const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
+      
+      const standardType = getStandardType(voucher.loaiChungTu);
+      const standardStatus = getStandardStatus(voucher.trangThai);
+
+      const matchesType = filterType === 'all' || standardType === filterType;
+      const matchesStatus = filterStatus === 'all' || standardStatus === filterStatus;
+      
+      return matchesSearch && matchesType && matchesStatus;
+    });
+  }, [vouchers, searchTerm, filterType, filterStatus]);
+
+  // ==========================================
+  // 5. USE_MEMO CHO THỐNG KÊ (Đếm số lượng tức thì)
+  // ==========================================
+  const stats = useMemo(() => {
+    let draft = 0, posted = 0, locked = 0;
+    vouchers.forEach(v => {
+      const s = getStandardStatus(v.trangThai);
+      if (s === 'nhap') draft++;
+      else if (s === 'hoan_thanh') posted++;
+      else if (s === 'da_khoa') locked++;
+    });
+    return { draft, posted, locked, total: vouchers.length };
+  }, [vouchers]);
 
   const handleExportExcel = () => {
     if (filteredVouchers.length === 0) {
@@ -106,42 +165,9 @@ export function VoucherList() {
     }
   };
 
-  const handlePostVoucher = async (id: number) => {
-    if (window.confirm('Bạn có chắc chắn muốn ghi sổ chứng từ này?')) {
-      try {
-        const response = await voucherApi.postVoucher(id);
-        if (response.errorCode === 200) {
-          toast.success('Ghi sổ thành công!');
-          fetchVouchers();
-        }
-      } catch (error) {
-        toast.error('Lỗi kết nối đến máy chủ.');
-      }
-    }
-  };
-
-  // 3. LOGIC LỌC (Dựa trên hàm Chuẩn hóa)
-  const filteredVouchers = vouchers.filter(voucher => {
-    const searchStr = `${voucher.maChungTu} ${voucher.moTa}`.toLowerCase();
-    const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
-    
-    const standardType = getStandardType(voucher.loaiChungTu);
-    const standardStatus = getStandardStatus(voucher.trangThai);
-
-    const matchesType = filterType === 'all' || standardType === filterType;
-    const matchesStatus = filterStatus === 'all' || standardStatus === filterStatus;
-    
-    return matchesSearch && matchesType && matchesStatus;
-  });
-
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
-
-  // Đếm theo hàm chuẩn hóa
-  const totalDraft = vouchers.filter(v => getStandardStatus(v.trangThai) === 'nhap').length;
-  const totalPosted = vouchers.filter(v => getStandardStatus(v.trangThai) === 'hoan_thanh').length;
-  const totalLocked = vouchers.filter(v => getStandardStatus(v.trangThai) === 'da_khoa').length;
 
   return (
     <div className="space-y-6">
@@ -150,28 +176,41 @@ export function VoucherList() {
           <h1 className="font-bold text-gray-900 text-xl">Chứng từ Kế toán</h1>
           <p className="text-sm text-gray-500 mt-1">Quản lý và ghi sổ chứng từ tài sản cố định</p>
         </div>
-        <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm bg-white font-medium text-gray-700">
-          <Download className="w-4 h-4" /> Xuất Excel
-        </button>
+        <div className="flex gap-2">
+          {/* Nút Làm mới Data */}
+          <button 
+            onClick={() => fetchVouchers(true)}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-sm"
+            title="Tải lại dữ liệu"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
+            <span className="hidden sm:block">Làm mới</span>
+          </button>
+
+          <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm bg-white font-medium text-gray-700">
+            <Download className="w-4 h-4" /> Xuất Excel
+          </button>
+        </div>
       </div>
 
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
           <p className="text-sm font-medium text-gray-500 mb-1">Tổng chứng từ</p>
-          <p className="text-2xl font-bold text-gray-900">{vouchers.length}</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm border-l-4 border-l-gray-400">
           <p className="text-sm font-medium text-gray-500 mb-1">Bản nháp</p>
-          <p className="text-2xl font-bold text-gray-700">{totalDraft}</p>
+          <p className="text-2xl font-bold text-gray-700">{stats.draft}</p>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm border-l-4 border-l-green-500">
           <p className="text-sm font-medium text-gray-500 mb-1">Đã ghi sổ</p>
-          <p className="text-2xl font-bold text-green-600">{totalPosted}</p>
+          <p className="text-2xl font-bold text-green-600">{stats.posted}</p>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm border-l-4 border-l-red-500">
           <p className="text-sm font-medium text-gray-500 mb-1">Đã khóa</p>
-          <p className="text-2xl font-bold text-red-600">{totalLocked}</p>
+          <p className="text-2xl font-bold text-red-600">{stats.locked}</p>
         </div>
       </div>
 
@@ -223,13 +262,12 @@ export function VoucherList() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {isLoading ? (
+              {isLoading && filteredVouchers.length === 0 ? (
                 <tr><td colSpan={7} className="text-center py-12 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : filteredVouchers.length === 0 ? (
                 <tr><td colSpan={7} className="text-center py-12 text-gray-500">Không tìm thấy chứng từ phù hợp.</td></tr>
               ) : (
                 filteredVouchers.map((voucher) => {
-                  // Gọi hàm lấy mã chuẩn
                   const stType = getStandardType(voucher.loaiChungTu);
                   const stStatus = getStandardStatus(voucher.trangThai);
                   

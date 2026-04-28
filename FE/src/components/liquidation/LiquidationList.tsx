@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import { Plus, Search, Trash2, Eye, Edit, X, Save, AlertCircle, CheckCircle, FileCheck } from 'lucide-react';
+import { Plus, Search, Trash2, Eye, Edit, X, Save, AlertCircle, CheckCircle, FileCheck, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { liquidationApi, ThanhLyTaiSan } from '../../api/liquidationApi';
-import { assetApi, TaiSan } from '../../api/assetApi';
+import { useGlobalData } from '../../context/GlobalContext'; // <-- IMPORT GLOBAL CONTEXT
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   'ChoDuyet': { label: 'Chờ duyệt', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
@@ -11,12 +11,21 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   'DaHoanThanh': { label: 'Hoàn thành', color: 'bg-green-100 text-green-700 border-green-200' },
 };
 
+// ==========================================
+// 1. BIẾN CACHE CỤC BỘ TRÊN RAM (Chỉ lưu Phiếu thanh lý)
+// ==========================================
+let cachedLiquidationRecords: ThanhLyTaiSan[] | null = null;
+
 export function LiquidationList() {
+  // 2. Móc Tài sản từ KHO CHUNG (Tải 0 giây)
+  const { assets, isLoadingGlobal, refreshData } = useGlobalData();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [records, setRecords] = useState<ThanhLyTaiSan[]>([]);
-  const [assets, setAssets] = useState<TaiSan[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  // State quản lý Phiếu thanh lý
+  const [records, setRecords] = useState<ThanhLyTaiSan[]>(cachedLiquidationRecords || []);
+  const [isLoadingRecords, setIsLoadingRecords] = useState(!cachedLiquidationRecords);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -24,22 +33,42 @@ export function LiquidationList() {
   const [editForm, setEditForm] = useState<Partial<ThanhLyTaiSan>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchData = async () => {
-    setIsLoading(true);
+  // ==========================================
+  // 3. HÀM TẢI PHIẾU THANH LÝ CÓ TÍCH HỢP CACHE
+  // ==========================================
+  const fetchRecords = async (forceRefresh = false) => {
+    if (!forceRefresh && cachedLiquidationRecords) {
+      setRecords(cachedLiquidationRecords);
+      return;
+    }
+
+    setIsLoadingRecords(true);
     try {
-      const [recRes, assetRes] = await Promise.all([liquidationApi.getAll(), assetApi.getAll()]);
-      if (recRes.errorCode === 200) setRecords(recRes.data);
-      if (assetRes.errorCode === 200) setAssets(assetRes.data);
+      const res = await liquidationApi.getAll();
+      if (res.errorCode === 200) {
+        cachedLiquidationRecords = res.data;
+        setRecords(res.data);
+      }
     } catch (error) {
       toast.error('Lỗi kết nối máy chủ!');
     } finally {
-      setIsLoading(false);
+      setIsLoadingRecords(false);
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchRecords(); 
+  }, []);
 
-  const getAsset = (id: number) => assets.find(a => a.id === id);
+  // Hàm gộp chung làm mới toàn bộ hệ thống
+  const handleRefreshAll = async () => {
+    await Promise.all([
+      refreshData(),      // Làm mới Tài sản từ Global
+      fetchRecords(true)  // Làm mới Phiếu thanh lý
+    ]);
+  };
+
+  const getAsset = (id: number) => assets.find((a: any) => a.id === id);
 
   const openModal = (record: ThanhLyTaiSan, edit: boolean = false) => {
     setSelectedRecord(record);
@@ -60,7 +89,7 @@ export function LiquidationList() {
       if (response.errorCode === 200) {
         toast.success('Cập nhật thông tin thành công!');
         setIsModalOpen(false);
-        fetchData();
+        handleRefreshAll(); // Ép hệ thống làm mới dữ liệu
       } else {
         toast.error(response.message);
       }
@@ -83,7 +112,7 @@ export function LiquidationList() {
       if (response.errorCode === 200) {
         toast.success(`${actionName} thành công!`);
         setIsModalOpen(false);
-        fetchData();
+        handleRefreshAll(); // Ép hệ thống làm mới dữ liệu
       } else {
         toast.error(response.message);
       }
@@ -98,12 +127,19 @@ export function LiquidationList() {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
   };
 
-  const filteredRecords = records.filter(r => {
-    const asset = getAsset(r.taiSanId);
-    const matchesSearch = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || r.trangThai?.toString() === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  // ==========================================
+  // 4. USE_MEMO BỘ LỌC ĐỂ RENDER MƯỢT MÀ
+  // ==========================================
+  const filteredRecords = useMemo(() => {
+    return records.filter(r => {
+      const asset = getAsset(r.taiSanId);
+      const matchesSearch = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = filterStatus === 'all' || r.trangThai?.toString() === filterStatus;
+      return matchesSearch && matchesStatus;
+    });
+  }, [records, assets, searchTerm, filterStatus]);
+
+  const isScreenLoading = isLoadingGlobal || isLoadingRecords;
 
   return (
     <div className="space-y-6">
@@ -112,9 +148,23 @@ export function LiquidationList() {
           <h1 className="font-bold text-gray-900 text-2xl">Thanh lý - Giảm Tài sản</h1>
           <p className="text-sm text-gray-500">Quản lý luồng duyệt thanh lý tài sản cố định</p>
         </div>
-        <Link to="/liquidation/new" className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-md transition-all">
-          <Plus className="w-5 h-5" /> Tạo Phiếu thanh lý
-        </Link>
+        
+        <div className="flex gap-2">
+          {/* Nút Làm mới */}
+          <button 
+            onClick={handleRefreshAll}
+            disabled={isScreenLoading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-sm"
+            title="Tải lại dữ liệu"
+          >
+            <RefreshCw className={`w-4 h-4 ${isScreenLoading ? 'animate-spin text-blue-600' : ''}`} />
+            <span className="hidden sm:block">Làm mới</span>
+          </button>
+
+          <Link to="/liquidation/new" className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-md transition-all">
+            <Plus className="w-5 h-5" /> Tạo Phiếu thanh lý
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
@@ -146,7 +196,7 @@ export function LiquidationList() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {isLoading ? (
+            {isScreenLoading && filteredRecords.length === 0 ? (
               <tr><td colSpan={6} className="text-center py-8 text-gray-500">Đang tải dữ liệu...</td></tr>
             ) : filteredRecords.length === 0 ? (
               <tr><td colSpan={6} className="text-center py-8 text-gray-500">Không có dữ liệu thanh lý.</td></tr>

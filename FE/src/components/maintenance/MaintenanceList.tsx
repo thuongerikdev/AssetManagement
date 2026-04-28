@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import { Plus, Search, Wrench, Trash2, Eye, X, Edit, Save } from 'lucide-react';
+import { Plus, Search, Wrench, Trash2, Eye, X, Edit, Save, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { maintenanceApi, BaoTriTaiSan } from '../../api/maintenanceApi';
-import { assetApi, TaiSan } from '../../api/assetApi';
+import { useGlobalData } from '../../context/GlobalContext'; // <-- IMPORT GLOBAL CONTEXT
 
 // Map Enum Loại bảo trì
 const loaiBaoTriConfig: Record<string, string> = {
@@ -14,12 +14,20 @@ const loaiBaoTriConfig: Record<string, string> = {
   '4': 'Kiểm tra'
 };
 
+// ==========================================
+// 1. BIẾN CACHE CỤC BỘ TRÊN RAM (Chỉ lưu Lịch sử bảo trì)
+// ==========================================
+let cachedMaintenanceRecords: BaoTriTaiSan[] | null = null;
+
 export function MaintenanceList() {
+  // 2. Móc Tài sản từ KHO CHUNG (Tải 0 giây)
+  const { assets, isLoadingGlobal, refreshData } = useGlobalData();
+
   const [searchTerm, setSearchTerm] = useState('');
   
-  const [records, setRecords] = useState<BaoTriTaiSan[]>([]);
-  const [assets, setAssets] = useState<TaiSan[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // State quản lý Lịch sử bảo trì
+  const [records, setRecords] = useState<BaoTriTaiSan[]>(cachedMaintenanceRecords || []);
+  const [isLoadingRecords, setIsLoadingRecords] = useState(!cachedMaintenanceRecords);
 
   // States cho Modal 2-trong-1 (Xem & Sửa)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -31,25 +39,40 @@ export function MaintenanceList() {
   const [modalHasCost, setModalHasCost] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchData = async () => {
-    setIsLoading(true);
+  // ==========================================
+  // 3. HÀM TẢI LỊCH SỬ BẢO TRÌ CÓ TÍCH HỢP CACHE
+  // ==========================================
+  const fetchRecords = async (forceRefresh = false) => {
+    if (!forceRefresh && cachedMaintenanceRecords) {
+      setRecords(cachedMaintenanceRecords);
+      return;
+    }
+
+    setIsLoadingRecords(true);
     try {
-      const [recRes, assetRes] = await Promise.all([
-        maintenanceApi.getAll(),
-        assetApi.getAll()
-      ]);
-      if (recRes.errorCode === 200) setRecords(recRes.data);
-      if (assetRes.errorCode === 200) setAssets(assetRes.data);
+      const res = await maintenanceApi.getAll();
+      if (res.errorCode === 200) {
+        cachedMaintenanceRecords = res.data;
+        setRecords(res.data);
+      }
     } catch (error) {
       toast.error('Lỗi tải dữ liệu bảo trì.');
     } finally {
-      setIsLoading(false);
+      setIsLoadingRecords(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchRecords();
   }, []);
+
+  // Hàm gộp chung làm mới toàn bộ hệ thống
+  const handleRefreshAll = async () => {
+    await Promise.all([
+      refreshData(),      // Làm mới Tài sản từ Global
+      fetchRecords(true)  // Làm mới Lịch sử bảo trì
+    ]);
+  };
 
   const handleDelete = async (id: number) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa bản ghi bảo trì này?')) {
@@ -57,7 +80,7 @@ export function MaintenanceList() {
         const response = await maintenanceApi.delete(id);
         if (response.errorCode === 200) {
           toast.success('Xóa thành công');
-          fetchData();
+          handleRefreshAll(); // Ép làm mới để cập nhật UI ngay lập tức
         } else {
           toast.error(response.message || 'Lỗi khi xóa');
         }
@@ -105,7 +128,7 @@ export function MaintenanceList() {
       if (response.errorCode === 200) {
         toast.success('Cập nhật thông tin thành công!');
         setIsViewModalOpen(false);
-        fetchData();
+        handleRefreshAll(); // Cập nhật lại dữ liệu sau khi sửa
       } else {
         toast.error(response.message || 'Lỗi khi cập nhật.');
       }
@@ -116,18 +139,25 @@ export function MaintenanceList() {
     }
   };
 
-  const getAsset = (id: number) => assets.find(a => a.id === id);
+  const getAsset = (id: number) => assets.find((a: any) => a.id === id);
 
-  const filteredRecords = records.filter(record => {
-    const asset = getAsset(record.taiSanId);
-    const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
-    return searchStr.includes(searchTerm.toLowerCase());
-  });
+  // ==========================================
+  // 4. USE_MEMO BỘ LỌC ĐỂ RENDER MƯỢT MÀ
+  // ==========================================
+  const filteredRecords = useMemo(() => {
+    return records.filter(record => {
+      const asset = getAsset(record.taiSanId);
+      const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
+      return searchStr.includes(searchTerm.toLowerCase());
+    });
+  }, [records, assets, searchTerm]);
 
   const formatCurrency = (value?: number) => {
     if (!value) return '0 ₫';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
+
+  const isScreenLoading = isLoadingGlobal || isLoadingRecords;
 
   return (
     <div className="space-y-6">
@@ -136,13 +166,26 @@ export function MaintenanceList() {
           <h1 className="font-bold text-gray-900">Lịch sử Bảo trì / Sửa chữa</h1>
           <p className="text-sm text-gray-500 mt-1">Quản lý lịch sử sửa chữa tài sản</p>
         </div>
-        <Link
-          to="/maintenance/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Ghi nhận sửa chữa
-        </Link>
+        <div className="flex gap-2">
+          {/* Nút Làm mới */}
+          <button 
+            onClick={handleRefreshAll}
+            disabled={isScreenLoading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            title="Tải lại dữ liệu"
+          >
+            <RefreshCw className={`w-4 h-4 ${isScreenLoading ? 'animate-spin text-blue-600' : ''}`} />
+            <span className="hidden sm:block">Làm mới</span>
+          </button>
+          
+          <Link
+            to="/maintenance/new"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            <Plus className="w-5 h-5" />
+            Ghi nhận sửa chữa
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -175,7 +218,7 @@ export function MaintenanceList() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {isLoading ? (
+              {isScreenLoading && filteredRecords.length === 0 ? (
                 <tr><td colSpan={6} className="text-center py-8 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : filteredRecords.length === 0 ? (
                 <tr><td colSpan={6} className="text-center py-8 text-gray-500">Không có lịch sử bảo trì.</td></tr>
@@ -194,7 +237,7 @@ export function MaintenanceList() {
                           <p className="text-sm text-gray-600">{asset?.tenTaiSan}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{loaiBaoTriConfig[record.loaiBaoTri]}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{loaiBaoTriConfig[record.loaiBaoTri] || 'Khác'}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{record.nhaCungCap || 'Nội bộ'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-red-600">
                         {record.chiPhi && record.chiPhi > 0 ? formatCurrency(record.chiPhi) : '-'}
@@ -260,7 +303,7 @@ export function MaintenanceList() {
                       </div>
                       <div>
                         <p className="text-xs text-gray-500 mb-1">Loại bảo trì</p>
-                        <p className="text-sm font-medium text-gray-900">{loaiBaoTriConfig[selectedRecord.loaiBaoTri]}</p>
+                        <p className="text-sm font-medium text-gray-900">{loaiBaoTriConfig[selectedRecord.loaiBaoTri] || 'Khác'}</p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500 mb-1">Đơn vị thực hiện / NCC</p>
@@ -284,7 +327,7 @@ export function MaintenanceList() {
                   {selectedRecord.ghiChu && (
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wider">Ghi chú</h4>
-                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded border border-gray-100">{selectedRecord.ghiChu}</p>
+                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded border border-gray-100 whitespace-pre-wrap">{selectedRecord.ghiChu}</p>
                     </div>
                   )}
                 </>

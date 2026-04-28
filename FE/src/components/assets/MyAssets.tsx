@@ -1,21 +1,35 @@
-import { useState, useEffect } from 'react';
-import { Monitor, CheckCircle, Package, AlertTriangle, Clock } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Monitor, CheckCircle, Package, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { assetApi, TaiSan } from '../../api/assetApi';
 
-export function MyAssets() {
-  const [assets, setAssets] = useState<TaiSan[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+// ==========================================
+// 1. BIẾN CACHE CỤC BỘ TRÊN RAM (Dành riêng cho My Assets)
+// ==========================================
+let cachedMyAssets: TaiSan[] | null = null;
 
-  // GIẢ LẬP: Đang đăng nhập bằng User có ID = 15 (Bạn có thể đổi số này để test)
-  // Sau này có Auth, bạn sẽ lấy ID này từ Redux/Context (ví dụ: currentUser.id)
+export function MyAssets() {
+  const [assets, setAssets] = useState<TaiSan[]>(cachedMyAssets || []);
+  const [isLoading, setIsLoading] = useState(!cachedMyAssets);
+
+  // GIẢ LẬP: Đang đăng nhập bằng User có ID = 15 (Sau này lấy từ hệ thống Auth)
   const currentUserId = 15; 
 
-  const fetchMyAssets = async () => {
+  // ==========================================
+  // 2. HÀM FETCH CÓ TÍCH HỢP CACHE VÀ NÚT LÀM MỚI
+  // ==========================================
+  const fetchMyAssets = async (forceRefresh = false) => {
+    // Trả về cache nếu không ép tải lại
+    if (!forceRefresh && cachedMyAssets) {
+      setAssets(cachedMyAssets);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await assetApi.getMyAssets(currentUserId);
       if (response.errorCode === 200) {
+        cachedMyAssets = response.data; // Lưu vào cache
         setAssets(response.data);
       }
     } catch (error) {
@@ -35,7 +49,7 @@ export function MyAssets() {
         const response = await assetApi.confirm(id);
         if (response.errorCode === 200) {
           toast.success('Ký nhận tài sản thành công!');
-          fetchMyAssets(); // Load lại để thẻ chuyển sang màu xanh
+          fetchMyAssets(true); // Ép tải lại từ server để thẻ chuyển sang màu xanh ngay lập tức
         } else {
           toast.error(response.message || 'Có lỗi xảy ra');
         }
@@ -48,18 +62,35 @@ export function MyAssets() {
   const formatCurrency = (val?: number) => 
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0);
 
-  // Chia làm 2 nhóm để hiển thị
-  const pendingAssets = assets.filter(a => a.trangThai?.toString() === 'ChoXacNhan');
-  const activeAssets = assets.filter(a => a.trangThai?.toString() === 'DangSuDung');
+  // ==========================================
+  // 3. TÁCH NHÓM MƯỢT MÀ BẰNG USE_MEMO
+  // ==========================================
+  const { pendingAssets, activeAssets } = useMemo(() => {
+    const pending = assets.filter(a => a.trangThai?.toString() === 'ChoXacNhan' || a.trangThai?.toString() === '1');
+    const active = assets.filter(a => a.trangThai?.toString() === 'DangSuDung' || a.trangThai?.toString() === '2');
+    return { pendingAssets: pending, activeAssets: active };
+  }, [assets]);
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Tài sản của tôi</h1>
-        <p className="text-gray-500 mt-1">Quản lý và xác nhận các tài sản được công ty cấp phát cho bạn.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Tài sản của tôi</h1>
+          <p className="text-gray-500 mt-1">Quản lý và xác nhận các tài sản được công ty cấp phát cho bạn.</p>
+        </div>
+        
+        {/* Nút Làm mới dữ liệu */}
+        <button 
+          onClick={() => fetchMyAssets(true)}
+          disabled={isLoading}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-sm"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
+          <span className="hidden sm:block">Làm mới</span>
+        </button>
       </div>
 
-      {isLoading ? (
+      {isLoading && assets.length === 0 ? (
         <div className="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
           Đang tải dữ liệu...
         </div>
@@ -143,7 +174,7 @@ export function MyAssets() {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Trạng thái:</span>
-                        <span className="text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full text-xs">Đang sử dụng</span>
+                        <span className="text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full text-xs border border-green-200">Đang sử dụng</span>
                       </div>
                     </div>
                   </div>

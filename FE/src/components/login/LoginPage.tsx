@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { authApi } from '../../api/authApi';
 import { toast } from 'sonner';
+import { useAuth } from '../AuthContext'; // <--- IMPORT Context Auth
 import './style.css'; 
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation(); // <--- Dùng để lấy thông tin đường dẫn cũ
+  const { login, isAuthenticated } = useAuth(); // <--- Lấy hàm login và trạng thái từ Context
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Kiểm tra nếu đã có token thì đá thẳng vào trong luôn, khỏi bắt đăng nhập lại
+  // Xác định đường dẫn người dùng muốn vào trước đó, nếu không có thì mặc định về trang chủ '/'
+  const from = location.state?.from?.pathname || '/';
+
+  // Kiểm tra nếu đã có token hoặc state đã đăng nhập thì đá thẳng vào trong luôn
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      navigate('/', { replace: true });
-    }
-  }, [navigate]);
+  if (isAuthenticated) {
+    // Nếu trang trước đó cũng là /login thì ép về trang chủ, tránh loop
+    const target = from === '/login' ? '/' : from;
+    navigate(target, { replace: true });
+  }
+}, [isAuthenticated, navigate, from]);
 
   // Animation mắt - miệng 
   useEffect(() => {
@@ -85,7 +92,6 @@ export function LoginPage() {
     try {
       const response = await authApi.login({ userName: username.trim(), password });
       
-      // Lúc này TypeScript đã nhận diện được cấu trúc mới cực chuẩn
       if (response.errorCode === 200 && response.data?.token) {
         
         // 1. Lưu token để dùng cho các API khác
@@ -100,10 +106,13 @@ export function LoginPage() {
         };
         localStorage.setItem('user_info', JSON.stringify(userInfo));
         
+        // 3. Cập nhật state hệ thống thông qua AuthContext
+        login();
+
         toast.success('Đăng nhập thành công!');
         
-        // 3. Chuyển hướng vào trang Dashboard
-        navigate('/', { replace: true });
+        // 4. Chuyển hướng về trang trước đó (hoặc Dashboard) thay vì cứng nhắc về '/'
+        navigate(from, { replace: true });
       } else {
         toast.error(response.errorMessage || 'Đăng nhập thất bại! Sai tài khoản hoặc mật khẩu.');
       }
