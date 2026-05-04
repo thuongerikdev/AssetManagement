@@ -118,7 +118,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("admin/getUserById")]
-        [Authorize(Policy = "UserReadDetailsAdmin")]
+        //[Authorize(Policy = "UserReadDetailsAdmin")]
         public async Task<IActionResult> GetUserById(int userId, CancellationToken ct)
         {
             var result = await _userService.GetUserByIDAsync(userId, ct);

@@ -10,6 +10,8 @@ export interface Department {
 
 export const departmentApi = {
   getAll: () => apiClient.get('/PhongBan/get-all'),
+
+  getById: (id: string | number) => apiClient.get(`/PhongBan/get/${id}`),
   
   create: (data: Department) => apiClient.post('/PhongBan/create', data),
   

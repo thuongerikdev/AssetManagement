@@ -108,6 +108,7 @@ namespace TH.Asset.Domain.Entities
         [Required]
         public required string MaTaiSan { get; set; }
 
+        public PhuongThucThanhToan? PhuongThucThanhToan { get; set; }
         public string? TenTaiSan { get; set; }
         public int? DanhMucId { get; set; }
         public int? LoId { get; set; }

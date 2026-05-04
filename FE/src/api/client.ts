@@ -1,7 +1,7 @@
 // src/utils/apiClient.ts
 
 // Thay đổi URL này khi bạn deploy lên server thật
-const BASE_URL = ' https://1fad-2405-4802-1caf-be30-8c19-7b66-ba0f-e9cf.ngrok-free.app/api';
+const BASE_URL = 'https://9fd9-2405-4802-1caf-be30-31fc-7a4-7bf0-3fb2.ngrok-free.app/api';
 
 const buildUrl = (endpoint: string) => {
   if (endpoint.startsWith('http')) return endpoint;

@@ -31,9 +31,9 @@ const getStandardStatus = (status: any): string => {
 const typeConfig: Record<string, { label: string; color: string }> = {
   '0': { label: 'Ghi tăng', color: 'bg-green-100 text-green-700 border-green-200' },
   '1': { label: 'Khấu hao', color: 'bg-orange-100 text-orange-700 border-orange-200' },
-  '2': { label: 'Bảo trì', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  // '2': { label: 'Bảo trì', color: 'bg-blue-100 text-blue-700 border-blue-200' },
   '3': { label: 'Thanh lý', color: 'bg-red-100 text-red-700 border-red-200' },
-  '4': { label: 'Điều chuyển', color: 'bg-purple-100 text-purple-700 border-purple-200' },
+  // '4': { label: 'Điều chuyển', color: 'bg-purple-100 text-purple-700 border-purple-200' },
   'other': { label: 'Khác', color: 'bg-gray-100 text-gray-700 border-gray-200' }
 };
 
@@ -232,9 +232,9 @@ export function VoucherList() {
               <option value="all">Tất cả loại nghiệp vụ</option>
               <option value="0">Ghi tăng TSCĐ</option>
               <option value="1">Khấu hao TSCĐ</option>
-              <option value="2">Bảo trì TSCĐ</option>
+              {/* <option value="2">Bảo trì TSCĐ</option> */}
               <option value="3">Thanh lý TSCĐ</option>
-              <option value="4">Điều chuyển</option>
+              {/* <option value="4">Điều chuyển</option> */}
             </select>
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium text-gray-700">
               <option value="all">Tất cả trạng thái</option>

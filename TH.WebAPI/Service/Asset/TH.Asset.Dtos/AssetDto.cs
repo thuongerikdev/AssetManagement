@@ -109,9 +109,6 @@ namespace TH.Asset.Dtos
         public required string maTaiSan { get; set; }
         public string? tenTaiSan { get; set; }
         public int? danhMucId { get; set; }
-        //public int? loId { get; set; }
-        //public int? soThuTuTrongLo { get; set; }
-        //public int? tongSoTrongLo { get; set; }
         public TrangThaiTaiSan trangThai { get; set; } = TrangThaiTaiSan.DangSuDung;
         public string? soSeri { get; set; }
         public string? nhaSanXuat { get; set; }
@@ -125,6 +122,8 @@ namespace TH.Asset.Dtos
         public int? phongBanId { get; set; }
         public int? nguoiDungId { get; set; }
         public DateTime? ngayCapPhat { get; set; }
+
+        public PhuongThucThanhToan? phuongThucThanhToan { get; set; }  // <-- THÊM
     }
 
     public class UpdateTaiSanRequestDto : CreateTaiSanRequestDto
@@ -133,6 +132,7 @@ namespace TH.Asset.Dtos
         public decimal? giaTriConLai { get; set; }
         public decimal? khauHaoLuyKe { get; set; }
         public decimal? khauHaoHangThang { get; set; }
+        // phuongThucThanhToan kế thừa từ Create
     }
 
     public class TaiSanResponse
@@ -159,9 +159,12 @@ namespace TH.Asset.Dtos
         public string? maTaiKhoan { get; set; }
         public int? phongBanId { get; set; }
         public int? nguoiDungId { get; set; }
+
         public DateTime? ngayCapPhat { get; set; }
         public DateTime? ngayTao { get; set; }
         public DateTime? ngayCapNhat { get; set; }
+
+        public PhuongThucThanhToan? phuongThucThanhToan { get; set; }  // <-- THÊM
     }
 
     // ==========================================

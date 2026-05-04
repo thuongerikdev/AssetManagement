@@ -203,7 +203,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Notifications */}
+      {/* Notifications
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-blue-500" />
@@ -224,7 +224,7 @@ export function Dashboard() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

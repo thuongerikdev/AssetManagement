@@ -233,20 +233,29 @@ export function DepreciationList() {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Chọn kỳ khấu hao (Tháng/Năm)
-            </label>
-            <input
-              type="month"
-              value={selectedMonth}
-              max={getMaxMonth()}
-              onChange={(e) => {
-                setSelectedMonth(e.target.value);
-                setManualSelection({}); // Reset checkbox khi đổi tháng
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Chọn kỳ khấu hao (Tháng/Năm)
+              </label>
+              <input
+                type="month"
+                value={selectedMonth}
+                max={getMaxMonth()} // Chặn chọn từ giao diện lịch
+                onChange={(e) => {
+                  const selectedVal = e.target.value;
+                  const maxMonth = getMaxMonth();
+
+                  // Logic chặn nhập tay tháng tương lai
+                  if (selectedVal > maxMonth) {
+                    toast.error("Vui lòng không chọn tháng tương lai.");
+                    setSelectedMonth(maxMonth);
+                  } else {
+                    setSelectedMonth(selectedVal);
+                  }
+                  setManualSelection({});
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           <div className="flex gap-2">
             <button
               onClick={() => {
@@ -339,7 +348,7 @@ export function DepreciationList() {
                     <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.originalValue)}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-600">{formatCurrency(asset.accumulatedDepreciation)}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-right bg-blue-50/30">
-                      <span className={`text-sm font-bold ${asset.isAlreadyDepreciated ? 'text-gray-500 line-through' : 'text-blue-700'}`}>
+                      <span className={`text-sm font-bold ${asset.isAlreadyDepreciated ? 'text-gray-500' : 'text-blue-700'}`}>
                         {formatCurrency(asset.monthlyDepreciation)}
                       </span>
                     </td>

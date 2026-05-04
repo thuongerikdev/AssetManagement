@@ -82,22 +82,18 @@ namespace TH.Asset.ApplicationService.Service
                     ThongSoKyThuat = request.thongSoKyThuat,
                     NgayMua = request.ngayMua,
                     NguyenGia = request.nguyenGia,
-
-                    // Logic mặc định khi tạo mới
                     GiaTriConLai = request.nguyenGia ?? 0,
                     KhauHaoLuyKe = 0,
                     KhauHaoHangThang = 0,
-
                     PhuongPhapKhauHao = request.phuongPhapKhauHao,
                     ThoiGianKhauHao = request.thoiGianKhauHao,
                     MaTaiKhoan = request.maTaiKhoan,
                     PhongBanId = request.phongBanId,
-
-                    // Lưu NguoiDungId (không ràng buộc khóa ngoại)
                     NguoiDungId = request.nguoiDungId,
-                    // Tự động set ngày cấp phát nếu có cấp cho người dùng
-                    NgayCapPhat = request.nguoiDungId.HasValue ? (request.ngayCapPhat ?? DateTime.UtcNow) : null,
-
+                    NgayCapPhat = request.nguoiDungId.HasValue
+                               ? (request.ngayCapPhat ?? DateTime.UtcNow)
+                               : null,
+                    PhuongThucThanhToan = request.phuongThucThanhToan,   // <-- THÊM
                     NgayTao = DateTime.UtcNow
                 };
 
@@ -158,6 +154,7 @@ namespace TH.Asset.ApplicationService.Service
                 taiSan.ThoiGianKhauHao = request.thoiGianKhauHao;
                 taiSan.MaTaiKhoan = request.maTaiKhoan;
                 taiSan.PhongBanId = request.phongBanId;
+                taiSan.PhuongThucThanhToan = request.phuongThucThanhToan;
 
                 // Nếu đổi người dùng thì ghi nhận lại ngày cấp phát
                 if (taiSan.NguoiDungId != request.nguoiDungId)

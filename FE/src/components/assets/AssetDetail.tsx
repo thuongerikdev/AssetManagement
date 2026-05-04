@@ -9,8 +9,8 @@ import {
 import { toast } from "sonner";
 
 // APIs
-import { apiClient } from '../../api/client'; // <-- ĐÃ THÊM IMPORT apiClient NÀY
-import { assetApi, TaiSan } from '../../api/assetApi';
+import { apiClient } from '../../api/client';
+import { assetApi, TaiSan, PHUONG_THUC_THANH_TOAN_OPTIONS } from '../../api/assetApi'; 
 import { departmentApi, Department } from '../../api/departmentApi';
 import { assetCategoryApi, AssetCategory } from '../../api/assetCategoryApi';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
@@ -73,6 +73,28 @@ export function AssetDetail() {
   const [usersInDept, setUsersInDept] = useState<any[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
 
+  // === STATE & EFFECT CHO NHÂN VIÊN ĐANG ĐƯỢC PHÂN BỔ ===
+  const [assignedUser, setAssignedUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchAssignedUser = async () => {
+      if (asset?.nguoiDungId) {
+        try {
+          const res = await apiClient.get(`/User/admin/getUserById?userId=${asset.nguoiDungId}`);
+          if (res.errorCode === 200 && res.data) {
+            setAssignedUser(res.data);
+          }
+        } catch (error) {
+          console.error('Lỗi khi tải thông tin nhân viên:', error);
+        }
+      } else {
+        setAssignedUser(null);
+      }
+    };
+    fetchAssignedUser();
+  }, [asset?.nguoiDungId]);
+  // =================================================================
+
   useEffect(() => {
     const fetchUsersByDept = async () => {
       if (!allocFormData.denPhongBanId) {
@@ -95,7 +117,6 @@ export function AssetDetail() {
     };
     fetchUsersByDept();
   }, [allocFormData.denPhongBanId]);
-  // =================================================================
 
   useEffect(() => {
     if (activeTab === 'depreciation' && asset?.id) {
@@ -479,14 +500,13 @@ export function AssetDetail() {
           )}
 
           {statusInfo.value !== 3 && (
-            <button 
-              onClick={openLiqModal}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-600 border border-orange-200 text-sm font-medium rounded-lg hover:bg-orange-100 transition-colors"
-            >
-              Thanh lý
-            </button>
-          )}
-
+              <button 
+                onClick={openLiqModal}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-600 border border-orange-200 text-sm font-medium rounded-lg hover:bg-orange-100 transition-colors"
+              >
+                <DollarSign className="w-4 h-4" /> Thanh lý
+              </button>
+            )}
           {statusInfo.value === 2 && (
             <button 
               onClick={openMaintModal}
@@ -623,26 +643,46 @@ export function AssetDetail() {
                       <p className="text-sm text-gray-500 col-span-1">Nhà sản xuất:</p>
                       <p className="text-sm font-medium text-gray-900 col-span-2">{asset.nhaSanXuat || '-'}</p>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
                       <p className="text-sm text-gray-500 col-span-1">Mô tả thêm:</p>
                       <p className="text-sm text-gray-900 col-span-2 whitespace-pre-wrap">{asset.moTa || 'Không có mô tả'}</p>
                     </div>
                   </div>
                 </div>
 
+                {/* --- PHẦN THEO DÕI PHÂN BỔ MỚI --- */}
                 <div>
                   <h3 className="text-base font-bold text-gray-900 mb-4 border-b pb-2 mt-8">Theo dõi Phân bổ</h3>
                   <div className="space-y-4">
+                    
                     <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
-                      <p className="text-sm text-gray-500 col-span-1">Mã Nhân viên:</p>
-                      <p className="text-sm font-medium text-gray-900 col-span-2">{asset.nguoiDungId ? `User #${asset.nguoiDungId}` : 'Chưa gắn User'}</p>
+                      <p className="text-sm text-gray-500 col-span-1">Phòng ban:</p>
+                      <p className="text-sm font-medium text-blue-600 col-span-2">
+                        {getDeptName(asset.phongBanId)}
+                      </p>
                     </div>
+
+                    <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
+                      <p className="text-sm text-gray-500 col-span-1">Nhân viên:</p>
+                      <p className="text-sm font-medium text-gray-900 col-span-2">
+                        {!asset.nguoiDungId 
+                          ? 'Chưa cấp phát' 
+                          : assignedUser 
+                            ? `${assignedUser.profile?.firstName || ''} ${assignedUser.profile?.lastName || ''}`.trim() || assignedUser.userName
+                            : `Đang tải...`}
+                      </p>
+                    </div>
+
                     <div className="grid grid-cols-3 gap-4">
                       <p className="text-sm text-gray-500 col-span-1">Ngày nhận (CP/LC):</p>
-                      <p className="text-sm font-medium text-gray-900 col-span-2">{asset.ngayCapPhat ? new Date(asset.ngayCapPhat).toLocaleDateString('vi-VN') : '-'}</p>
+                      <p className="text-sm font-medium text-gray-900 col-span-2">
+                        {asset.ngayCapPhat ? new Date(asset.ngayCapPhat).toLocaleDateString('vi-VN') : '-'}
+                      </p>
                     </div>
+                    
                   </div>
                 </div>
+                {/* -------------------------------- */}
               </div>
 
               <div className="space-y-6">
@@ -653,14 +693,17 @@ export function AssetDetail() {
                       <p className="text-sm text-gray-500 col-span-1">Nguyên giá:</p>
                       <p className="text-sm font-bold text-gray-900 col-span-2">{formatCurrency(asset.nguyenGia)}</p>
                     </div>
-                    <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
-                      <p className="text-sm text-gray-500 col-span-1">Giá trị còn lại:</p>
-                      <p className="text-sm font-bold text-green-600 col-span-2">{formatCurrency(asset.giaTriConLai)}</p>
-                    </div>
+
                     <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
                       <p className="text-sm text-gray-500 col-span-1">KH Lũy kế:</p>
                       <p className="text-sm font-medium text-gray-900 col-span-2">{formatCurrency(asset.khauHaoLuyKe)}</p>
                     </div>
+
+                    <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
+                      <p className="text-sm text-gray-500 col-span-1">Giá trị còn lại:</p>
+                      <p className="text-sm font-bold text-green-600 col-span-2">{formatCurrency(asset.giaTriConLai)}</p>
+                    </div>
+                    
                     <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
                       <p className="text-sm text-gray-500 col-span-1">Mức KH/tháng:</p>
                       <p className="text-sm font-medium text-gray-900 col-span-2">{formatCurrency(asset.khauHaoHangThang)}</p>
@@ -673,9 +716,17 @@ export function AssetDetail() {
                       <p className="text-sm text-gray-500 col-span-1">Phương pháp KH:</p>
                       <p className="text-sm font-medium text-gray-900 col-span-2">Khấu hao đường thẳng</p>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
                       <p className="text-sm text-gray-500 col-span-1">Tài khoản hạch toán:</p>
                       <p className="text-sm font-medium text-blue-600 col-span-2">{asset.maTaiKhoan || '-'}</p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-3">
+                      <p className="text-sm text-gray-500 col-span-1">Phương thức thanh toán:</p>
+                      <p className="text-sm font-medium text-gray-900 col-span-2">
+                        {asset.phuongThucThanhToan !== undefined && asset.phuongThucThanhToan !== null
+                          ? PHUONG_THUC_THANH_TOAN_OPTIONS.find(o => o.value === asset.phuongThucThanhToan)?.label ?? '—'
+                          : '—'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -811,7 +862,7 @@ export function AssetDetail() {
                           <th className="px-4 py-3">Ngày chứng từ</th>
                           <th className="px-4 py-3">Số CT</th>
                           <th className="px-4 py-3">Loại/Diễn giải</th>
-                          <th className="px-4 py-3">Hạch toán</th>
+                          {/* <th className="px-4 py-3">Hạch toán</th> */}
                           <th className="px-4 py-3 text-right">Số tiền (VNĐ)</th>
                           <th className="px-4 py-3 text-center">Trạng thái</th>
                         </tr>
@@ -849,14 +900,6 @@ export function AssetDetail() {
                                 <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[200px]" title={detail?.moTa || voucher.moTa}>
                                   {detail?.moTa || voucher.moTa}
                                 </p>
-                              </td>
-                              <td className="px-4 py-4 text-xs font-mono text-gray-600">
-                                {detail ? (
-                                  <>
-                                    {detail.taiKhoanNo && <p className="text-red-600">Nợ: {detail.taiKhoanNo}</p>}
-                                    {detail.taiKhoanCo && <p className="text-blue-600">Có: {detail.taiKhoanCo}</p>}
-                                  </>
-                                ) : '-'}
                               </td>
                               <td className="px-4 py-4 text-right font-bold text-gray-900">
                                 {formatCurrency(detail?.soTien || voucher.tongTien)}
@@ -937,7 +980,6 @@ export function AssetDetail() {
                   </select>
                 </div>
 
-                {/* SỬA INPUT SỐ THÀNH SELECT NHÂN VIÊN */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Nhân viên nhận {isLoadingUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
@@ -954,7 +996,6 @@ export function AssetDetail() {
                         : (usersInDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
                     </option>
                     {usersInDept.map((user: any) => {
-                      // Kết hợp firstName và lastName, nếu không có profile thì fallback về userName
                       const fullName = user.profile 
                         ? `${user.profile.firstName} ${user.profile.lastName}` 
                         : user.userName;
@@ -1184,9 +1225,10 @@ export function AssetDetail() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Trạng thái phiếu <span className="text-red-500">*</span></label>
                   <select
                     required
+                    disabled // Khóa không cho người dùng thao tác
                     value={liqFormData.trangThai ?? 'ChoDuyet'}
                     onChange={(e) => setLiqFormData({...liqFormData, trangThai: e.target.value})} 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed font-medium"
                   >
                     <option value="ChoDuyet">Chờ duyệt</option>
                     <option value="DaDuyet">Đã duyệt</option> 

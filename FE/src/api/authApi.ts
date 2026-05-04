@@ -34,7 +34,9 @@ export const authApi = {
     return await apiClient.post('/Login/userLogin', credentials);
   },
   getAllUsers: () => apiClient.get('/user/admin/getAllUsers'),
+  getUserById: (id: number) => apiClient.get(`/user/admin/getUserById?userId=${id}`),
   deleteUser: (id: number) => apiClient.delete(`/user/deleteUser?userId=${id}`),
+
   
   // --- ROLES ---
   getAllRoles: () => apiClient.get('/Role/getall'),

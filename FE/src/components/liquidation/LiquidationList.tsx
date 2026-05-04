@@ -369,7 +369,7 @@ export function LiquidationList() {
                         onClick={() => handleUpdateStatus(selectedRecord, 'DaHoanThanh', 'Hoàn thành và Ghi sổ')} 
                         className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-md transition-colors"
                       >
-                        <FileCheck className="w-5 h-5" /> Hoàn thành & Sinh chứng từ
+                        <FileCheck className="w-5 h-5" /> Duyệt và & Sinh chứng từ
                       </button>
                     )}
                   </div>
