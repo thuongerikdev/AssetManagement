@@ -1,7 +1,7 @@
 // src/utils/apiClient.ts
 
 // Thay đổi URL này khi bạn deploy lên server thật
-const BASE_URL = 'https://9fd9-2405-4802-1caf-be30-31fc-7a4-7bf0-3fb2.ngrok-free.app/api';
+const BASE_URL = 'https://assetmanagement.fly.dev/api';
 
 const buildUrl = (endpoint: string) => {
   if (endpoint.startsWith('http')) return endpoint;
