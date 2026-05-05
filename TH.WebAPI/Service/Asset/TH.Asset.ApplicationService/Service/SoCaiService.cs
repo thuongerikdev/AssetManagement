@@ -157,7 +157,7 @@ namespace TH.Asset.ApplicationService.Service
                         ct.TaiKhoanCo,
                         ct.SoTien,
                         ct.MoTa,
-                        ct.ChungTu!.Id as ChungTuId,
+                        ChungTuId = ct.ChungTu!.Id,
                         ct.ChungTu.MaChungTu,
                         ct.ChungTu.NgayLap,
                         ct.ChungTu.LoaiChungTu
