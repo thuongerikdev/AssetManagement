@@ -22,6 +22,7 @@ namespace TH.Asset.Infrastructure.Database
         public DbSet<LichSuKhauHao> lichSuKhauHaos { get; set; }
         public DbSet<ChungTu> chungTus { get; set; }
         public DbSet<ChiTietChungTu> chiTietChungTus { get; set; }
+        public DbSet<TaiSanDinhKem> taiSanDinhKems { get; set; }
 
         public AssetDbContext(DbContextOptions<AssetDbContext> options) : base(options) { }
 

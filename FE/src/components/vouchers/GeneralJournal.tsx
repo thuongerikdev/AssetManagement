@@ -4,6 +4,7 @@ import { Search, Download, Plus, Calendar, ChevronDown, ChevronRight, FileText, 
 import { toast } from 'sonner';
 import { voucherApi, ChungTu } from '../../api/voucherApi';
 import * as XLSX from 'xlsx';
+import { exportNhatKyChung } from '../../utils/excelExport';
 
 // ==========================================
 // 1. HÀM CHUẨN HÓA VÀ CONFIG
@@ -222,7 +223,25 @@ export function GeneralJournal() {
             <span className="hidden sm:block">Làm mới</span>
           </button>
 
-          <button 
+          <button
+            onClick={() => {
+              if (filteredEntries.length === 0) { toast.error('Không có dữ liệu để xuất'); return; }
+              exportNhatKyChung(filteredEntries.map(e => ({
+                ngayGhiSo: e.ngayLap,
+                ngayLap: e.ngayLap,
+                maChungTu: e.maChungTu,
+                dienGiai: e.moTa,
+                taiKhoanNo: e.taiKhoanNo,
+                taiKhoanCo: e.taiKhoanCo,
+                soTien: e.soTien,
+              })), fromDate, toDate);
+              toast.success('Xuất file Sổ Nhật Ký Chung thành công!');
+            }}
+            className="flex items-center gap-2 px-4 py-2 border border-green-300 rounded-md hover:bg-green-50 bg-white font-medium text-sm text-green-700 transition-colors shadow-sm"
+          >
+            <Download className="w-4 h-4" /> Xuất S03a-DN
+          </button>
+          <button
             onClick={handleExportExcel}
             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 bg-white font-medium text-sm text-gray-700 transition-colors shadow-sm"
           >

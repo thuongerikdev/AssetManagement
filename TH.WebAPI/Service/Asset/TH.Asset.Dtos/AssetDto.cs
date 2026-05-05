@@ -446,4 +446,16 @@ namespace TH.Asset.Dtos
         public string tienToApDung { get; set; } = "";
         public int soThuTuTiepTheo { get; set; }
     }
+
+    public class TaiSanDinhKemResponse
+    {
+        public int id { get; set; }
+        public int taiSanId { get; set; }
+        public string tenFile { get; set; } = "";
+        public string? loaiFile { get; set; }
+        public string? duongDan { get; set; }
+        public long? kichThuoc { get; set; }
+        public DateTime ngayTai { get; set; }
+        public string? moTa { get; set; }
+    }
 }

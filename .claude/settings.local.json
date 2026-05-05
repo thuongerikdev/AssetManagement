@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -E \"^/d/PersonalProject/GiangProject/FE/src/[^/]+/[^/]+$|^/d/PersonalProject/GiangProject/FE/src/[^/]+\\\\.tsx?$\")"
+      "Bash(grep -E \"^/d/PersonalProject/GiangProject/FE/src/[^/]+/[^/]+$|^/d/PersonalProject/GiangProject/FE/src/[^/]+\\\\.tsx?$\")",
+      "Read(//c/Users/DELL/Downloads/**)",
+      "Bash(python -c ' *)",
+      "Bash(pip install *)",
+      "Bash(dotnet ef *)",
+      "Bash(npx tsc *)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(npm run *)",
+      "Bash(dotnet build *)"
     ]
   }
 }

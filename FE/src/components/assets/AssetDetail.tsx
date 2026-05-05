@@ -1,16 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router';
-import { 
-  ArrowLeft, Edit, Send, ArrowLeftRight, Trash2, Printer, 
-  Wrench, DollarSign, TrendingDown, Calendar, Building2, 
-  Settings, History, LineChart, FileText, Paperclip, Home, ChevronRight, X, Save, 
-  Package, AlertCircle, Calculator, UserPlus
+import {
+  ArrowLeft, Edit, Send, ArrowLeftRight, Trash2, Printer,
+  Wrench, DollarSign, TrendingDown, Calendar, Building2,
+  Settings, History, LineChart, FileText, Paperclip, Home, ChevronRight, X, Save,
+  Package, AlertCircle, Calculator, UserPlus, Upload, Download
 } from 'lucide-react';
 import { toast } from "sonner";
 
 // APIs
 import { apiClient } from '../../api/client';
-import { assetApi, TaiSan, PHUONG_THUC_THANH_TOAN_OPTIONS } from '../../api/assetApi'; 
+import { assetApi, TaiSan, PHUONG_THUC_THANH_TOAN_OPTIONS } from '../../api/assetApi';
+import { exportTheeTSCD } from '../../utils/excelExport';
 import { departmentApi, Department } from '../../api/departmentApi';
 import { assetCategoryApi, AssetCategory } from '../../api/assetCategoryApi';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
@@ -18,6 +19,7 @@ import { maintenanceApi, BaoTriTaiSan } from '../../api/maintenanceApi';
 import { liquidationApi, ThanhLyTaiSan } from '../../api/liquidationApi';
 import { voucherApi } from '../../api/voucherApi';
 import { depreciationHistoryApi } from '../../api/depreciationHistoryApi';
+import { attachmentApi, TaiSanDinhKem, formatFileSize, getFileIcon, ATTACHMENT_BASE_URL } from '../../api/attachmentApi';
 
 const statusConfig: Record<string, { label: string; color: string; value: number }> = {
   '0': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700', value: 0 },
@@ -46,7 +48,7 @@ export function AssetDetail() {
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  const [activeTab, setActiveTab] = useState<'general' | 'usage' | 'depreciation' | 'vouchers'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'usage' | 'depreciation' | 'vouchers' | 'attachments'>('general');
   const [historyTimeline, setHistoryTimeline] = useState<any[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
@@ -68,6 +70,11 @@ export function AssetDetail() {
 
   const [depreciations, setDepreciations] = useState<any[]>([]);
   const [isLoadingDepreciations, setIsLoadingDepreciations] = useState(false);
+
+  const [attachments, setAttachments] = useState<TaiSanDinhKem[]>([]);
+  const [isLoadingAttachments, setIsLoadingAttachments] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadMoTa, setUploadMoTa] = useState('');
 
   // === STATE & EFFECT CHO CHỨC NĂNG TÌM NHÂN VIÊN THEO PHÒNG BAN ===
   const [usersInDept, setUsersInDept] = useState<any[]>([]);
@@ -155,6 +162,60 @@ export function AssetDetail() {
       fetchVouchers();
     }
   }, [activeTab, asset?.id]);
+
+  useEffect(() => {
+    if (activeTab === 'attachments' && asset?.id) {
+      loadAttachments(asset.id);
+    }
+  }, [activeTab, asset?.id]);
+
+  const loadAttachments = async (taiSanId: number) => {
+    setIsLoadingAttachments(true);
+    try {
+      const res = await attachmentApi.getByAsset(taiSanId);
+      if (res.errorCode === 200) setAttachments(res.data);
+    } catch {
+      toast.error("Không thể tải danh sách file đính kèm.");
+    } finally {
+      setIsLoadingAttachments(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !asset?.id) return;
+    setIsUploading(true);
+    try {
+      const res = await attachmentApi.upload(asset.id, file, uploadMoTa || undefined);
+      if (res.errorCode === 200) {
+        toast.success('Upload file thành công!');
+        setUploadMoTa('');
+        loadAttachments(asset.id);
+      } else {
+        toast.error(res.message || 'Upload thất bại.');
+      }
+    } catch {
+      toast.error('Lỗi khi upload file.');
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleDeleteAttachment = async (id: number) => {
+    if (!confirm('Bạn có chắc muốn xóa file này?')) return;
+    try {
+      const res = await attachmentApi.delete(id);
+      if (res.errorCode === 200) {
+        toast.success('Đã xóa file.');
+        setAttachments(prev => prev.filter(a => a.id !== id));
+      } else {
+        toast.error(res.message || 'Xóa thất bại.');
+      }
+    } catch {
+      toast.error('Lỗi khi xóa file.');
+    }
+  };
 
   const loadAssetData = useCallback(async () => {
     setIsLoading(true);
@@ -538,6 +599,13 @@ export function AssetDetail() {
             <Edit className="w-4 h-4" /> Chỉnh sửa
           </Link>
 
+          <button
+            onClick={() => asset && exportTheeTSCD(asset, categories, departments)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+          >
+            <Download className="w-4 h-4" /> Xuất Thẻ TSCĐ
+          </button>
+
           <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
             <Printer className="w-4 h-4" /> In thông tin
           </button>
@@ -606,17 +674,24 @@ export function AssetDetail() {
             <LineChart className="w-4 h-4" /> Lịch sử khấu hao
           </button>
 
-          <button 
+          <button
             onClick={() => setActiveTab('vouchers')}
             className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all border-b-2 ${activeTab === 'vouchers' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}
           >
             <FileText className="w-4 h-4" /> Chứng từ kế toán
           </button>
 
-          <div className="flex-1"></div>
-          <button className="px-4 py-3 text-gray-400 hover:text-gray-700 transition-colors">
-            <Paperclip className="w-5 h-5" />
+          <button
+            onClick={() => setActiveTab('attachments')}
+            className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all border-b-2 ${activeTab === 'attachments' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}
+          >
+            <Paperclip className="w-4 h-4" /> Tài liệu đính kèm
+            {attachments.length > 0 && (
+              <span className="ml-1 bg-blue-100 text-blue-700 text-xs font-bold px-1.5 py-0.5 rounded-full">{attachments.length}</span>
+            )}
           </button>
+
+          <div className="flex-1"></div>
         </div>
 
         <div className="p-6 bg-gray-50/30">
@@ -844,77 +919,238 @@ export function AssetDetail() {
             </div>
           )}
 
-          {activeTab === 'vouchers' && (
-            <div className="max-w-4xl mx-auto py-2">
-              {isLoadingVouchers ? (
-                <div className="text-center text-gray-500 py-8">Đang tải chứng từ liên quan...</div>
-              ) : vouchers.length === 0 ? (
-                <div className="py-8 text-center text-gray-500 bg-white rounded-lg border border-gray-200 border-dashed">
-                  <FileText className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                  <p>Chưa có chứng từ kế toán nào liên kết với tài sản này.</p>
+          {activeTab === 'vouchers' && (() => {
+            const getLoaiLabel = (loaiCT: string) => {
+              if (loaiCT === '0' || loaiCT === 'GhiTang') return 'Ghi tăng TSCĐ';
+              if (loaiCT === '1' || loaiCT === 'SuaChua') return 'Sửa chữa/Bảo trì';
+              if (loaiCT === '2' || loaiCT === 'DieuChuyen') return 'Điều chuyển';
+              if (loaiCT === '3' || loaiCT === 'ThanhLy') return 'Thanh lý';
+              if (loaiCT === '4' || loaiCT === 'KhauHao') return 'Khấu hao TSCĐ';
+              return 'Chứng từ khác';
+            };
+            const isGhiSo = (v: any) => v.trangThai === 'hoan_thanh' || v.trangThai === 'da_khoa';
+            const khauHaoVouchers = vouchers.filter(v => ['4', 'KhauHao'].includes(v.loaiChungTu?.toString()));
+            const otherVouchers = vouchers.filter(v => !['4', 'KhauHao'].includes(v.loaiChungTu?.toString()));
+
+            return (
+              <div className="max-w-4xl mx-auto py-2 space-y-4">
+                {isLoadingVouchers ? (
+                  <div className="text-center text-gray-500 py-8">Đang tải chứng từ liên quan...</div>
+                ) : vouchers.length === 0 ? (
+                  <div className="py-8 text-center text-gray-500 bg-white rounded-lg border border-gray-200 border-dashed">
+                    <FileText className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                    <p>Chưa có chứng từ kế toán nào liên kết với tài sản này.</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Regular vouchers */}
+                    {otherVouchers.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Chứng từ nghiệp vụ</p>
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                          <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium text-xs">
+                              <tr>
+                                <th className="px-4 py-3">Ngày lập</th>
+                                <th className="px-4 py-3">Số CT</th>
+                                <th className="px-4 py-3">Loại / Diễn giải</th>
+                                <th className="px-4 py-3 text-right">Số tiền</th>
+                                <th className="px-4 py-3 text-center">Trạng thái</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {otherVouchers.map((v, idx) => {
+                                const detail = v.chiTietChungTus?.find((d: any) => d.taiSanId === asset?.id) ?? v.chiTietChungTus?.[0];
+                                return (
+                                  <tr key={idx} className="hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-gray-700 text-xs">{v.ngayLap ? new Date(v.ngayLap).toLocaleDateString('vi-VN') : '—'}</td>
+                                    <td className="px-4 py-3">
+                                      <Link to={`/vouchers/${v.id}`} className="text-blue-600 font-semibold hover:underline text-xs">{v.maChungTu}</Link>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <p className="font-medium text-gray-900 text-xs">{getLoaiLabel(v.loaiChungTu?.toString())}</p>
+                                      <p className="text-[11px] text-gray-400 mt-0.5 truncate max-w-[200px]">{detail?.moTa || v.moTa}</p>
+                                    </td>
+                                    <td className="px-4 py-3 text-right font-bold text-gray-900 text-xs">{formatCurrency(detail?.soTien || v.tongTien)}</td>
+                                    <td className="px-4 py-3 text-center">
+                                      <span className={`inline-flex px-2 py-1 text-[10px] font-medium rounded-full ${isGhiSo(v) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                        {isGhiSo(v) ? 'Đã ghi sổ' : 'Bản nháp'}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Depreciation vouchers — grouped by parent */}
+                    {khauHaoVouchers.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                          Chứng từ khấu hao TSCĐ <span className="text-gray-400 font-normal">({khauHaoVouchers.length} kỳ)</span>
+                        </p>
+                        <div className="space-y-2">
+                          {khauHaoVouchers.map((v, idx) => {
+                            const myLines = (v.chiTietChungTus ?? []).filter((d: any) =>
+                              d.taiSanId === asset?.id || d.maTaiSan === asset?.maTaiSan
+                            );
+                            const soTienKH = myLines
+                              .filter((d: any) => ['214', '2141'].includes(d.taiKhoanCo) || ['642', '627', '623'].includes(d.taiKhoanNo))
+                              .reduce((s: number, d: any) => s + (d.soTien ?? 0), 0)
+                              || myLines.reduce((s: number, d: any) => s + (d.soTien ?? 0), 0)
+                              || v.tongTien;
+
+                            return (
+                              <div key={idx} className="bg-white border border-purple-100 rounded-lg overflow-hidden shadow-sm">
+                                {/* Parent header */}
+                                <div className="flex items-center justify-between px-4 py-3 bg-purple-50 border-b border-purple-100">
+                                  <div className="flex items-center gap-3">
+                                    <TrendingDown className="w-4 h-4 text-purple-500 shrink-0" />
+                                    <div>
+                                      <Link to={`/vouchers/${v.id}`} className="font-semibold text-purple-700 hover:underline text-sm">
+                                        {v.maChungTu}
+                                      </Link>
+                                      <p className="text-[11px] text-purple-400 mt-0.5">{v.moTa}</p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right flex items-center gap-3">
+                                    <div>
+                                      <p className="text-xs text-gray-500">{v.ngayLap ? new Date(v.ngayLap).toLocaleDateString('vi-VN') : '—'}</p>
+                                      <p className="font-bold text-purple-700 text-sm">{formatCurrency(soTienKH)}</p>
+                                    </div>
+                                    <span className={`inline-flex px-2 py-1 text-[10px] font-medium rounded-full ${isGhiSo(v) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                      {isGhiSo(v) ? 'Đã ghi sổ' : 'Bản nháp'}
+                                    </span>
+                                  </div>
+                                </div>
+                                {/* Asset-specific lines */}
+                                {myLines.length > 0 && (
+                                  <table className="w-full text-xs">
+                                    <thead className="bg-gray-50 text-gray-500 border-b border-gray-100">
+                                      <tr>
+                                        <th className="pl-8 pr-4 py-2 text-left font-medium">Hạch toán</th>
+                                        <th className="px-4 py-2 text-left font-medium">Diễn giải</th>
+                                        <th className="px-4 py-2 text-right font-medium">TK Nợ</th>
+                                        <th className="px-4 py-2 text-right font-medium">TK Có</th>
+                                        <th className="px-4 py-2 text-right font-medium">Số tiền</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50">
+                                      {myLines.map((d: any, dIdx: number) => (
+                                        <tr key={dIdx} className="hover:bg-gray-50">
+                                          <td className="pl-8 pr-4 py-2 text-gray-400">└</td>
+                                          <td className="px-4 py-2 text-gray-600 truncate max-w-[200px]">{d.moTa || '—'}</td>
+                                          <td className="px-4 py-2 text-right font-mono text-blue-600">{d.taiKhoanNo}</td>
+                                          <td className="px-4 py-2 text-right font-mono text-red-500">{d.taiKhoanCo}</td>
+                                          <td className="px-4 py-2 text-right font-semibold text-gray-800">{formatCurrency(d.soTien)}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })()}
+
+          {activeTab === 'attachments' && (
+            <div className="max-w-4xl mx-auto py-2 space-y-4">
+              {/* Upload area */}
+              <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <Upload className="w-4 h-4 text-blue-500" /> Tải lên file mới
+                </h3>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    placeholder="Mô tả file (tuỳ chọn)..."
+                    value={uploadMoTa}
+                    onChange={e => setUploadMoTa(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                  <label className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${isUploading ? 'bg-blue-300 text-white cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
+                    {isUploading ? (
+                      <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full inline-block"></span> Đang tải...</>
+                    ) : (
+                      <><Upload className="w-4 h-4" /> Chọn file</>
+                    )}
+                    <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
+                  </label>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">Hỗ trợ mọi định dạng, tối đa 20MB mỗi file.</p>
+              </div>
+
+              {/* File list */}
+              {isLoadingAttachments ? (
+                <div className="text-center text-gray-500 py-8">Đang tải danh sách file...</div>
+              ) : attachments.length === 0 ? (
+                <div className="py-10 text-center text-gray-500 bg-white rounded-lg border border-gray-200 border-dashed">
+                  <Paperclip className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                  <p className="font-medium">Chưa có file đính kèm nào.</p>
+                  <p className="text-xs text-gray-400 mt-1">Hãy tải lên hóa đơn, biên bản, hình ảnh... liên quan đến tài sản này.</p>
                 </div>
               ) : (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-                        <tr>
-                          <th className="px-4 py-3">Ngày chứng từ</th>
-                          <th className="px-4 py-3">Số CT</th>
-                          <th className="px-4 py-3">Loại/Diễn giải</th>
-                          {/* <th className="px-4 py-3">Hạch toán</th> */}
-                          <th className="px-4 py-3 text-right">Số tiền (VNĐ)</th>
-                          <th className="px-4 py-3 text-center">Trạng thái</th>
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
+                      <tr>
+                        <th className="px-4 py-3 text-left">Tên file</th>
+                        <th className="px-4 py-3 text-left">Mô tả</th>
+                        <th className="px-4 py-3 text-right">Kích thước</th>
+                        <th className="px-4 py-3 text-center">Ngày tải</th>
+                        <th className="px-4 py-3 text-center">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {attachments.map(att => (
+                        <tr key={att.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{getFileIcon(att.loaiFile, att.tenFile)}</span>
+                              <span className="font-medium text-gray-900 truncate max-w-[200px]" title={att.tenFile}>{att.tenFile}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-gray-500 text-xs truncate max-w-[160px]">{att.moTa || '—'}</td>
+                          <td className="px-4 py-3 text-right text-gray-600">{formatFileSize(att.kichThuoc)}</td>
+                          <td className="px-4 py-3 text-center text-gray-500 text-xs">
+                            {new Date(att.ngayTai).toLocaleDateString('vi-VN')}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              {att.duongDan && (
+                                <a
+                                  href={`${ATTACHMENT_BASE_URL}${att.duongDan}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-1.5 rounded hover:bg-blue-50 text-blue-500 hover:text-blue-700 transition-colors"
+                                  title="Tải xuống"
+                                >
+                                  <Download className="w-4 h-4" />
+                                </a>
+                              )}
+                              <button
+                                onClick={() => handleDeleteAttachment(att.id)}
+                                className="p-1.5 rounded hover:bg-red-50 text-red-400 hover:text-red-600 transition-colors"
+                                title="Xóa file"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {vouchers.map((voucher, idx) => {
-                          const isGhiSo = voucher.trangThai === 'hoan_thanh' || 
-                                          (voucher.trangThai !== 'nhap' && 
-                                           voucher.trangThai !== 'Nhap' && 
-                                           voucher.trangThai !== '0' && 
-                                           voucher.trangThai !== 0);
-
-                          const detail = voucher.chiTietChungTus?.[0]; 
-
-                          let loaiChungTuLabel = 'Chứng từ khác';
-                          const loaiCT = voucher.loaiChungTu?.toString();
-                          if (loaiCT === '0' || loaiCT === 'GhiTang') loaiChungTuLabel = 'Ghi tăng TSCĐ';
-                          else if (loaiCT === '1' || loaiCT === 'SuaChua') loaiChungTuLabel = 'Sửa chữa/Bảo trì';
-                          else if (loaiCT === '2' || loaiCT === 'DieuChuyen') loaiChungTuLabel = 'Điều chuyển';
-                          else if (loaiCT === '3' || loaiCT === 'ThanhLy') loaiChungTuLabel = 'Thanh lý';
-                          else if (loaiCT === '4' || loaiCT === 'KhauHao') loaiChungTuLabel = 'Khấu hao TSCĐ';
-
-                          return (
-                            <tr key={idx} className="hover:bg-gray-50">
-                              <td className="px-4 py-4 text-gray-900 font-medium">
-                                {voucher.ngayLap ? new Date(voucher.ngayLap).toLocaleDateString('vi-VN') : '-'}
-                              </td>
-                              <td className="px-4 py-4">
-                                <Link to={`/vouchers/${voucher.id}`} className="text-blue-600 font-semibold hover:underline">
-                                  {voucher.maChungTu}
-                                </Link>
-                              </td>
-                              <td className="px-4 py-4">
-                                <p className="font-medium text-gray-900">{loaiChungTuLabel}</p>
-                                <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[200px]" title={detail?.moTa || voucher.moTa}>
-                                  {detail?.moTa || voucher.moTa}
-                                </p>
-                              </td>
-                              <td className="px-4 py-4 text-right font-bold text-gray-900">
-                                {formatCurrency(detail?.soTien || voucher.tongTien)}
-                              </td>
-                              <td className="px-4 py-4 text-center">
-                                <span className={`inline-flex px-2 py-1 text-[11px] font-medium rounded-full ${isGhiSo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                  {isGhiSo ? 'Đã ghi sổ' : 'Bản nháp'}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>

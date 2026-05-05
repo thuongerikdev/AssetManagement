@@ -98,6 +98,28 @@ namespace TH.Asset.Domain.Entities
         public virtual ICollection<TaiSan>? TaiSans { get; set; }
     }
 
+    [Table("tai_san_dinh_kem", Schema = Constant.Database.DbSchema.Asset)]
+    public class TaiSanDinhKem
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int TaiSanId { get; set; }
+
+        [ForeignKey(nameof(TaiSanId))]
+        public virtual TaiSan? TaiSan { get; set; }
+
+        [Required]
+        public required string TenFile { get; set; }
+
+        public string? LoaiFile { get; set; }
+        public string? DuongDan { get; set; }
+        public long? KichThuoc { get; set; }
+        public DateTime NgayTai { get; set; } = DateTime.UtcNow;
+        public string? MoTa { get; set; }
+    }
+
     [Table("tai_san", Schema = Constant.Database.DbSchema.Asset)]
     public class TaiSan
     {

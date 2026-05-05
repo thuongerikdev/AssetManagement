@@ -133,6 +133,7 @@ namespace TH.Asset.ApplicationService.StartUp
             builder.Services.AddScoped<ILichSuKhauHaoService, LichSuKhauHaoService>();
             builder.Services.AddScoped<IChungTuService, ChungTuService>();
             builder.Services.AddScoped<ISoCaiService, SoCaiService>();
+            builder.Services.AddScoped<ITaiSanDinhKemService, TaiSanDinhKemService>();
         }
 
         public static async Task SeedAssetDataAsync(this WebApplication app)

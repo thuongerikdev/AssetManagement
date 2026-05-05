@@ -3,6 +3,7 @@ import { Calculator, FileText, Download, AlertCircle, Loader2, CheckCircle, Refr
 import { toast } from "sonner";
 import { useGlobalData } from '../../context/GlobalContext';
 import { depreciationHistoryApi, LichSuKhauHao } from '../../api/depreciationHistoryApi';
+import { exportBangTinhKhauHao } from '../../utils/excelExport';
 
 interface DepreciationAsset {
   id: number;
@@ -270,8 +271,14 @@ export function DepreciationList() {
             >
               <Calculator className="w-5 h-5" /> Tính Khấu hao
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              <Download className="w-5 h-5" /> Xuất Excel
+            <button
+              onClick={() => exportBangTinhKhauHao(
+                tableAssets.map(a => rawAssets.find((r: any) => r.id === a.id) ?? a),
+                selectedMonth
+              )}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <Download className="w-5 h-5" /> Xuất Bảng KH TSCĐ
             </button>
           </div>
         </div>
