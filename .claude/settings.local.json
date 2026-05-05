@@ -9,7 +9,13 @@
       "Bash(npx tsc *)",
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(npm run *)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(npm list *)",
+      "Bash(npm install *)",
+      "Bash(node generate-docs.mjs)",
+      "Bash(node generate-diagrams.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(kill %1)"
     ]
   }
 }

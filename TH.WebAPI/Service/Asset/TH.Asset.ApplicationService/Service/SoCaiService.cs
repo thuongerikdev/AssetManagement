@@ -144,12 +144,14 @@ namespace TH.Asset.ApplicationService.Service
                 if (tkInfo == null)
                     return ResponseConst.Error<SoCaiChiTietResponse>(404, $"Không tìm thấy tài khoản {maTaiKhoan}.");
 
-                // Toàn bộ entries liên quan đến tài khoản này (đã hoàn thành)
+                // Toàn bộ entries liên quan đến tài khoản này và các tài khoản con (đã hoàn thành)
+                // VD: maTaiKhoan = "211" sẽ match "2111", "2112", "2113", "2114"
                 var relatedEntries = await _dbContext.chiTietChungTus
                     .Include(ct => ct.ChungTu)
                     .Where(ct => ct.ChungTu != null &&
                                  (ct.ChungTu.TrangThai == "hoan_thanh" || ct.ChungTu.TrangThai == "da_khoa") &&
-                                 (ct.TaiKhoanNo == maTaiKhoan || ct.TaiKhoanCo == maTaiKhoan))
+                                 ((ct.TaiKhoanNo != null && ct.TaiKhoanNo.StartsWith(maTaiKhoan)) ||
+                                  (ct.TaiKhoanCo != null && ct.TaiKhoanCo.StartsWith(maTaiKhoan))))
                     .Select(ct => new
                     {
                         ct.Id,
@@ -166,12 +168,16 @@ namespace TH.Asset.ApplicationService.Service
                     .ThenBy(ct => ct.ChungTuId)
                     .ToListAsync();
 
+                // Tài khoản khớp (bao gồm tài khoản con, VD: "211" → "2111","2112","2113","2114")
+                bool IsMatchTK(string? tkCode) =>
+                    tkCode != null && tkCode.StartsWith(maTaiKhoan);
+
                 // Số dư đầu kỳ (trước fromDate)
                 var noDauKy = relatedEntries
-                    .Where(e => e.TaiKhoanNo == maTaiKhoan && e.NgayLap.HasValue && e.NgayLap.Value < from)
+                    .Where(e => IsMatchTK(e.TaiKhoanNo) && e.NgayLap.HasValue && e.NgayLap.Value < from)
                     .Sum(e => e.SoTien ?? 0);
                 var coDauKy = relatedEntries
-                    .Where(e => e.TaiKhoanCo == maTaiKhoan && e.NgayLap.HasValue && e.NgayLap.Value < from)
+                    .Where(e => IsMatchTK(e.TaiKhoanCo) && e.NgayLap.HasValue && e.NgayLap.Value < from)
                     .Sum(e => e.SoTien ?? 0);
                 var soDuDauKy = noDauKy - coDauKy;
 
@@ -185,8 +191,8 @@ namespace TH.Asset.ApplicationService.Service
 
                 foreach (var e in inPeriod)
                 {
-                    decimal no = e.TaiKhoanNo == maTaiKhoan ? (e.SoTien ?? 0) : 0;
-                    decimal co = e.TaiKhoanCo == maTaiKhoan ? (e.SoTien ?? 0) : 0;
+                    decimal no = IsMatchTK(e.TaiKhoanNo) ? (e.SoTien ?? 0) : 0;
+                    decimal co = IsMatchTK(e.TaiKhoanCo) ? (e.SoTien ?? 0) : 0;
                     runningBalance += no - co;
 
                     butToans.Add(new SoCaiButToanResponse
@@ -202,8 +208,8 @@ namespace TH.Asset.ApplicationService.Service
                     });
                 }
 
-                var totalNo = inPeriod.Where(e => e.TaiKhoanNo == maTaiKhoan).Sum(e => e.SoTien ?? 0);
-                var totalCo = inPeriod.Where(e => e.TaiKhoanCo == maTaiKhoan).Sum(e => e.SoTien ?? 0);
+                var totalNo = inPeriod.Where(e => IsMatchTK(e.TaiKhoanNo)).Sum(e => e.SoTien ?? 0);
+                var totalCo = inPeriod.Where(e => IsMatchTK(e.TaiKhoanCo)).Sum(e => e.SoTien ?? 0);
 
                 var response = new SoCaiChiTietResponse
                 {
