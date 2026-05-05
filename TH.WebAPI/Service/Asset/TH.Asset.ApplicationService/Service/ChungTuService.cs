@@ -19,8 +19,8 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<bool>> DeleteChungTuAsync(int id);
         Task<ResponseDto<List<ChungTuResponse>>> GetAllChungTuAsync();
         Task<ResponseDto<ChungTuResponse>> GetChungTuByIdAsync(int id);
-
         Task<ResponseDto<List<ChungTuResponse>>> GetChungTuByTaiSanIdAsync(int taiSanId);
+        Task<ResponseDto<GenerateMaChungTuResponse>> GenerateMaChungTuAsync(string? loaiChungTu);
     }
 
     public class ChungTuService : AssetServiceBase, IChungTuService
@@ -309,7 +309,6 @@ namespace TH.Asset.ApplicationService.Service
         {
             try
             {
-                // Lọc các chứng từ có chứa TaiSanId trong các dòng chi tiết hạch toán
                 var result = await _dbContext.chungTus
                     .Include(x => x.ChiTietChungTus)
                     .Where(x => x.ChiTietChungTus!.Any(ct => ct.TaiSanId == taiSanId))
@@ -347,5 +346,59 @@ namespace TH.Asset.ApplicationService.Service
             }
         }
 
+        // ==========================================
+        // SINH MÃ CHỨNG TỪ TỰ ĐỘNG THEO CẤU HÌNH
+        // ==========================================
+        public async Task<ResponseDto<GenerateMaChungTuResponse>> GenerateMaChungTuAsync(string? loaiChungTu)
+        {
+            try
+            {
+                var cauHinh = await _dbContext.cauHinhHeThongs.FirstOrDefaultAsync();
+                var tienTo = cauHinh?.TienToChungTu ?? "CT";
+                var startNum = cauHinh?.SoBatDauChungTu ?? 1;
+                var year = DateTime.UtcNow.Year;
+
+                // Viết tắt loại chứng từ để đưa vào mã
+                var loaiAbbr = (loaiChungTu?.ToLower()) switch
+                {
+                    "ghi_tang" => "GT",
+                    "khau_hao" => "KH",
+                    "thanh_ly" => "TL",
+                    "dieu_chuyen" => "DC",
+                    "bao_tri" => "BT",
+                    _ => "CT"
+                };
+
+                var prefix = $"{tienTo}-{loaiAbbr}-{year}-";
+
+                // Tìm số thứ tự lớn nhất trong năm hiện tại
+                var existingCodes = await _dbContext.chungTus
+                    .Where(x => x.MaChungTu != null && x.MaChungTu.StartsWith(prefix))
+                    .Select(x => x.MaChungTu!)
+                    .ToListAsync();
+
+                int nextNum = startNum;
+                foreach (var code in existingCodes)
+                {
+                    var suffix = code[prefix.Length..];
+                    if (int.TryParse(suffix, out int num) && num >= nextNum)
+                        nextNum = num + 1;
+                }
+
+                var maChungTu = $"{prefix}{nextNum:D3}";
+
+                return ResponseConst.Success("Sinh mã chứng từ thành công.", new GenerateMaChungTuResponse
+                {
+                    maChungTu = maChungTu,
+                    tienToApDung = tienTo,
+                    soThuTuTiepTheo = nextNum
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi sinh mã chứng từ.");
+                return ResponseConst.Error<GenerateMaChungTuResponse>(500, "Lỗi hệ thống: " + ex.Message);
+            }
+        }
     }
 }

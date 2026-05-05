@@ -22,6 +22,7 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<TaiSanResponse>> GetTaiSanByIdAsync(int id);
         Task<ResponseDto<bool>> ConfirmAssetAsync(int id);
         Task<ResponseDto<List<TaiSan>>> GetTaiSanByUserIdAsync(int userId);
+        Task<ResponseDto<GenerateMaTaiSanResponse>> GenerateMaTaiSanAsync(int danhMucId);
     }
 
     public class TaiSanService : AssetServiceBase, ITaiSanService
@@ -53,6 +54,56 @@ namespace TH.Asset.ApplicationService.Service
         }
 
         // ==========================================
+        // 0. SINH MÃ TÀI SẢN TỰ ĐỘNG THEO CẤU HÌNH
+        // ==========================================
+        public async Task<ResponseDto<GenerateMaTaiSanResponse>> GenerateMaTaiSanAsync(int danhMucId)
+        {
+            try
+            {
+                var danhMuc = await _dbContext.danhMucTaiSans.FindAsync(danhMucId);
+                if (danhMuc == null)
+                    return ResponseConst.Error<GenerateMaTaiSanResponse>(404, "Danh mục tài sản không tồn tại.");
+
+                var cauHinh = await _dbContext.cauHinhHeThongs.FirstOrDefaultAsync();
+                var format = cauHinh?.DinhDangMaTaiSan ?? "{DANH_MUC}-{SO_THU_TU}";
+                var doDai = cauHinh?.DoDaiMaTaiSan ?? 4;
+
+                var prefix = (danhMuc.TienTo ?? danhMuc.MaDanhMuc).ToUpper();
+
+                // Tìm số thứ tự cao nhất hiện có cho danh mục này
+                var existingCodes = await _dbContext.taiSans
+                    .Where(x => x.MaTaiSan != null && x.MaTaiSan.StartsWith(prefix + "-"))
+                    .Select(x => x.MaTaiSan!)
+                    .ToListAsync();
+
+                int nextNum = 1;
+                foreach (var code in existingCodes)
+                {
+                    var suffix = code[(prefix.Length + 1)..];
+                    if (int.TryParse(suffix, out int num) && num >= nextNum)
+                        nextNum = num + 1;
+                }
+
+                var paddedNum = nextNum.ToString().PadLeft(doDai, '0');
+                var maTaiSan = format
+                    .Replace("{DANH_MUC}", prefix)
+                    .Replace("{SO_THU_TU}", paddedNum);
+
+                return ResponseConst.Success("Sinh mã tài sản thành công.", new GenerateMaTaiSanResponse
+                {
+                    maTaiSan = maTaiSan,
+                    dinhDangApDung = format,
+                    soThuTuTiepTheo = nextNum
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi sinh mã tài sản. DanhMucId: {Id}", danhMucId);
+                return ResponseConst.Error<GenerateMaTaiSanResponse>(500, "Lỗi hệ thống: " + ex.Message);
+            }
+        }
+
+        // ==========================================
         // 1. TẠO MỚI TÀI SẢN
         // ==========================================
         public async Task<ResponseDto<bool>> CreateTaiSanAsync(CreateTaiSanRequestDto request)
@@ -70,6 +121,9 @@ namespace TH.Asset.ApplicationService.Service
                 var validationError = await ValidateForeignKeysAsync(request.danhMucId, request.phongBanId, request.maTaiKhoan);
                 if (validationError != null) return ResponseConst.Error<bool>(400, validationError);
 
+                // 3. Lấy cấu hình để áp dụng phương pháp khấu hao mặc định
+                var cauHinh = await _dbContext.cauHinhHeThongs.FirstOrDefaultAsync();
+
                 var taiSan = new TaiSan
                 {
                     MaTaiSan = request.maTaiSan,
@@ -85,7 +139,7 @@ namespace TH.Asset.ApplicationService.Service
                     GiaTriConLai = request.nguyenGia ?? 0,
                     KhauHaoLuyKe = 0,
                     KhauHaoHangThang = 0,
-                    PhuongPhapKhauHao = request.phuongPhapKhauHao,
+                    PhuongPhapKhauHao = request.phuongPhapKhauHao ?? cauHinh?.PhuongPhapKhauHaoMacDinh,
                     ThoiGianKhauHao = request.thoiGianKhauHao,
                     MaTaiKhoan = request.maTaiKhoan,
                     PhongBanId = request.phongBanId,
@@ -93,7 +147,7 @@ namespace TH.Asset.ApplicationService.Service
                     NgayCapPhat = request.nguoiDungId.HasValue
                                ? (request.ngayCapPhat ?? DateTime.UtcNow)
                                : null,
-                    PhuongThucThanhToan = request.phuongThucThanhToan,   // <-- THÊM
+                    PhuongThucThanhToan = request.phuongThucThanhToan,
                     NgayTao = DateTime.UtcNow
                 };
 

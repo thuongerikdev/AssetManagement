@@ -106,15 +106,17 @@ namespace TH.WebAPI.Controllers.Asset
         public async Task<IActionResult> GetChungTuByTaiSanId(int taiSanId)
         {
             var result = await _chungTuService.GetChungTuByTaiSanIdAsync(taiSanId);
-            if (result.ErrorCode == 200)
-            {
-                return Ok(result);
-            }
-            if (result.ErrorCode == 404)
-            {
-                return NotFound(result);
-            }
+            if (result.ErrorCode == 200) return Ok(result);
+            if (result.ErrorCode == 404) return NotFound(result);
             return BadRequest(result);
+        }
+
+        // GET: api/ChungTu/generate-code?loaiChungTu=ghi_tang
+        [HttpGet("generate-code")]
+        public async Task<IActionResult> GenerateMaChungTu([FromQuery] string? loaiChungTu)
+        {
+            var result = await _chungTuService.GenerateMaChungTuAsync(loaiChungTu);
+            return result.ErrorCode == 200 ? Ok(result) : BadRequest(result);
         }
     }
 }

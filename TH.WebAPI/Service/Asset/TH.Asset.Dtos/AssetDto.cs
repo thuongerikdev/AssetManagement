@@ -388,4 +388,62 @@ namespace TH.Asset.Dtos
         public int TaiSanId { get; set; }
         public decimal SoTien { get; set; }
     }
+
+    // ==========================================
+    // SỔ CÁI DTOs
+    // ==========================================
+
+    public class SoCaiTomTatResponse
+    {
+        public string maTaiKhoan { get; set; } = "";
+        public string? tenTaiKhoan { get; set; }
+        public string? loaiTaiKhoan { get; set; }
+        public decimal soDuDauKy { get; set; }
+        public decimal phatSinhNo { get; set; }
+        public decimal phatSinhCo { get; set; }
+        public decimal soDuCuoiKy { get; set; }
+        public int soLuongButToan { get; set; }
+    }
+
+    public class SoCaiChiTietResponse
+    {
+        public string maTaiKhoan { get; set; } = "";
+        public string? tenTaiKhoan { get; set; }
+        public string? loaiTaiKhoan { get; set; }
+        public decimal soDuDauKy { get; set; }
+        public decimal phatSinhNo { get; set; }
+        public decimal phatSinhCo { get; set; }
+        public decimal soDuCuoiKy { get; set; }
+        public List<SoCaiButToanResponse> butToans { get; set; } = new();
+    }
+
+    public class SoCaiButToanResponse
+    {
+        public int chungTuId { get; set; }
+        public string maChungTu { get; set; } = "";
+        public DateTime? ngayHachToan { get; set; }
+        public string dienGiai { get; set; } = "";
+        public decimal phatSinhNo { get; set; }
+        public decimal phatSinhCo { get; set; }
+        public decimal soDuLuyKe { get; set; }
+        public string? loaiChungTu { get; set; }
+    }
+
+    // ==========================================
+    // SINH MÃ TỰ ĐỘNG DTOs
+    // ==========================================
+
+    public class GenerateMaTaiSanResponse
+    {
+        public string maTaiSan { get; set; } = "";
+        public string dinhDangApDung { get; set; } = "";
+        public int soThuTuTiepTheo { get; set; }
+    }
+
+    public class GenerateMaChungTuResponse
+    {
+        public string maChungTu { get; set; } = "";
+        public string tienToApDung { get; set; } = "";
+        public int soThuTuTiepTheo { get; set; }
+    }
 }

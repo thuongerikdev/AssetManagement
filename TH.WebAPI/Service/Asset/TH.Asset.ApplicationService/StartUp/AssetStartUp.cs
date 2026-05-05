@@ -132,6 +132,7 @@ namespace TH.Asset.ApplicationService.StartUp
             // 4. Các nghiệp vụ Kế toán / Sổ sách
             builder.Services.AddScoped<ILichSuKhauHaoService, LichSuKhauHaoService>();
             builder.Services.AddScoped<IChungTuService, ChungTuService>();
+            builder.Services.AddScoped<ISoCaiService, SoCaiService>();
         }
 
         public static async Task SeedAssetDataAsync(this WebApplication app)

@@ -28,6 +28,8 @@ export interface ChungTu {
 export const voucherApi = {
   getAll: () => apiClient.get('/ChungTu/get-all'),
   getById: (id: number) => apiClient.get(`/ChungTu/get/${id}`),
-  postVoucher: (id: number) => apiClient.put(`/ChungTu/post-voucher/${id}`, {}), 
+  postVoucher: (id: number) => apiClient.put(`/ChungTu/post-voucher/${id}`, {}),
   getByAssetId: (assetId: number) => apiClient.get(`/ChungTu/get-by-asset/${assetId}`),
+  generateCode: (loaiChungTu?: string) =>
+    apiClient.get(`/ChungTu/generate-code${loaiChungTu ? '?loaiChungTu=' + encodeURIComponent(loaiChungTu) : ''}`),
 };

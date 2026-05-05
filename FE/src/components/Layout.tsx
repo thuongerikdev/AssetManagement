@@ -32,6 +32,7 @@ import { GlobalProvider, useGlobalData } from '../context/GlobalContext';
 
 // MỚI: Import useAuth từ AuthContext để gọi hàm logout
 import { useAuth } from './AuthContext';
+import { systemConfigApi } from '../api/systemConfigApi';
 
 interface NavItem {
   path: string;
@@ -47,24 +48,34 @@ const navItems: NavItem[] = [
   { path: '/maintenance', label: 'Bảo trì - Bảo dưỡng', icon: Wrench },
   { path: '/liquidation', label: 'Thanh lý', icon: Trash2 },
   { path: '/vouchers', label: 'Chứng từ Kế toán', icon: FileText },
-  { path: '/ledger', label: 'Sổ cái - Nhật ký chung', icon: BookOpenCheck },
+  { path: '/so-cai', label: 'Sổ Cái', icon: BookOpen },
+  { path: '/ledger', label: 'Nhật ký chung', icon: BookOpenCheck },
   { path: '/reports', label: 'Báo cáo', icon: BarChart3 },
   { path: '/my-assets', label: 'Tài sản của tôi', icon: MonitorSmartphone },
 ];
 
 function LayoutInner() {
   const location = useLocation();
-  const navigate = useNavigate(); // Dùng để chuyển hướng khi đăng xuất
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [companyName, setCompanyName] = useState('TSCĐ Manager');
 
   const isSettingsActive = location.pathname.startsWith('/settings');
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsActive);
 
   // Móc dữ liệu từ kho chung
   const { isLoadingGlobal, refreshData } = useGlobalData();
-  
+
   // Móc hàm logout từ AuthContext
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
+
+  useEffect(() => {
+    systemConfigApi.get().then(res => {
+      if (res.errorCode === 200 && res.data?.tenCongTy) {
+        setCompanyName(res.data.tenCongTy);
+      }
+    }).catch(() => {});
+  }, []);
 
   // === XỬ LÝ ĐĂNG XUẤT ===
   const handleLogout = () => {
@@ -306,7 +317,7 @@ function LayoutInner() {
                 </span>
               </button>
               <div className="text-right hidden sm:block border-l border-gray-200 pl-4 ml-1">
-                <p className="text-sm font-medium text-gray-900">Công ty TNHH ABC</p>
+                <p className="text-sm font-medium text-gray-900">{companyName}</p>
                 <p className="text-xs text-gray-500">Hôm nay: {new Date().toLocaleDateString('vi-VN')}</p>
               </div>
             </div>

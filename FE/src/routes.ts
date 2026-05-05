@@ -24,6 +24,7 @@ import { AccountList } from "./components/settings/AccountList";
 import { MyAssets } from './components/assets/MyAssets';
 import { LoginPage } from "./components/login/LoginPage";
 import { GeneralJournal } from './components/vouchers/GeneralJournal';
+import { GeneralLedger } from './components/vouchers/GeneralLedger';
 
 import { UserList } from "./components/settings/UserList";
 import { RoleList } from "./components/settings/RoleList";
@@ -69,6 +70,7 @@ export const router = createBrowserRouter([
           { path: "settings/accounts", Component: AccountList },
           { path: "my-assets", Component: MyAssets },
           { path: "ledger", Component: GeneralJournal },
+          { path: "so-cai", Component: GeneralLedger },
           { path: "settings/users", Component: UserList },
           { path: "settings/roles", Component: RoleList },
           { path: "settings/permissions", Component: PermissionList },

@@ -50,6 +50,6 @@ export const assetApi = {
   delete: (id: number) => apiClient.delete(`/TaiSan/delete/${id}`),
 
   confirm: (id: number) => apiClient.post(`/TaiSan/confirm/${id}`, {}),
-
   getMyAssets: (userId: number) => apiClient.get(`/TaiSan/my-assets/${userId}`),
+  generateCode: (danhMucId: number) => apiClient.get(`/TaiSan/generate-code?danhMucId=${danhMucId}`),
 };

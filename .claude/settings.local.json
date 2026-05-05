@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"^/d/PersonalProject/GiangProject/FE/src/[^/]+/[^/]+$|^/d/PersonalProject/GiangProject/FE/src/[^/]+\\\\.tsx?$\")"
+    ]
+  }
+}

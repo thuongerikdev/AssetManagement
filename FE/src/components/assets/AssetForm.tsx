@@ -7,16 +7,6 @@ import { departmentApi, Department } from '../../api/departmentApi';
 import { assetCategoryApi, AssetCategory } from '../../api/assetCategoryApi';
 import { accountApi, TaiKhoanKeToan } from '../../api/accountApi';
 
-// Hàm hỗ trợ tạo tiền tố từ Tên danh mục (VD: "Máy in" -> "MI", "Laptop" -> "LAP")
-const generatePrefix = (name: string) => {
-  const cleanName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-  const words = cleanName.split(' ').filter(w => w.length > 0);
-  if (words.length === 1) {
-    return words[0].substring(0, 3); 
-  }
-  return words.map(w => w[0]).join(''); 
-};
-
 export function AssetForm() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -25,7 +15,6 @@ export function AssetForm() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [accounts, setAccounts] = useState<TaiKhoanKeToan[]>([]);
-  const [allAssets, setAllAssets] = useState<TaiSan[]>([]);
   
   const [formData, setFormData] = useState<Partial<TaiSan>>({
     maTaiSan: '',
@@ -48,7 +37,6 @@ export function AssetForm() {
     departmentApi.getAll().then(res => { if(res.errorCode === 200) setDepartments(res.data) });
     assetCategoryApi.getAll().then(res => { if(res.errorCode === 200) setCategories(res.data) });
     accountApi.getAll().then(res => { if(res.errorCode === 200) setAccounts(res.data) });
-    assetApi.getAll().then(res => { if(res.errorCode === 200) setAllAssets(res.data) });
 
     if (isEdit && id) {
       assetApi.getById(Number(id)).then(res => {
@@ -64,32 +52,16 @@ export function AssetForm() {
   }, [id, isEdit]);
 
   useEffect(() => {
-    if (!isEdit && formData.danhMucId && categories.length > 0 && allAssets.length >= 0) {
-      const category = categories.find(c => c.id === formData.danhMucId);
-      if (category && category.tenDanhMuc) {
-        const prefix = generatePrefix(category.tenDanhMuc);
-        const assetsInCat = allAssets.filter(a => a.danhMucId === formData.danhMucId);
-        let maxSeq = 0;
-        
-        assetsInCat.forEach(a => {
-          if (a.maTaiSan) {
-            const parts = a.maTaiSan.split('-');
-            if (parts.length > 1) {
-              const num = parseInt(parts[parts.length - 1], 10);
-              if (!isNaN(num) && num > maxSeq) {
-                maxSeq = num;
-              }
-            }
-          }
-        });
-
-        const sequence = (maxSeq + 1).toString().padStart(3, '0');
-        setFormData(prev => ({ ...prev, maTaiSan: `${prefix}-${sequence}` }));
-      }
+    if (!isEdit && formData.danhMucId) {
+      assetApi.generateCode(formData.danhMucId).then(res => {
+        if (res.errorCode === 200 && res.data?.maTaiSan) {
+          setFormData(prev => ({ ...prev, maTaiSan: res.data.maTaiSan }));
+        }
+      }).catch(() => {});
     } else if (!isEdit && !formData.danhMucId) {
       setFormData(prev => ({ ...prev, maTaiSan: '' }));
     }
-  }, [formData.danhMucId, categories, allAssets, isEdit]);
+  }, [formData.danhMucId, isEdit]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

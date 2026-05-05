@@ -101,10 +101,17 @@ namespace TH.WebAPI.Controllers.Asset
         [HttpGet("my-assets/{userId}")]
         public async Task<IActionResult> GetMyAssets(int userId)
         {
-            // Thực tế sau này userId sẽ lấy từ Token (User.Claims), 
-            // tạm thời ta truyền qua URL để test.
             var result = await _taiSanService.GetTaiSanByUserIdAsync(userId);
             return Ok(result);
+        }
+
+        // GET: api/TaiSan/generate-code?danhMucId=1
+        [HttpGet("generate-code")]
+        public async Task<IActionResult> GenerateMaTaiSan([FromQuery] int danhMucId)
+        {
+            var result = await _taiSanService.GenerateMaTaiSanAsync(danhMucId);
+            if (result.ErrorCode == 404) return NotFound(result);
+            return result.ErrorCode == 200 ? Ok(result) : BadRequest(result);
         }
     }
 }
