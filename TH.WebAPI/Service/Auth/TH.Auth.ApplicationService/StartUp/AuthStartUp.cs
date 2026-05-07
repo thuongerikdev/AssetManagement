@@ -453,32 +453,21 @@ namespace TH.Auth.ApplicationService.StartUp
         }
         public static async Task SeedAuthDataAsync(this WebApplication app)
         {
-            using (var scope = app.Services.CreateScope())
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("AuthSeeder");
+
+            try
             {
-                var services = scope.ServiceProvider;
-                var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("AuthSeeder");
+                var context = services.GetRequiredService<AuthDbContext>();
+                var hasher  = services.GetRequiredService<IPasswordHasher>();
 
-                try
-                {
-                    var context = services.GetRequiredService<AuthDbContext>();
-
-                    // 1. (Tuỳ chọn) Tự động chạy Migration nếu chưa update database
-                    // logger.LogInformation("Applying migrations...");
-                    await context.Database.MigrateAsync();
-
-                    //await AuthDataSeeder.SyncRolesAsync(context);
-
-                    // 2. Chạy Seeder
-                    //logger.LogInformation("Starting Permission Seeding...");
-                    //await AuthDataSeeder.SeedPermissionsAsync(context);
-                    //logger.LogInformation("Seeding completed successfully.");
-                    //logger.LogInformation("Seeding Admin User...");
-                    //await AuthDataSeeder.SeedAdminUserAsync(context, services);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "An error occurred while seeding the database.");
-                }
+                await context.Database.MigrateAsync();
+                await TH.Auth.Infrastructure.SeedData.AuthDataSeeder.SeedAsync(context, hasher, logger);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while seeding the database.");
             }
         }
     }

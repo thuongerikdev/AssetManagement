@@ -17,7 +17,15 @@
       "Bash(node -e ' *)",
       "Bash(kill %1)",
       "Bash(sed -n '225,250p' src/components/vouchers/GeneralJournal.tsx)",
-      "Bash(sed -n '270,285p' src/components/depreciation/DepreciationList.tsx)"
+      "Bash(sed -n '270,285p' src/components/depreciation/DepreciationList.tsx)",
+      "Bash(xargs grep *)",
+      "Bash(dotnet add *)",
+      "Bash(taskkill /F /PID 23736)",
+      "PowerShell(Stop-Process -Id 23736 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process -Name \"TH.WebAPI\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force -ErrorAction SilentlyContinue)",
+      "Bash(dotnet run *)",
+      "PowerShell($proc = Get-NetTCPConnection -LocalPort 5267 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -First 1; if \\($proc\\) { Stop-Process -Id $proc -Force; \"Đã kill PID $proc\" } else { \"Không có process nào trên port 5267\" })"
     ]
   }
 }

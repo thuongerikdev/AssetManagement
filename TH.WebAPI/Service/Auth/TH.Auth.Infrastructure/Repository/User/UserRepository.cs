@@ -557,16 +557,16 @@ namespace TH.Auth.Infrastructure.Repository.User
             => _db.authUsers.FirstOrDefaultAsync(x => x.userID == userId, ct);
 
         public Task<AuthUser?> FindByUserNameAsync(string userName, CancellationToken ct)
-            => _db.authUsers.FirstOrDefaultAsync(x => x.userName == userName, ct);
+            => _db.authUsers.FirstOrDefaultAsync(x => x.userName.ToLower() == userName.ToLower(), ct);
 
         public Task<AuthUser?> FindByEmailAsync(string email, CancellationToken ct)
-            => _db.authUsers.FirstOrDefaultAsync(x => x.email == email, ct);
+            => _db.authUsers.FirstOrDefaultAsync(x => x.email.ToLower() == email.ToLower(), ct);
 
         public Task<bool> ExistsByEmailAsync(string email, CancellationToken ct)
-            => _db.authUsers.AnyAsync(x => x.email == email, ct);
+            => _db.authUsers.AnyAsync(x => x.email.ToLower() == email.ToLower(), ct);
 
         public Task<bool> ExistsByUserNameAsync(string userName, CancellationToken ct)
-            => _db.authUsers.AnyAsync(x => x.userName == userName, ct);
+            => _db.authUsers.AnyAsync(x => x.userName.ToLower() == userName.ToLower(), ct);
 
         public Task AddAsync(AuthUser user, CancellationToken ct)
             => _db.authUsers.AddAsync(user, ct).AsTask();

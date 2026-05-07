@@ -74,6 +74,7 @@ namespace TH.WebAPI.Controllers.Auth
 
         [HttpPut("update/profile")]
         [Authorize(Policy = "UserUpdateProfile")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> UpdateProfile([FromForm] AuthUpdateProfileRequest req, CancellationToken ct)
         {
 

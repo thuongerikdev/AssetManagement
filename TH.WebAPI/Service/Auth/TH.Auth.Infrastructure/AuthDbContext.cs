@@ -97,21 +97,11 @@ namespace TH.Auth.Infrastructure
             // ====== SEED DATA ======
             // =========================================================
 
-            // Seed Roles
+            // Seed Roles (static, no password needed)
             AuthSeedData.SeedRoles(modelBuilder);
 
-            // Seed Users
-            AuthSeedData.SeedUsers(modelBuilder);
-
-            // Seed Profiles
-            AuthSeedData.SeedProfiles(modelBuilder);
-
-            // Seed User-Role Assignments
-            AuthSeedData.SeedUserRoles(modelBuilder);
-
-            // LƯU Ý: Permissions và RolePermissions cần được seed riêng
-            // vì cần query permissionID từ permission code
-            // Xem RolePermissionMapping.cs để biết cách map
+            // Users/Profiles/UserRoles are seeded at runtime via SeedAuthDataAsync
+            // so plain-text passwords can be hashed dynamically by IPasswordHasher
 
             base.OnModelCreating(modelBuilder);
         }

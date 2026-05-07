@@ -5,6 +5,12 @@ using TH.Asset.ApplicationService.Service;
 
 namespace TH.WebAPI.Controllers.Asset
 {
+    public class UploadTaiSanDinhKemRequest
+    {
+        public IFormFile file { get; set; } = default!;
+        public string? moTa { get; set; }
+    }
+
     [ApiController]
     [Route("api/[controller]")]
     public class TaiSanDinhKemController : ControllerBase
@@ -25,9 +31,10 @@ namespace TH.WebAPI.Controllers.Asset
 
         [HttpPost("upload/{taiSanId}")]
         [RequestSizeLimit(20 * 1024 * 1024)]
-        public async Task<IActionResult> Upload(int taiSanId, [FromForm] IFormFile file, [FromForm] string? moTa)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Upload(int taiSanId, [FromForm] UploadTaiSanDinhKemRequest request)
         {
-            var result = await _service.UploadAsync(taiSanId, file, moTa);
+            var result = await _service.UploadAsync(taiSanId, request.file, request.moTa);
             if (result.ErrorCode == 404) return NotFound(result);
             return result.ErrorCode == 200 ? Ok(result) : BadRequest(result);
         }
