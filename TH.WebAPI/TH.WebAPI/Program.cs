@@ -132,10 +132,6 @@ namespace TH.WebAPI
             await app.SeedAuthDataAsync();
 
 
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-
             var fwd = new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost

@@ -46,7 +46,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
 
-        [HttpGet("GetUserSlimById{userID}")]
+        [HttpGet("GetUserSlimById/{userID}")]
         [Authorize(Policy = "UserReadDetails")]
         public async Task<IActionResult> GetUserSlimById(int userID, CancellationToken ct)
         {
@@ -104,7 +104,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
 
-        [HttpGet("admin/GetUserSlimById{userID}")]
+        [HttpGet("admin/GetUserSlimById/{userID}")]
         [Authorize(Policy = "UserReadDetailsAdmin")]
         public async Task<IActionResult> AdminGetUserSlimById(int userID, CancellationToken ct)
         {
