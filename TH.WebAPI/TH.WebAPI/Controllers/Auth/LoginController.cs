@@ -34,6 +34,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("userLogin")]
+        [AllowAnonymous]
         public async Task<IActionResult> UserLogin([FromBody] LoginRequest loginRequest, CancellationToken ct)
         {
             var result = await _authLoginService.LoginAsync(loginRequest, ct);

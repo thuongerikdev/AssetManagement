@@ -15,7 +15,9 @@
       "Bash(node generate-docs.mjs)",
       "Bash(node generate-diagrams.mjs)",
       "Bash(node -e ' *)",
-      "Bash(kill %1)"
+      "Bash(kill %1)",
+      "Bash(sed -n '225,250p' src/components/vouchers/GeneralJournal.tsx)",
+      "Bash(sed -n '270,285p' src/components/depreciation/DepreciationList.tsx)"
     ]
   }
 }
