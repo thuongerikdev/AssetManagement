@@ -266,7 +266,8 @@ namespace TH.Asset.ApplicationService.Service
             try
             {
                 var result = await _dbContext.chungTus
-                    .Include(x => x.ChiTietChungTus)
+                    .Include(x => x.ChiTietChungTus!)
+                        .ThenInclude(ct => ct.TaiSan) // BẮT BUỘC PHẢI THÊM DÒNG NÀY ĐỂ LẤY THÔNG TIN TÀI SẢN
                     .Where(x => x.Id == id)
                     .Select(x => new ChungTuResponse
                     {
@@ -287,7 +288,11 @@ namespace TH.Asset.ApplicationService.Service
                             taiKhoanCo = ct.TaiKhoanCo,
                             soTien = ct.SoTien,
                             moTa = ct.MoTa,
-                            taiSanId = ct.TaiSanId
+                            taiSanId = ct.TaiSanId,
+
+                            // Nhờ có ThenInclude ở trên, ct.TaiSan lúc này mới có dữ liệu để lấy ra
+                            maTaiSan = ct.TaiSan != null ? ct.TaiSan.MaTaiSan : null,
+                            tenTaiSan = ct.TaiSan != null ? ct.TaiSan.TenTaiSan : null
                         }).ToList()
                     })
                     .FirstOrDefaultAsync();
@@ -305,6 +310,7 @@ namespace TH.Asset.ApplicationService.Service
                 return ResponseConst.Error<ChungTuResponse>(500, "Lỗi hệ thống: " + ex.Message);
             }
         }
+
         public async Task<ResponseDto<List<ChungTuResponse>>> GetChungTuByTaiSanIdAsync(int taiSanId)
         {
             try
