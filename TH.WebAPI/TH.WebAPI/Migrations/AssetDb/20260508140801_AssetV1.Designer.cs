@@ -12,7 +12,7 @@ using TH.Asset.Infrastructure.Database;
 namespace TH.WebAPI.Migrations.AssetDb
 {
     [DbContext(typeof(AssetDbContext))]
-    [Migration("20260508132206_AssetV1")]
+    [Migration("20260508140801_AssetV1")]
     partial class AssetV1
     {
         /// <inheritdoc />
@@ -180,9 +180,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 2,
                             ChungTuId = 2,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 18000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 75
                         },
                         new
@@ -216,9 +216,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 6,
                             ChungTuId = 4,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 16000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 76
                         },
                         new
@@ -252,9 +252,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 10,
                             ChungTuId = 6,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 17000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 77
                         },
                         new
@@ -288,9 +288,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 14,
                             ChungTuId = 8,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 14000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 78
                         },
                         new
@@ -324,9 +324,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 18,
                             ChungTuId = 10,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 15000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 79
                         },
                         new
@@ -360,9 +360,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 22,
                             ChungTuId = 12,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 13000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 80
                         },
                         new
@@ -396,9 +396,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 26,
                             ChungTuId = 14,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 35000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 81
                         },
                         new
@@ -432,9 +432,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 30,
                             ChungTuId = 16,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 12000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 82
                         },
                         new
@@ -468,9 +468,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 34,
                             ChungTuId = 18,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 8000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 83
                         },
                         new
@@ -522,9 +522,9 @@ namespace TH.WebAPI.Migrations.AssetDb
                         {
                             Id = 40,
                             ChungTuId = 20,
-                            MoTa = "Thanh toán qua ngân hàng",
+                            MoTa = "Thanh toán tiền mặt",
                             SoTien = 5000000m,
-                            TaiKhoanCo = "112",
+                            TaiKhoanCo = "111",
                             TaiSanId = 84
                         },
                         new
