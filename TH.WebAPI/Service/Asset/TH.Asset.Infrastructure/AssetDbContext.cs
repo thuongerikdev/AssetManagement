@@ -490,7 +490,7 @@ namespace TH.Asset.Infrastructure.Database
                 };
                 chungTus.Add(ctGhiTang);
                 chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = oldMaTK[i], SoTien = gia, MoTa = "Ghi tăng nguyên giá TSCĐ" });
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanCo = "112", SoTien = gia, MoTa = "Thanh toán qua ngân hàng" });
+                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanCo = "111", SoTien = gia, MoTa = "Thanh toán tiền mặt" });
                 ctId++;
 
                 // Chứng từ thanh lý

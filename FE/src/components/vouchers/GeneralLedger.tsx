@@ -229,84 +229,80 @@ export function GeneralLedger() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 text-xs font-semibold uppercase">
-                      <th className="px-4 py-3 text-left w-32">Ngày hạch toán</th>
-                      <th className="px-4 py-3 text-left w-36">Số chứng từ</th>
-                      <th className="px-4 py-3 text-left">Diễn giải</th>
-                      <th className="px-4 py-3 text-right w-36">Phát sinh Nợ</th>
-                      <th className="px-4 py-3 text-right w-36">Phát sinh Có</th>
-                      {/* <th className="px-4 py-3 text-right w-36">Số dư lũy kế</th> */}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Opening balance row */}
-                    <tr className="bg-yellow-50 border-b border-yellow-100 font-semibold">
-                      <td className="px-4 py-3 text-gray-500 text-xs">—</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">—</td>
-                      <td className="px-4 py-3 text-gray-700">Số dư đầu kỳ</td>
-                      <td className="px-4 py-3 text-right text-gray-400">—</td>
-                      <td className="px-4 py-3 text-right text-gray-400">—</td>
-                      {/* <td className="px-4 py-3 text-right text-blue-700 font-bold">{fmtFull(data.soDuDauKy)}</td> */}
-                    </tr>
+  <thead>
+    <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 text-xs font-semibold uppercase">
+      <th className="px-4 py-3 text-left w-32">Ngày hạch toán</th>
+      <th className="px-4 py-3 text-left w-36">Số chứng từ</th>
+      <th className="px-4 py-3 text-left">Diễn giải</th>
+      <th className="px-4 py-3 text-right w-36">Phát sinh Nợ</th>
+      <th className="px-4 py-3 text-right w-36">Phát sinh Có</th>
+    </tr>
+  </thead>
+  <tbody>
+    {/* Dòng Số dư đầu kỳ */}
+    <tr className="bg-yellow-50 border-b border-yellow-100 font-semibold">
+      <td className="px-4 py-3 text-gray-500 text-xs">—</td>
+      <td className="px-4 py-3 text-gray-500 text-xs">—</td>
+      <td className="px-4 py-3 text-gray-700">Số dư đầu kỳ</td>
+      <td className="px-4 py-3 text-right text-gray-400">—</td>
+      <td className="px-4 py-3 text-right text-gray-400">—</td>
+    </tr>
 
-                    {/* Transaction rows */}
-                    {data.butToans.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                          Không có phát sinh trong kỳ
-                        </td>
-                      </tr>
-                    ) : (
-                      data.butToans.map((b, idx) => (
-                        <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                          <td className="px-4 py-3 text-gray-600 text-xs">{fmtDate(b.ngayHachToan)}</td>
-                          <td className="px-4 py-3">
-                            <span className="font-medium text-blue-600 text-xs">{b.maChungTu ?? '—'}</span>
-                          </td>
-                          <td className="px-4 py-3 text-gray-700 text-xs truncate max-w-[260px]" title={b.dienGiai ?? ''}>
-                            {b.dienGiai ?? '—'}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {b.phatSinhNo > 0
-                              ? <span className="font-medium text-blue-700">{fmt(b.phatSinhNo)}</span>
-                              : <span className="text-gray-300">—</span>}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {b.phatSinhCo > 0
-                              ? <span className="font-medium text-red-600">{fmt(b.phatSinhCo)}</span>
-                              : <span className="text-gray-300">—</span>}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className={`font-semibold ${b.soDuLuyKe >= 0 ? 'text-blue-700' : 'text-red-600'}`}>
-                              {fmtFull(b.soDuLuyKe)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    )}
+    {/* Các dòng phát sinh */}
+    {data.butToans.length === 0 ? (
+      <tr>
+        {/* Đã sửa colSpan từ 6 xuống 5 */}
+        <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+          Không có phát sinh trong kỳ
+        </td>
+      </tr>
+    ) : (
+      data.butToans.map((b, idx) => (
+        <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <td className="px-4 py-3 text-gray-600 text-xs">{fmtDate(b.ngayHachToan)}</td>
+          <td className="px-4 py-3">
+            <span className="font-medium text-blue-600 text-xs">{b.maChungTu ?? '—'}</span>
+          </td>
+          <td className="px-4 py-3 text-gray-700 text-xs truncate max-w-[260px]" title={b.dienGiai ?? ''}>
+            {b.dienGiai ?? '—'}
+          </td>
+          <td className="px-4 py-3 text-right">
+            {b.phatSinhNo > 0
+              ? <span className="font-medium text-blue-700">{fmt(b.phatSinhNo)}</span>
+              : <span className="text-gray-300">—</span>}
+          </td>
+          <td className="px-4 py-3 text-right">
+            {b.phatSinhCo > 0
+              ? <span className="font-medium text-red-600">{fmt(b.phatSinhCo)}</span>
+              : <span className="text-gray-300">—</span>}
+          </td>
+          {/* Đã xóa cột hiển thị b.soDuLuyKe ở đây */}
+        </tr>
+      ))
+    )}
 
-                    {/* Total row */}
-                    <tr className="bg-gray-50 border-t-2 border-gray-200 font-bold">
-                      <td className="px-4 py-3" colSpan={3}>
-                        <span className="text-gray-700 text-sm">Tổng cộng phát sinh</span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-blue-700">{fmtFull(data.phatSinhNo)}</td>
-                      <td className="px-4 py-3 text-right text-red-600">{fmtFull(data.phatSinhCo)}</td>
-                      <td className="px-4 py-3 text-right text-gray-900">—</td>
-                    </tr>
-                    <tr className="bg-blue-50 border-t border-blue-100 font-bold">
-                      <td className="px-4 py-3" colSpan={3}>
-                        <span className="text-blue-800 text-sm">Số dư cuối kỳ</span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-gray-400">—</td>
-                      <td className="px-4 py-3 text-right text-gray-400">—</td>
-                      <td className="px-4 py-3 text-right text-blue-800 text-base">
-                        {fmtFull(data.soDuCuoiKy)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+    {/* Dòng Tổng cộng phát sinh */}
+    <tr className="bg-gray-50 border-t-2 border-gray-200 font-bold">
+      <td className="px-4 py-3" colSpan={3}>
+        <span className="text-gray-700 text-sm">Tổng cộng phát sinh</span>
+      </td>
+      <td className="px-4 py-3 text-right text-blue-700">{fmtFull(data.phatSinhNo)}</td>
+      <td className="px-4 py-3 text-right text-red-600">{fmtFull(data.phatSinhCo)}</td>
+      {/* Đã xóa thẻ <td> trống thừa ở đây */}
+    </tr>
+
+    {/* Dòng Số dư cuối kỳ */}
+    <tr className="bg-blue-50 border-t border-blue-100 font-bold">
+      <td className="px-4 py-3" colSpan={3}>
+        <span className="text-blue-800 text-sm">Số dư cuối kỳ</span>
+      </td>
+      <td className="px-4 py-3 text-right text-gray-400">—</td>
+      <td className="px-4 py-3 text-right text-blue-800 text-base">
+        {fmtFull(data.soDuCuoiKy)}
+      </td>
+    </tr>
+  </tbody>
+</table>
               </div>
             </div>
           </>
