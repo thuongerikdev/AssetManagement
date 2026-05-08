@@ -43,9 +43,10 @@ interface NavItem {
 const navItems: NavItem[] = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/assets', label: 'Quản lý Tài sản', icon: Package },
-  { path: '/depreciation', label: 'Khấu hao', icon: TrendingDown },
   { path: '/allocation', label: 'Cấp phát & Điều chuyển', icon: ArrowLeftRight },
-  { path: '/maintenance', label: 'Bảo trì - Bảo dưỡng', icon: Wrench },
+  { path: '/depreciation', label: 'Khấu hao', icon: TrendingDown },
+  
+  { path: '/maintenance', label: 'Bảo trì - Sửa chữa', icon: Wrench },
   { path: '/liquidation', label: 'Thanh lý', icon: Trash2 },
   { path: '/vouchers', label: 'Chứng từ Kế toán', icon: FileText },
   { path: '/so-cai', label: 'Sổ Cái', icon: BookOpen },

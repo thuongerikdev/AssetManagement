@@ -108,59 +108,90 @@ namespace TH.Asset.ApplicationService.Service
         // ==========================================
         public async Task<ResponseDto<bool>> CreateTaiSanAsync(CreateTaiSanRequestDto request)
         {
-            try
+            // Bọc bằng Execution Strategy để tránh lỗi Transaction với Npgsql Retry
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                // 1. Kiểm tra trùng mã tài sản
-                var isExist = await _dbContext.taiSans.AnyAsync(x => x.MaTaiSan == request.maTaiSan);
-                if (isExist)
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
                 {
-                    return ResponseConst.Error<bool>(400, "Mã tài sản đã tồn tại trong hệ thống.");
+                    // 1. Kiểm tra trùng mã tài sản
+                    var isExist = await _dbContext.taiSans.AnyAsync(x => x.MaTaiSan == request.maTaiSan);
+                    if (isExist)
+                    {
+                        return ResponseConst.Error<bool>(400, "Mã tài sản đã tồn tại trong hệ thống.");
+                    }
+
+                    // 2. Validate Foreign Keys
+                    var validationError = await ValidateForeignKeysAsync(request.danhMucId, request.phongBanId, request.maTaiKhoan);
+                    if (validationError != null) return ResponseConst.Error<bool>(400, validationError);
+
+                    // 3. Lấy cấu hình để áp dụng phương pháp khấu hao mặc định
+                    var cauHinh = await _dbContext.cauHinhHeThongs.FirstOrDefaultAsync();
+
+                    var taiSan = new TaiSan
+                    {
+                        MaTaiSan = request.maTaiSan,
+                        TenTaiSan = request.tenTaiSan,
+                        DanhMucId = request.danhMucId,
+                        TrangThai = request.trangThai,
+                        SoSeri = request.soSeri,
+                        NhaSanXuat = request.nhaSanXuat,
+                        MoTa = request.moTa,
+                        ThongSoKyThuat = request.thongSoKyThuat,
+                        NgayMua = request.ngayMua,
+                        NguyenGia = request.nguyenGia,
+                        GiaTriConLai = request.nguyenGia ?? 0,
+                        KhauHaoLuyKe = 0,
+                        KhauHaoHangThang = 0,
+                        PhuongPhapKhauHao = request.phuongPhapKhauHao ?? cauHinh?.PhuongPhapKhauHaoMacDinh,
+                        ThoiGianKhauHao = request.thoiGianKhauHao,
+                        MaTaiKhoan = request.maTaiKhoan,
+                        PhongBanId = request.phongBanId,
+                        NguoiDungId = request.nguoiDungId,
+                        NgayCapPhat = request.nguoiDungId.HasValue
+                                    ? (request.ngayCapPhat ?? DateTime.UtcNow)
+                                    : null,
+                        PhuongThucThanhToan = request.phuongThucThanhToan,
+                        NgayTao = DateTime.UtcNow
+                    };
+
+                    _dbContext.taiSans.Add(taiSan);
+                    await _dbContext.SaveChangesAsync(); // Lưu để lấy ID tài sản mới
+
+                    // 4. TỰ ĐỘNG SINH PHIẾU CẤP PHÁT NẾU ĐỦ ĐIỀU KIỆN
+                    // Điều kiện: Trạng thái là Chờ Xác Nhận (1) + Có Phòng Ban + Có Người Dùng
+                    if (request.trangThai == TrangThaiTaiSan.ChoXacNhan
+                        && request.phongBanId.HasValue
+                        && request.nguoiDungId.HasValue)
+                    {
+                        var dieuChuyen = new DieuChuyenTaiSan
+                        {
+                            TaiSanId = taiSan.Id,
+                            LoaiDieuChuyen = LoaiDieuChuyen.CapPhat,
+                            NgayThucHien = taiSan.NgayCapPhat ?? DateTime.UtcNow,
+                            DenPhongBanId = request.phongBanId,
+                            DenNguoiDungId = request.nguoiDungId,
+                            TrangThai = "cho_xu_ly", // Giữ trạng thái chờ để nhân viên vào xác nhận
+                            GhiChu = "Tự động tạo phiếu cấp phát khi thêm mới tài sản",
+                            NgayTao = DateTime.UtcNow
+                        };
+
+                        _dbContext.dieuChuyenTaiSans.Add(dieuChuyen);
+                        await _dbContext.SaveChangesAsync(); // Lưu phiếu điều chuyển
+                    }
+
+                    await transaction.CommitAsync();
+                    return ResponseConst.Success("Thêm tài sản thành công.", true);
                 }
-
-                // 2. Validate Foreign Keys
-                var validationError = await ValidateForeignKeysAsync(request.danhMucId, request.phongBanId, request.maTaiKhoan);
-                if (validationError != null) return ResponseConst.Error<bool>(400, validationError);
-
-                // 3. Lấy cấu hình để áp dụng phương pháp khấu hao mặc định
-                var cauHinh = await _dbContext.cauHinhHeThongs.FirstOrDefaultAsync();
-
-                var taiSan = new TaiSan
+                catch (Exception ex)
                 {
-                    MaTaiSan = request.maTaiSan,
-                    TenTaiSan = request.tenTaiSan,
-                    DanhMucId = request.danhMucId,
-                    TrangThai = request.trangThai,
-                    SoSeri = request.soSeri,
-                    NhaSanXuat = request.nhaSanXuat,
-                    MoTa = request.moTa,
-                    ThongSoKyThuat = request.thongSoKyThuat,
-                    NgayMua = request.ngayMua,
-                    NguyenGia = request.nguyenGia,
-                    GiaTriConLai = request.nguyenGia ?? 0,
-                    KhauHaoLuyKe = 0,
-                    KhauHaoHangThang = 0,
-                    PhuongPhapKhauHao = request.phuongPhapKhauHao ?? cauHinh?.PhuongPhapKhauHaoMacDinh,
-                    ThoiGianKhauHao = request.thoiGianKhauHao,
-                    MaTaiKhoan = request.maTaiKhoan,
-                    PhongBanId = request.phongBanId,
-                    NguoiDungId = request.nguoiDungId,
-                    NgayCapPhat = request.nguoiDungId.HasValue
-                               ? (request.ngayCapPhat ?? DateTime.UtcNow)
-                               : null,
-                    PhuongThucThanhToan = request.phuongThucThanhToan,
-                    NgayTao = DateTime.UtcNow
-                };
-
-                _dbContext.taiSans.Add(taiSan);
-                await _dbContext.SaveChangesAsync();
-
-                return ResponseConst.Success("Thêm tài sản thành công.", true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi tạo tài sản.");
-                return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
-            }
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Lỗi khi tạo tài sản.");
+                    return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
+                }
+            });
         }
 
         // ==========================================

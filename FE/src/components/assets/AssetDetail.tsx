@@ -928,136 +928,75 @@ export function AssetDetail() {
               if (loaiCT === '4' || loaiCT === 'KhauHao') return 'Khấu hao TSCĐ';
               return 'Chứng từ khác';
             };
-            const isGhiSo = (v: any) => v.trangThai === 'hoan_thanh' || v.trangThai === 'da_khoa';
-            const khauHaoVouchers = vouchers.filter(v => ['4', 'KhauHao'].includes(v.loaiChungTu?.toString()));
-            const otherVouchers = vouchers.filter(v => !['4', 'KhauHao'].includes(v.loaiChungTu?.toString()));
+            
+            // Xử lý logic trạng thái (đã hoàn thành / đã ghi sổ / v.v.)
+            const isGhiSo = (v: any) => v.trangThai === 'hoan_thanh' || v.trangThai === 'da_khoa' || v.trangThai === 'da_ghi_so';
 
             return (
-              <div className="max-w-4xl mx-auto py-2 space-y-4">
+              <div className="max-w-5xl mx-auto py-4 space-y-4">
                 {isLoadingVouchers ? (
                   <div className="text-center text-gray-500 py-8">Đang tải chứng từ liên quan...</div>
                 ) : vouchers.length === 0 ? (
-                  <div className="py-8 text-center text-gray-500 bg-white rounded-lg border border-gray-200 border-dashed">
+                  <div className="py-12 text-center text-gray-500 bg-white rounded-xl border border-gray-200 border-dashed">
                     <FileText className="w-12 h-12 mx-auto text-gray-300 mb-3" />
                     <p>Chưa có chứng từ kế toán nào liên kết với tài sản này.</p>
                   </div>
                 ) : (
-                  <>
-                    {/* Regular vouchers */}
-                    {otherVouchers.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Chứng từ nghiệp vụ</p>
-                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                          <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium text-xs">
-                              <tr>
-                                <th className="px-4 py-3">Ngày lập</th>
-                                <th className="px-4 py-3">Số CT</th>
-                                <th className="px-4 py-3">Loại / Diễn giải</th>
-                                <th className="px-4 py-3 text-right">Số tiền</th>
-                                <th className="px-4 py-3 text-center">Trạng thái</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                              {otherVouchers.map((v, idx) => {
-                                const detail = v.chiTietChungTus?.find((d: any) => d.taiSanId === asset?.id) ?? v.chiTietChungTus?.[0];
-                                return (
-                                  <tr key={idx} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 text-gray-700 text-xs">{v.ngayLap ? new Date(v.ngayLap).toLocaleDateString('vi-VN') : '—'}</td>
-                                    <td className="px-4 py-3">
-                                      <Link to={`/vouchers/${v.id}`} className="text-blue-600 font-semibold hover:underline text-xs">{v.maChungTu}</Link>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                      <p className="font-medium text-gray-900 text-xs">{getLoaiLabel(v.loaiChungTu?.toString())}</p>
-                                      <p className="text-[11px] text-gray-400 mt-0.5 truncate max-w-[200px]">{detail?.moTa || v.moTa}</p>
-                                    </td>
-                                    <td className="px-4 py-3 text-right font-bold text-gray-900 text-xs">{formatCurrency(detail?.soTien || v.tongTien)}</td>
-                                    <td className="px-4 py-3 text-center">
-                                      <span className={`inline-flex px-2 py-1 text-[10px] font-medium rounded-full ${isGhiSo(v) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                        {isGhiSo(v) ? 'Đã ghi sổ' : 'Bản nháp'}
-                                      </span>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
+                  <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold text-xs">
+                        <tr>
+                          <th className="px-5 py-4">Ngày chứng từ</th>
+                          <th className="px-5 py-4">Số CT</th>
+                          <th className="px-5 py-4">Loại/Diễn giải</th>
+                          <th className="px-5 py-4 text-right">Số tiền (VNĐ)</th>
+                          <th className="px-5 py-4 text-center">Trạng thái</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {vouchers.map((v, idx) => {
+                          // Lấy chi tiết dòng hạch toán thuộc về tài sản đang xem
+                          const detail = v.chiTietChungTus?.find((d: any) => d.taiSanId === asset?.id || d.maTaiSan === asset?.maTaiSan) ?? v.chiTietChungTus?.[0];
+                          
+                          // Lấy số tiền tương ứng
+                          const soTien = detail?.soTien || v.tongTien || 0;
 
-                    {/* Depreciation vouchers — grouped by parent */}
-                    {khauHaoVouchers.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                          Chứng từ khấu hao TSCĐ <span className="text-gray-400 font-normal">({khauHaoVouchers.length} kỳ)</span>
-                        </p>
-                        <div className="space-y-2">
-                          {khauHaoVouchers.map((v, idx) => {
-                            const myLines = (v.chiTietChungTus ?? []).filter((d: any) =>
-                              d.taiSanId === asset?.id || d.maTaiSan === asset?.maTaiSan
-                            );
-                            const soTienKH = myLines
-                              .filter((d: any) => ['214', '2141'].includes(d.taiKhoanCo) || ['642', '627', '623'].includes(d.taiKhoanNo))
-                              .reduce((s: number, d: any) => s + (d.soTien ?? 0), 0)
-                              || myLines.reduce((s: number, d: any) => s + (d.soTien ?? 0), 0)
-                              || v.tongTien;
-
-                            return (
-                              <div key={idx} className="bg-white border border-purple-100 rounded-lg overflow-hidden shadow-sm">
-                                {/* Parent header */}
-                                <div className="flex items-center justify-between px-4 py-3 bg-purple-50 border-b border-purple-100">
-                                  <div className="flex items-center gap-3">
-                                    <TrendingDown className="w-4 h-4 text-purple-500 shrink-0" />
-                                    <div>
-                                      <Link to={`/vouchers/${v.id}`} className="font-semibold text-purple-700 hover:underline text-sm">
-                                        {v.maChungTu}
-                                      </Link>
-                                      <p className="text-[11px] text-purple-400 mt-0.5">{v.moTa}</p>
-                                    </div>
-                                  </div>
-                                  <div className="text-right flex items-center gap-3">
-                                    <div>
-                                      <p className="text-xs text-gray-500">{v.ngayLap ? new Date(v.ngayLap).toLocaleDateString('vi-VN') : '—'}</p>
-                                      <p className="font-bold text-purple-700 text-sm">{formatCurrency(soTienKH)}</p>
-                                    </div>
-                                    <span className={`inline-flex px-2 py-1 text-[10px] font-medium rounded-full ${isGhiSo(v) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                      {isGhiSo(v) ? 'Đã ghi sổ' : 'Bản nháp'}
-                                    </span>
-                                  </div>
-                                </div>
-                                {/* Asset-specific lines */}
-                                {myLines.length > 0 && (
-                                  <table className="w-full text-xs">
-                                    <thead className="bg-gray-50 text-gray-500 border-b border-gray-100">
-                                      <tr>
-                                        <th className="pl-8 pr-4 py-2 text-left font-medium">Hạch toán</th>
-                                        <th className="px-4 py-2 text-left font-medium">Diễn giải</th>
-                                        <th className="px-4 py-2 text-right font-medium">TK Nợ</th>
-                                        <th className="px-4 py-2 text-right font-medium">TK Có</th>
-                                        <th className="px-4 py-2 text-right font-medium">Số tiền</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                      {myLines.map((d: any, dIdx: number) => (
-                                        <tr key={dIdx} className="hover:bg-gray-50">
-                                          <td className="pl-8 pr-4 py-2 text-gray-400">└</td>
-                                          <td className="px-4 py-2 text-gray-600 truncate max-w-[200px]">{d.moTa || '—'}</td>
-                                          <td className="px-4 py-2 text-right font-mono text-blue-600">{d.taiKhoanNo}</td>
-                                          <td className="px-4 py-2 text-right font-mono text-red-500">{d.taiKhoanCo}</td>
-                                          <td className="px-4 py-2 text-right font-semibold text-gray-800">{formatCurrency(d.soTien)}</td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </>
+                          return (
+                            <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                              <td className="px-5 py-4 text-gray-900 font-medium text-sm">
+                                {v.ngayLap ? new Date(v.ngayLap).toLocaleDateString('vi-VN') : '—'}
+                              </td>
+                              <td className="px-5 py-4">
+                                <Link to={`/vouchers/${v.id}`} className="text-blue-600 font-medium hover:underline text-sm">
+                                  {v.maChungTu}
+                                </Link>
+                              </td>
+                              <td className="px-5 py-4">
+                                <p className="font-semibold text-gray-900 text-sm">
+                                  {getLoaiLabel(v.loaiChungTu?.toString())}
+                                </p>
+                                <p className="text-[13px] text-gray-500 mt-1 line-clamp-2 max-w-sm">
+                                  {detail?.moTa || v.moTa || '—'}
+                                </p>
+                              </td>
+                              <td className="px-5 py-4 text-right font-bold text-gray-900 text-sm">
+                                {formatCurrency(soTien)}
+                              </td>
+                              <td className="px-5 py-4 text-center">
+                                <span className={`inline-flex px-3 py-1 text-[11px] font-medium rounded-full border ${
+                                  isGhiSo(v) 
+                                    ? 'bg-green-50 text-green-700 border-green-200' 
+                                    : 'bg-gray-50 text-gray-600 border-gray-200'
+                                }`}>
+                                  {isGhiSo(v) ? 'Đã ghi sổ' : 'Bản nháp'}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </div>
             );

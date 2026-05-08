@@ -114,8 +114,16 @@ namespace TH.Asset.ApplicationService.Service
                         taiKhoanCo = "2143"; // Nếu là TSCĐ vô hình (Mã 213x)
                     }
 
-                    chiTietList.Add(new ChiTietChungTu { ChungTuId = chungTu.Id, TaiSanId = taiSan.Id, TaiKhoanNo = taiKhoanNo, SoTien = soTienKhauHao, MoTa = $"Chi phí khấu hao TSCĐ kỳ {request.kyKhauHao}" });
-                    chiTietList.Add(new ChiTietChungTu { ChungTuId = chungTu.Id, TaiSanId = taiSan.Id, TaiKhoanCo = taiKhoanCo, SoTien = soTienKhauHao, MoTa = $"Hao mòn TSCĐ kỳ {request.kyKhauHao}" });
+                    // GỘP CHUNG VÀO 1 DÒNG (Giống Seed Data)
+                    chiTietList.Add(new ChiTietChungTu
+                    {
+                        ChungTuId = chungTu.Id,
+                        TaiSanId = taiSan.Id,
+                        TaiKhoanNo = taiKhoanNo,
+                        TaiKhoanCo = taiKhoanCo, // Đưa luôn TK Có vào đây
+                        SoTien = soTienKhauHao,
+                        MoTa = $"Trích khấu hao TSCĐ kỳ {request.kyKhauHao}"
+                    });
 
                     _dbContext.chiTietChungTus.AddRange(chiTietList);
 
@@ -396,13 +404,19 @@ namespace TH.Asset.ApplicationService.Service
                         else if (taiSan.MaTaiKhoan == "2113") taiKhoanNo = "641";
                         string taiKhoanCo = taiSan.MaTaiKhoan?.StartsWith("213") == true ? "2143" : "2141";
 
-                        // Sinh dòng Detail: Gắn vào ID Chứng Từ Cha
-                        chiTietList.Add(new ChiTietChungTu { ChungTuId = chungTuTong.Id, TaiSanId = taiSan.Id, TaiKhoanNo = taiKhoanNo, SoTien = item.SoTien, MoTa = $"Chi phí KH kỳ {request.KyKhauHao}" });
-                        chiTietList.Add(new ChiTietChungTu { ChungTuId = chungTuTong.Id, TaiSanId = taiSan.Id, TaiKhoanCo = taiKhoanCo, SoTien = item.SoTien, MoTa = $"Hao mòn TSCĐ kỳ {request.KyKhauHao}" });
+                        // Sinh dòng Detail: Gắn vào ID Chứng Từ Cha (GỘP NỢ/CÓ VÀO 1 DÒNG)
+                        chiTietList.Add(new ChiTietChungTu
+                        {
+                            ChungTuId = chungTuTong.Id,
+                            TaiSanId = taiSan.Id,
+                            TaiKhoanNo = taiKhoanNo,
+                            TaiKhoanCo = taiKhoanCo,
+                            SoTien = item.SoTien,
+                            MoTa = $"Trích khấu hao TSCĐ kỳ {request.KyKhauHao}"
+                        });
 
                         // Sinh dòng Lịch sử: Gắn vào ID Chứng Từ Cha
                         lichSuList.Add(new LichSuKhauHao { TaiSanId = taiSan.Id, ChungTuId = chungTuTong.Id, KyKhauHao = request.KyKhauHao, SoTien = item.SoTien, LuyKeSauKhauHao = luyKeMoi, ConLaiSauKhauHao = giaTriConLaiMoi, NgayTao = DateTime.UtcNow });
-
                         // Cập nhật Tài sản
                         taiSan.KhauHaoLuyKe = luyKeMoi;
                         taiSan.GiaTriConLai = giaTriConLaiMoi;
