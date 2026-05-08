@@ -460,10 +460,7 @@ namespace TH.Auth.ApplicationService.StartUp
             try
             {
                 var context = services.GetRequiredService<AuthDbContext>();
-                var hasher  = services.GetRequiredService<IPasswordHasher>();
-
-                await context.Database.MigrateAsync();
-                await TH.Auth.Infrastructure.SeedData.AuthDataSeeder.SeedAsync(context, hasher, logger);
+                await context.Database.MigrateAsync(); // Chỉ cần chạy Migrate là HasData sẽ tự động apply
             }
             catch (Exception ex)
             {

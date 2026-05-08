@@ -52,7 +52,5 @@ namespace TH.Asset.Domain.Enums
     {
         TienMat = 0,        // Tiền mặt
         ChuyenKhoan = 1,    // Chuyển khoản
-        TheNganHang = 2,    // Thẻ ngân hàng
-        CongNo = 3          // Công nợ / Ghi nợ
     }
 }

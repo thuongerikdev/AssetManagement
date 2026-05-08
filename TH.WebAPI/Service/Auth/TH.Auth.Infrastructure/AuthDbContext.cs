@@ -98,12 +98,18 @@ namespace TH.Auth.Infrastructure
             // =========================================================
 
             // Seed Roles (static, no password needed)
-            AuthSeedData.SeedRoles(modelBuilder);
+            //AuthSeedData.SeedRoles(modelBuilder);
 
             // Users/Profiles/UserRoles are seeded at runtime via SeedAuthDataAsync
             // so plain-text passwords can be hashed dynamically by IPasswordHasher
 
             base.OnModelCreating(modelBuilder);
+            TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedRoles(modelBuilder);
+            TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedUsers(modelBuilder);
+            TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedProfiles(modelBuilder);
+            TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedUserRoles(modelBuilder);
+
         }
+      
     }
 }

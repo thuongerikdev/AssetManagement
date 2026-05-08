@@ -364,13 +364,13 @@ export function AssetList() {
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getCatName(asset.danhMucId)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getDeptName(asset.phongBanId)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.nguyenGia)}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      {/* <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm text-gray-600">
                             {asset.phuongThucThanhToan !== undefined && asset.phuongThucThanhToan !== null
                               ? PHUONG_THUC_THANH_TOAN_OPTIONS.find(o => o.value === asset.phuongThucThanhToan)?.label ?? '—'
                               : '—'}
                           </span>
-                        </td>
+                        </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm font-medium text-gray-900">{formatCurrency(asset.giaTriConLai)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-center"><span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${currentStatus.color}`}>{currentStatus.label}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -404,7 +404,7 @@ export function AssetList() {
       </div>
 
       {/* MODAL THÊM TÀI SẢN MỚI FULL THÔNG TIN */}
-      {showAddModal && (
+{showAddModal && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-white sticky top-0 z-10">
@@ -619,7 +619,7 @@ export function AssetList() {
                           ...addFormData, 
                           phongBanId: newDeptId,
                           nguoiDungId: undefined, // Reset người dùng khi đổi phòng ban
-                          trangThai: newDeptId ? 1 : 0 // Nếu chọn phòng ban, tự chuyển thành Chờ xác nhận
+                          trangThai: 0 // Khi đổi/xóa phòng ban, do chưa có người dùng nên mặc định về 0
                         });
                       }} 
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
@@ -640,7 +640,8 @@ export function AssetList() {
                         setAddFormData({
                           ...addFormData, 
                           nguoiDungId: newUserId,
-                          trangThai: (addFormData.phongBanId || newUserId) ? 1 : 0
+                          // Điều kiện: Bắt buộc có cả phòng ban và người dùng mới lên 1 (Chờ xác nhận), còn không thì 0 (Chờ cấp phát)
+                          trangThai: (addFormData.phongBanId && newUserId) ? 1 : 0
                         });
                       }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
@@ -655,9 +656,14 @@ export function AssetList() {
                         const fullName = user.profile 
                           ? `${user.profile.lastName} ${user.profile.firstName}`.trim() 
                           : user.userName;
+                        
+                        // Lấy chức vụ: Thay 'chucVu' bằng trường lưu chức danh trong API của bạn nếu khác (vd: role, chucDanh...)
+                        const role = user.chucVu ? ` (${user.chucVu})` : ''; 
+
                         return (
                           <option key={user.userID} value={user.userID}>
-                            {fullName} ({user.email || user.userName})
+                            {/* Hiển thị: ID - Tên nhân viên (Chức vụ) */}
+                            {user.userID} - {fullName}{role}
                           </option>
                         );
                       })}
@@ -669,11 +675,11 @@ export function AssetList() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái luồng cấp phát</label>
                       <select 
                         value={addFormData.trangThai ?? 0} 
-                        onChange={(e) => setAddFormData({...addFormData, trangThai: Number(e.target.value)})} 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                        disabled // KHÓA SỬA TAY
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 font-medium cursor-not-allowed focus:outline-none"
                       >
-                        <option value={0}>Chưa cấp phát</option>
-                        <option value={1}>Chờ người dùng xác nhận</option>
+                        <option value={0}>Chờ cấp phát</option>
+                        <option value={1}>Chờ xác nhận</option>
                         <option value={2}>Đang sử dụng</option>
                       </select>
                     </div>

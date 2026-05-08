@@ -16,6 +16,8 @@ namespace TH.WebAPI
     {
         public static async Task Main(string[] args)
         {
+
+
             ThreadPool.GetMinThreads(out var worker, out var iocp);
             var target = Math.Max(worker, Environment.ProcessorCount * 16);
             ThreadPool.SetMinThreads(target, iocp);

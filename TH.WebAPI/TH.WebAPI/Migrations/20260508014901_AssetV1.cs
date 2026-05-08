@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace TH.WebAPI.Migrations.AssetDb
+namespace TH.WebAPI.Migrations
 {
     /// <inheritdoc />
     public partial class AssetV1 : Migration
@@ -357,6 +357,33 @@ namespace TH.WebAPI.Migrations.AssetDb
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_lich_su_khau_hao_tai_san_TaiSanId",
+                        column: x => x.TaiSanId,
+                        principalSchema: "asset",
+                        principalTable: "tai_san",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tai_san_dinh_kem",
+                schema: "asset",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TaiSanId = table.Column<int>(type: "integer", nullable: false),
+                    TenFile = table.Column<string>(type: "text", nullable: false),
+                    LoaiFile = table.Column<string>(type: "text", nullable: true),
+                    DuongDan = table.Column<string>(type: "text", nullable: true),
+                    KichThuoc = table.Column<long>(type: "bigint", nullable: true),
+                    NgayTai = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    MoTa = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tai_san_dinh_kem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tai_san_dinh_kem_tai_san_TaiSanId",
                         column: x => x.TaiSanId,
                         principalSchema: "asset",
                         principalTable: "tai_san",
@@ -1304,6 +1331,12 @@ namespace TH.WebAPI.Migrations.AssetDb
                 column: "PhongBanId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tai_san_dinh_kem_TaiSanId",
+                schema: "asset",
+                table: "tai_san_dinh_kem",
+                column: "TaiSanId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_thanh_ly_tai_san_TaiSanId",
                 schema: "asset",
                 table: "thanh_ly_tai_san",
@@ -1331,6 +1364,10 @@ namespace TH.WebAPI.Migrations.AssetDb
 
             migrationBuilder.DropTable(
                 name: "lich_su_khau_hao",
+                schema: "asset");
+
+            migrationBuilder.DropTable(
+                name: "tai_san_dinh_kem",
                 schema: "asset");
 
             migrationBuilder.DropTable(

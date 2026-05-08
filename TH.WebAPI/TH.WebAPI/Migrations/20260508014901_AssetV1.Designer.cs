@@ -9,10 +9,10 @@ using TH.Asset.Infrastructure.Database;
 
 #nullable disable
 
-namespace TH.WebAPI.Migrations.AssetDb
+namespace TH.WebAPI.Migrations
 {
     [DbContext(typeof(AssetDbContext))]
-    [Migration("20260505150135_AssetV1")]
+    [Migration("20260508014901_AssetV1")]
     partial class AssetV1
     {
         /// <inheritdoc />
@@ -8687,6 +8687,43 @@ namespace TH.WebAPI.Migrations.AssetDb
                         });
                 });
 
+            modelBuilder.Entity("TH.Asset.Domain.Entities.TaiSanDinhKem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DuongDan")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("KichThuoc")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("LoaiFile")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MoTa")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("NgayTai")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TaiSanId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TenFile")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaiSanId");
+
+                    b.ToTable("tai_san_dinh_kem", "asset");
+                });
+
             modelBuilder.Entity("TH.Asset.Domain.Entities.ThanhLyTaiSan", b =>
                 {
                     b.Property<int>("Id")
@@ -9013,6 +9050,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                     b.Navigation("PhongBan");
 
                     b.Navigation("TaiKhoanKeToan");
+                });
+
+            modelBuilder.Entity("TH.Asset.Domain.Entities.TaiSanDinhKem", b =>
+                {
+                    b.HasOne("TH.Asset.Domain.Entities.TaiSan", "TaiSan")
+                        .WithMany()
+                        .HasForeignKey("TaiSanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaiSan");
                 });
 
             modelBuilder.Entity("TH.Asset.Domain.Entities.ThanhLyTaiSan", b =>

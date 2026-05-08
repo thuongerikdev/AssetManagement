@@ -13,11 +13,27 @@ export function MyAssets() {
   const [isLoading, setIsLoading] = useState(!cachedMyAssets);
 
   // GIẢ LẬP: Đang đăng nhập bằng User có ID = 15 (Sau này lấy từ hệ thống Auth)
-  const currentUserId = 15; 
+  // const currentUserId = 15; 
 
   // ==========================================
   // 2. HÀM FETCH CÓ TÍCH HỢP CACHE VÀ NÚT LÀM MỚI
   // ==========================================
+
+  const getUserInfo = () => {
+    try {
+      const userInfoString = localStorage.getItem('user_info');
+      if (userInfoString) {
+        const userInfo = JSON.parse(userInfoString);
+        return userInfo.userID; // Lấy đúng trường userID bạn đã lưu lúc đăng nhập
+      }
+    } catch (error) {
+      console.error('Lỗi khi đọc thông tin user:', error);
+    }
+    return null; // Trả về null nếu không tìm thấy
+  };
+
+  const currentUserId = getUserInfo();
+
   const fetchMyAssets = async (forceRefresh = false) => {
     // Trả về cache nếu không ép tải lại
     if (!forceRefresh && cachedMyAssets) {

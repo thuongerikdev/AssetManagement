@@ -111,13 +111,29 @@ namespace TH.Auth.ApplicationService.Service.User
                     var ua = _tokenGenerate.GetUserAgent();
 
                     var user = await _userRepository.FindByEmailAsync(identifier, innerCt)
-                               ?? await _userRepository.FindByUserNameAsync(identifier, innerCt);
+            ?? await _userRepository.FindByUserNameAsync(identifier, innerCt);
 
-                    if (user is null) return ResponseConst.Error<LoginResponse>(401, "Sai tài khoản hoặc mật khẩu");
-                    if (!string.Equals(user.status, "Active", StringComparison.OrdinalIgnoreCase)) return ResponseConst.Error<LoginResponse>(403, "Tài khoản bị khóa");
-                    if (!_hasher.Verify(req.password, user.passwordHash)) return ResponseConst.Error<LoginResponse>(401, "Sai tài khoản hoặc mật khẩu");
-                    if (!user.isEmailVerified) return ResponseConst.Error<LoginResponse>(409, "Email chưa xác thực");
+                    if (user is null)
+                    {
+                        _logger.LogWarning("[LOGIN BUG] Không tìm thấy user trong DB bằng Email hoặc UserName: {Identifier}", identifier);
+                        // Tạm thời trả về message khác để phân biệt
+                        return ResponseConst.Error<LoginResponse>(401, "Sai tài khoản (Không tìm thấy DB)");
+                    }
 
+                    if (!string.Equals(user.status, "Active", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return ResponseConst.Error<LoginResponse>(403, "Tài khoản bị khóa");
+                    }
+
+                    if (!_hasher.Verify(req.password, user.passwordHash))
+                    {
+                        _logger.LogWarning("[LOGIN BUG] Sai mật khẩu cho user {Identifier}. Hash đang lưu: {Hash}", identifier, user.passwordHash);
+                        // Tạm thời trả về message khác để phân biệt
+                        return ResponseConst.Error<LoginResponse>(401, "Sai mật khẩu (Hash không khớp)");
+                    }
+
+                    if (!user.isEmailVerified)
+                        return ResponseConst.Error<LoginResponse>(409, "Email chưa xác thực");
                     // 1. Check MFA
                     var mfaEnabled = await _mfa.CheckEnabledMFAAsync(user.userID, innerCt);
                     if (mfaEnabled)

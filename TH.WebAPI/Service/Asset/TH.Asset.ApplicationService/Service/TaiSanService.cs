@@ -370,6 +370,8 @@ namespace TH.Asset.ApplicationService.Service
 
         public async Task<ResponseDto<bool>> ConfirmAssetAsync(int id)
         {
+            // Sử dụng Transaction để đảm bảo nếu tạo chứng từ lỗi thì roll-back lại trạng thái tài sản
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
             {
                 var taiSan = await _dbContext.taiSans.FindAsync(id);
@@ -395,12 +397,49 @@ namespace TH.Asset.ApplicationService.Service
                     _dbContext.dieuChuyenTaiSans.Update(phieuCho);
                 }
 
+                // 3. TẠO CHỨNG TỪ GHI TĂNG TÀI SẢN KÈM HẠCH TOÁN NỢ / CÓ
+                // Xác định Tài khoản Có dựa vào phương thức thanh toán
+                string taiKhoanCo = taiSan.PhuongThucThanhToan == PhuongThucThanhToan.ChuyenKhoan ? "112" : "111";
+
+                // Khởi tạo Master Chứng Từ
+                var chungTu = new ChungTu
+                {
+                    MaChungTu = $"CT-GT-{DateTime.UtcNow:yyMMddHHmmss}-{taiSan.Id}", // Sinh mã nhanh
+                    NgayLap = DateTime.UtcNow,
+                    LoaiChungTu = LoaiChungTu.GhiTang,
+                    MoTa = $"Ghi tăng tài sản: {taiSan.TenTaiSan} ({taiSan.MaTaiSan})",
+                    TongTien = taiSan.NguyenGia ?? 0,
+                    TrangThai = "da_ghi_so", // Có thể để "nhap" nếu bạn muốn kế toán duyệt lại
+                    NguoiLapId = taiSan.NguoiDungId,
+                    NgayTao = DateTime.UtcNow
+                };
+
+                _dbContext.chungTus.Add(chungTu);
+                await _dbContext.SaveChangesAsync(); // Lưu để lấy Id chứng từ
+
+                // Khởi tạo Chi tiết hạch toán (Detail)
+                var chiTietChungTu = new ChiTietChungTu
+                {
+                    ChungTuId = chungTu.Id,
+                    TaiSanId = taiSan.Id,
+                    TaiKhoanNo = taiSan.MaTaiKhoan, // Lấy tài khoản tài sản (VD: 211)
+                    TaiKhoanCo = taiKhoanCo,        // 111 hoặc 112
+                    SoTien = taiSan.NguyenGia ?? 0,
+                    MoTa = $"Thanh toán mua tài sản {taiSan.MaTaiSan}"
+                };
+
+                _dbContext.chiTietChungTus.Add(chiTietChungTu);
                 await _dbContext.SaveChangesAsync();
-                return ResponseConst.Success("Xác nhận nhận tài sản và chốt phiếu thành công!", true);
+
+                // Lưu toàn bộ thay đổi
+                await transaction.CommitAsync();
+
+                return ResponseConst.Success("Xác nhận nhận tài sản và sinh chứng từ thành công!", true);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi xác nhận tài sản.");
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Lỗi khi xác nhận tài sản và sinh chứng từ.");
                 return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
             }
         }
