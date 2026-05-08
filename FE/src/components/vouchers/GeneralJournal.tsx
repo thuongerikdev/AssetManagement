@@ -231,8 +231,11 @@ export function GeneralJournal() {
                 ngayLap: e.ngayLap,
                 maChungTu: e.maChungTu,
                 dienGiai: e.moTa,
-                taiKhoanNo: e.taiKhoanNo,
-                taiKhoanCo: e.taiKhoanCo,
+                
+                // THÊM || undefined ĐỂ FIX LỖI TYPESCRIPT
+                taiKhoanNo: e.taiKhoanNo || undefined, 
+                taiKhoanCo: e.taiKhoanCo || undefined, 
+                
                 soTien: e.soTien,
               })), fromDate, toDate);
               toast.success('Xuất file Sổ Nhật Ký Chung thành công!');
