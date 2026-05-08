@@ -1,88 +1,218 @@
-import { 
-  Package, 
-  DollarSign, 
-  TrendingDown, 
+import { useState, useEffect } from 'react';
+import {
+  Package,
+  DollarSign,
+  TrendingDown,
   Wrench,
-  AlertCircle,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
+import { useGlobalData } from '../context/GlobalContext';
+import { maintenanceApi, BaoTriTaiSan } from '../api/maintenanceApi';
+import { depreciationHistoryApi, LichSuKhauHao } from '../api/depreciationHistoryApi';
+import { liquidationApi, ThanhLyTaiSan } from '../api/liquidationApi';
+import { TaiSan } from '../api/assetApi';
 
-const statsData = [
-  { 
-    title: 'Tổng số Tài sản', 
-    value: '1,234', 
-    icon: Package, 
-    color: 'bg-blue-500',
-    change: '+12%',
-    changeType: 'increase'
-  },
-  { 
-    title: 'Tổng Nguyên giá', 
-    value: '15.5 tỷ', 
-    icon: DollarSign, 
-    color: 'bg-green-500',
-    change: '+8%',
-    changeType: 'increase'
-  },
-  { 
-    title: 'Giá trị Còn lại', 
-    value: '12.3 tỷ', 
-    icon: TrendingUp, 
-    color: 'bg-purple-500',
-    change: '-3%',
-    changeType: 'decrease'
-  },
-  { 
-    title: 'Khấu hao Tháng này', 
-    value: '285 tr', 
-    icon: TrendingDown, 
-    color: 'bg-orange-500',
-    change: '0%',
-    changeType: 'neutral'
-  },
-];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 
-const departmentData = [
-  { name: 'IT', value: 450, color: '#3b82f6' },
-  { name: 'Kỹ thuật', value: 320, color: '#10b981' },
-  { name: 'Sales', value: 180, color: '#f59e0b' },
-  { name: 'Marketing', value: 145, color: '#8b5cf6' },
-  { name: 'Admin', value: 139, color: '#ec4899' },
-];
+function getLast6Months(): { label: string; key: string }[] {
+  const result = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = `T${d.getMonth() + 1}`;
+    result.push({ label, key });
+  }
+  return result;
+}
 
-const assetTrendData = [
-  { month: 'T1', increase: 45, decrease: 12 },
-  { month: 'T2', increase: 52, decrease: 8 },
-  { month: 'T3', increase: 38, decrease: 15 },
-  { month: 'T4', increase: 61, decrease: 10 },
-  { month: 'T5', increase: 55, decrease: 18 },
-  { month: 'T6', increase: 67, decrease: 9 },
-];
+function formatCurrency(value: number): string {
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)} tỷ`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(0)} tr`;
+  return value.toLocaleString('vi-VN');
+}
 
-const maintenanceCostData = [
-  { month: 'T1', cost: 45 },
-  { month: 'T2', cost: 62 },
-  { month: 'T3', cost: 38 },
-  { month: 'T4', cost: 71 },
-  { month: 'T5', cost: 55 },
-  { month: 'T6', cost: 68 },
-];
-
-const upcomingMaintenance = [
-  { id: 1, asset: 'Server Dell R740', code: 'SRV-001', date: '2026-02-15', department: 'IT' },
-  { id: 2, asset: 'MacBook Pro 16"', code: 'LAP-045', date: '2026-02-18', department: 'Marketing' },
-  { id: 3, asset: 'HP Printer LaserJet', code: 'PRT-023', date: '2026-02-20', department: 'Admin' },
-  { id: 4, asset: 'Dell Monitor 27"', code: 'MON-156', date: '2026-02-22', department: 'Sales' },
-];
-
-const notifications = [
-  { id: 1, type: 'warning', message: '15 tài sản cần kiểm kê định kỳ trong tuần này', time: '2 giờ trước' },
-  { id: 2, type: 'info', message: 'Đã hoàn thành khấu hao tháng 1/2026', time: '5 giờ trước' },
-  { id: 3, type: 'alert', message: '3 tài sản đã quá hạn bảo trì', time: '1 ngày trước' },
-];
+function getMonthKey(offset = 0): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() + offset);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
 
 export function Dashboard() {
+  const { assets, departments, isLoadingGlobal } = useGlobalData();
+  const [maintenances, setMaintenances] = useState<BaoTriTaiSan[]>([]);
+  const [depreciations, setDepreciations] = useState<LichSuKhauHao[]>([]);
+  const [liquidations, setLiquidations] = useState<ThanhLyTaiSan[]>([]);
+  const [loadingLocal, setLoadingLocal] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      maintenanceApi.getAll(),
+      depreciationHistoryApi.getAll(),
+      liquidationApi.getAll(),
+    ])
+      .then(([maintRes, deprRes, liqRes]) => {
+        if (maintRes?.errorCode === 200) setMaintenances(maintRes.data ?? []);
+        if (deprRes?.errorCode === 200) setDepreciations(deprRes.data ?? []);
+        if (liqRes?.errorCode === 200) setLiquidations(liqRes.data ?? []);
+      })
+      .catch(console.error)
+      .finally(() => setLoadingLocal(false));
+  }, []);
+
+  const loading = isLoadingGlobal || loadingLocal;
+
+  // ── Stats ──────────────────────────────────────────────────────────────────
+  const totalAssets = assets.length;
+  const totalNguyenGia = assets.reduce((s, a) => s + (a.nguyenGia || 0), 0);
+  const totalGiaTriConLai = assets.reduce((s, a) => s + (a.giaTriConLai || 0), 0);
+
+  const currentMonthKey = getMonthKey(0);
+  const lastMonthKey = getMonthKey(-1);
+
+  const monthlyDepreciation = depreciations
+    .filter(d => d.kyKhauHao === currentMonthKey)
+    .reduce((s, d) => s + (d.soTien || 0), 0);
+
+  const assetsThisMonth = assets.filter(a => a.ngayTao?.startsWith(currentMonthKey)).length;
+  const assetsLastMonth = assets.filter(a => a.ngayTao?.startsWith(lastMonthKey)).length;
+  const assetChangePct =
+    assetsLastMonth > 0
+      ? Math.round(((assetsThisMonth - assetsLastMonth) / assetsLastMonth) * 100)
+      : 0;
+  const assetChangeLabel =
+    assetChangePct > 0 ? `+${assetChangePct}%` : assetChangePct < 0 ? `${assetChangePct}%` : '0%';
+  const assetChangeType =
+    assetChangePct > 0 ? 'increase' : assetChangePct < 0 ? 'decrease' : 'neutral';
+
+  const statsData = [
+    {
+      title: 'Tổng số Tài sản',
+      value: totalAssets.toLocaleString('vi-VN'),
+      icon: Package,
+      color: 'bg-blue-500',
+      change: assetChangeLabel,
+      changeType: assetChangeType,
+    },
+    {
+      title: 'Tổng Nguyên giá',
+      value: formatCurrency(totalNguyenGia),
+      icon: DollarSign,
+      color: 'bg-green-500',
+      change: '',
+      changeType: 'neutral' as const,
+    },
+    {
+      title: 'Giá trị Còn lại',
+      value: formatCurrency(totalGiaTriConLai),
+      icon: TrendingUp,
+      color: 'bg-purple-500',
+      change: totalNguyenGia > 0
+        ? `${((totalGiaTriConLai / totalNguyenGia) * 100).toFixed(0)}% nguyên giá`
+        : '',
+      changeType: 'neutral' as const,
+    },
+    {
+      title: 'Khấu hao Tháng này',
+      value: formatCurrency(monthlyDepreciation),
+      icon: TrendingDown,
+      color: 'bg-orange-500',
+      change: '',
+      changeType: 'neutral' as const,
+    },
+  ];
+
+  // ── Department Pie Chart ───────────────────────────────────────────────────
+  const deptNameMap = departments.reduce((m, d) => {
+    m[String(d.id)] = d.tenPhongBan;
+    return m;
+  }, {} as Record<string, string>);
+
+  const deptCounts = assets.reduce((m, a) => {
+    if (a.phongBanId) {
+      const name = deptNameMap[String(a.phongBanId)] || `PB ${a.phongBanId}`;
+      m[name] = (m[name] || 0) + 1;
+    }
+    return m;
+  }, {} as Record<string, number>);
+
+  const departmentChartData = Object.entries(deptCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, value], i) => ({ name, value, color: COLORS[i % COLORS.length] }));
+
+  // ── Asset Trend (last 6 months) ────────────────────────────────────────────
+  const last6 = getLast6Months();
+
+  const assetTrendData = last6.map(({ label, key }) => {
+    const increase = assets.filter(a => a.ngayTao?.startsWith(key)).length;
+    const decrease = liquidations.filter(l => l.ngayThanhLy?.startsWith(key)).length;
+    return { month: label, increase, decrease };
+  });
+
+  // ── Maintenance Cost (last 6 months) ──────────────────────────────────────
+  const maintenanceCostData = last6.map(({ label, key }) => {
+    const cost = maintenances
+      .filter(m => m.ngayThucHien?.startsWith(key))
+      .reduce((s, m) => s + (m.chiPhi || 0), 0);
+    return { month: label, cost: Math.round(cost / 1_000_000) };
+  });
+
+  // ── Upcoming Maintenance ───────────────────────────────────────────────────
+  const assetMap = assets.reduce((m, a) => {
+    if (a.id) m[a.id] = a;
+    return m;
+  }, {} as Record<number, TaiSan>);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const upcomingMaintenanceData = maintenances
+    .filter(m => m.ngayThucHien && m.ngayThucHien >= today)
+    .sort((a, b) => (a.ngayThucHien || '').localeCompare(b.ngayThucHien || ''))
+    .slice(0, 5)
+    .map(m => {
+      const asset = assetMap[m.taiSanId];
+      const dept = asset?.phongBanId ? deptNameMap[String(asset.phongBanId)] : '';
+      return {
+        id: m.id,
+        asset: asset?.tenTaiSan || `Tài sản #${m.taiSanId}`,
+        code: asset?.maTaiSan || '',
+        date: m.ngayThucHien || '',
+        department: dept,
+      };
+    });
+
+  // ── Loading skeleton ───────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="font-bold text-gray-900">Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">Tổng quan hệ thống quản lý tài sản cố định</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-3" />
+              <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/3" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 h-80 animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+              <div className="h-full bg-gray-100 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -97,18 +227,28 @@ export function Dashboard() {
         {statsData.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+            <div
+              key={index}
+              className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                  <p className="font-bold text-gray-900">{stat.value}</p>
-                  <p className={`text-xs mt-2 ${
-                    stat.changeType === 'increase' ? 'text-green-600' : 
-                    stat.changeType === 'decrease' ? 'text-red-600' : 
-                    'text-gray-600'
-                  }`}>
-                    {stat.change} so với tháng trước
-                  </p>
+                  <p className="font-bold text-gray-900 text-2xl">{stat.value}</p>
+                  {stat.change && (
+                    <p
+                      className={`text-xs mt-2 ${
+                        stat.changeType === 'increase'
+                          ? 'text-green-600'
+                          : stat.changeType === 'decrease'
+                          ? 'text-red-600'
+                          : 'text-gray-500'
+                      }`}
+                    >
+                      {stat.change}
+                      {stat.changeType !== 'neutral' && ' so với tháng trước'}
+                    </p>
+                  )}
                 </div>
                 <div className={`${stat.color} p-3 rounded-lg`}>
                   <Icon className="w-6 h-6 text-white" />
@@ -124,39 +264,49 @@ export function Dashboard() {
         {/* Asset by Department */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Tài sản theo Phòng ban</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={departmentData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {departmentData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          {departmentChartData.length === 0 ? (
+            <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+              Chưa có dữ liệu phân bổ phòng ban
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={departmentChartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    percent > 0.05 ? `${name}: ${(percent * 100).toFixed(0)}%` : ''
+                  }
+                  outerRadius={100}
+                  dataKey="value"
+                >
+                  {departmentChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value: number) => [`${value} tài sản`, 'Số lượng']} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         {/* Asset Trend */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Biểu đồ Tăng giảm Tài sản (6 tháng)</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">
+            Biểu đồ Tăng giảm Tài sản (6 tháng gần nhất)
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={assetTrendData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis />
+              <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
               <Bar dataKey="increase" fill="#10b981" name="Tăng" />
-              <Bar dataKey="decrease" fill="#ef4444" name="Giảm" />
+              <Bar dataKey="decrease" fill="#ef4444" name="Thanh lý" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -172,9 +322,19 @@ export function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                formatter={(value: number) => [`${value} triệu`, 'Chi phí']}
+              />
               <Legend />
-              <Line type="monotone" dataKey="cost" stroke="#f59e0b" strokeWidth={2} name="Chi phí" />
+              <Line
+                type="monotone"
+                dataKey="cost"
+                stroke="#f59e0b"
+                strokeWidth={2}
+                name="Chi phí"
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -185,46 +345,35 @@ export function Dashboard() {
             <Wrench className="w-5 h-5 text-orange-500" />
             Tài sản sắp Bảo trì
           </h3>
-          <div className="space-y-3">
-            {upcomingMaintenance.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                <div className="flex-1">
-                  <p className="font-medium text-sm text-gray-900">{item.asset}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {item.code} • {item.department}
-                  </p>
+          {upcomingMaintenanceData.length === 0 ? (
+            <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+              Không có lịch bảo trì sắp tới
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {upcomingMaintenanceData.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-gray-900 truncate">{item.asset}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {item.code}
+                      {item.department && ` • ${item.department}`}
+                    </p>
+                  </div>
+                  <div className="text-right ml-3 shrink-0">
+                    <p className="text-xs text-gray-600">
+                      {new Date(item.date).toLocaleDateString('vi-VN')}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-600">{new Date(item.date).toLocaleDateString('vi-VN')}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Notifications
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-blue-500" />
-          Thông báo & Nhắc nhở
-        </h3>
-        <div className="space-y-3">
-          {notifications.map((notif) => (
-            <div key={notif.id} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <AlertCircle className={`w-5 h-5 mt-0.5 ${
-                notif.type === 'warning' ? 'text-orange-500' : 
-                notif.type === 'alert' ? 'text-red-500' : 
-                'text-blue-500'
-              }`} />
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">{notif.message}</p>
-                <p className="text-xs text-gray-500 mt-1">{notif.time}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div> */}
     </div>
   );
 }

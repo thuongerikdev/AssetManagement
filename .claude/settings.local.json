@@ -25,7 +25,9 @@
       "PowerShell(Get-Process -Name \"TH.WebAPI\" -ErrorAction SilentlyContinue)",
       "PowerShell(Stop-Process -Force -ErrorAction SilentlyContinue)",
       "Bash(dotnet run *)",
-      "PowerShell($proc = Get-NetTCPConnection -LocalPort 5267 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -First 1; if \\($proc\\) { Stop-Process -Id $proc -Force; \"Đã kill PID $proc\" } else { \"Không có process nào trên port 5267\" })"
+      "PowerShell($proc = Get-NetTCPConnection -LocalPort 5267 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -First 1; if \\($proc\\) { Stop-Process -Id $proc -Force; \"Đã kill PID $proc\" } else { \"Không có process nào trên port 5267\" })",
+      "Bash(node_modules\\\\.bin\\\\tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)"
     ]
   }
 }

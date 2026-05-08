@@ -489,8 +489,10 @@ namespace TH.Asset.Infrastructure.Database
                     NgayTao = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 };
                 chungTus.Add(ctGhiTang);
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = oldMaTK[i], SoTien = gia, MoTa = "Ghi tăng nguyên giá TSCĐ" });
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanCo = "111", SoTien = gia, MoTa = "Thanh toán tiền mặt" });
+
+                // GỘP 1 DÒNG
+                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = oldMaTK[i], TaiKhoanCo = "111", SoTien = gia, MoTa = "Ghi tăng nguyên giá TSCĐ" });
+
                 ctId++;
 
                 // Chứng từ thanh lý
@@ -592,8 +594,10 @@ namespace TH.Asset.Infrastructure.Database
                     NgayTao = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 };
                 chungTus.Add(ctGhiTangNew);
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = "2114", SoTien = gia, MoTa = $"Ghi tăng nguyên giá {newLaptops[i]}" });
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanCo = "331", SoTien = gia, MoTa = "Phải trả nhà cung cấp Laptop" });
+
+                // GỘP 1 DÒNG
+                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = "2114", TaiKhoanCo = "331", SoTien = gia, MoTa = $"Ghi tăng nguyên giá {newLaptops[i]}" });
+
                 ctId++;
             }
 
@@ -616,8 +620,19 @@ namespace TH.Asset.Infrastructure.Database
                     NgayTao = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 };
                 chungTus.Add(ctGT);
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = ts.Id, TaiKhoanNo = ts.MaTaiKhoan, SoTien = ts.NguyenGia, MoTa = "Ghi tăng nguyên giá TSCĐ" });
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = ts.Id, TaiKhoanCo = ts.PhuongThucThanhToan == PhuongThucThanhToan.TienMat ? "111" : "112", SoTien = ts.NguyenGia, MoTa = ts.PhuongThucThanhToan == PhuongThucThanhToan.TienMat ? "Thanh toán tiền mặt" : "Thanh toán chuyển khoản" });
+
+                // GỘP 1 DÒNG
+                chiTiets.Add(new ChiTietChungTu
+                {
+                    Id = chiTietId++,
+                    ChungTuId = ctId,
+                    TaiSanId = ts.Id,
+                    TaiKhoanNo = ts.MaTaiKhoan,
+                    TaiKhoanCo = ts.PhuongThucThanhToan == PhuongThucThanhToan.TienMat ? "111" : "112",
+                    SoTien = ts.NguyenGia,
+                    MoTa = "Ghi tăng nguyên giá TSCĐ"
+                });
+
                 ctId++;
 
                 // Điều chuyển (cấp phát ban đầu)
