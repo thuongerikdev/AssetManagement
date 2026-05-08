@@ -27,7 +27,13 @@
       "Bash(dotnet run *)",
       "PowerShell($proc = Get-NetTCPConnection -LocalPort 5267 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -First 1; if \\($proc\\) { Stop-Process -Id $proc -Force; \"Đã kill PID $proc\" } else { \"Không có process nào trên port 5267\" })",
       "Bash(node_modules\\\\.bin\\\\tsc --noEmit)",
-      "Bash(./node_modules/.bin/tsc --noEmit)"
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(Get-ChildItem -Path \"D:\\\\PersonalProject\\\\GiangProject\\\\FE\\\\src\" -Recurse -Filter \"*.ts\" -o \"*.tsx\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(Format-Table FullName)",
+      "Bash(Get-ChildItem -Path \"D:\\\\PersonalProject\\\\GiangProject\\\\TH.WebAPI\" -Recurse -Filter \"*Controller*\" -Include \"*.cs\")",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

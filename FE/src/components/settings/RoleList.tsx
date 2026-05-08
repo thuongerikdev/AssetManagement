@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Shield, Plus, Search, Edit2, Trash2, Copy, 
-  Eye, Loader2, X, CheckSquare, Square, RefreshCw, Save
+import {
+  Shield, Plus, Search, Edit2, Trash2, Copy,
+  Eye, Loader2, X, CheckSquare, Square, RefreshCw, Save, Key
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { authApi } from '../../api/authApi';
@@ -12,17 +12,16 @@ import { authApi } from '../../api/authApi';
 let cachedRoles: any[] | null = null;
 
 export function RoleList() {
-  // State quản lý danh sách Role
   const [roles, setRoles] = useState<any[]>(cachedRoles || []);
   const [loading, setLoading] = useState(!cachedRoles);
   const [searchText, setSearchText] = useState('');
-  
-  // Dialog States
+
+  // Modal: add/edit role
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const [currentRole, setCurrentRole] = useState({
     roleID: 0,
     roleName: '',
@@ -38,6 +37,14 @@ export function RoleList() {
     newScope: 'user',
     isDefault: false,
   });
+
+  // Modal: assign permissions
+  const [isPermModalOpen, setIsPermModalOpen] = useState(false);
+  const [permTargetRole, setPermTargetRole] = useState<any | null>(null);
+  const [allPermissions, setAllPermissions] = useState<any[]>([]);
+  const [selectedPermIds, setSelectedPermIds] = useState<number[]>([]);
+  const [loadingPerms, setLoadingPerms] = useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
 
   // ==========================================
   // 2. HÀM TẢI DỮ LIỆU CÓ TÍCH HỢP CACHE
@@ -150,7 +157,7 @@ export function RoleList() {
       if (response.errorCode === 200 || response.errorCode === 201) {
         toast.success("Sao chép Role thành công!");
         setIsCloneModalOpen(false);
-        fetchRoles(true); // Ép làm mới Cache
+        fetchRoles(true);
       } else {
         toast.error(response.errorMessage || "Sao chép thất bại!");
       }
@@ -158,6 +165,56 @@ export function RoleList() {
       toast.error("Lỗi kết nối đến máy chủ.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const openPermModal = async (role: any) => {
+    setPermTargetRole(role);
+    setIsPermModalOpen(true);
+    setLoadingPerms(true);
+    try {
+      const [allRes, roleRes] = await Promise.all([
+        authApi.getAllPermissions(),
+        authApi.getPermissionsByRoleId(role.roleID),
+      ]);
+      if (allRes.errorCode === 200) setAllPermissions(allRes.data || []);
+      if (roleRes.errorCode === 200) {
+        setSelectedPermIds((roleRes.data || []).map((p: any) => p.permissionID));
+      } else {
+        setSelectedPermIds([]);
+      }
+    } catch {
+      toast.error('Lỗi khi tải danh sách quyền');
+    } finally {
+      setLoadingPerms(false);
+    }
+  };
+
+  const togglePermId = (id: number) => {
+    setSelectedPermIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id],
+    );
+  };
+
+  const handleAssignPermissions = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!permTargetRole) return;
+    setIsAssigning(true);
+    try {
+      const res = await authApi.assignPermissionsToRole({
+        roleId: permTargetRole.roleID,
+        permissionIds: selectedPermIds,
+      });
+      if (res.errorCode === 200 || res.errorCode === 201) {
+        toast.success('Gán quyền thành công!');
+        setIsPermModalOpen(false);
+      } else {
+        toast.error(res.errorMessage || 'Gán quyền thất bại');
+      }
+    } catch {
+      toast.error('Lỗi kết nối máy chủ');
+    } finally {
+      setIsAssigning(false);
     }
   };
 
@@ -264,21 +321,25 @@ export function RoleList() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
-                        <button className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-md transition-colors" title="Xem chi tiết">
-                          <Eye className="w-4 h-4" />
+                        <button
+                          onClick={() => openPermModal(row)}
+                          className="p-1.5 text-yellow-600 hover:bg-yellow-100 rounded-md transition-colors"
+                          title="Gán quyền (Permissions)"
+                        >
+                          <Key className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => {
-                            setCloneData({ 
-                              sourceRoleId: row.roleID, 
-                              newRoleName: `${row.roleName}_copy`, 
-                              newRoleDescription: row.roleDescription, 
-                              newScope: row.scope, 
-                              isDefault: false 
+                            setCloneData({
+                              sourceRoleId: row.roleID,
+                              newRoleName: `${row.roleName}_copy`,
+                              newRoleDescription: row.roleDescription,
+                              newScope: row.scope,
+                              isDefault: false,
                             });
                             setIsCloneModalOpen(true);
                           }}
-                          className="p-1.5 text-green-600 hover:bg-green-100 rounded-md transition-colors" 
+                          className="p-1.5 text-green-600 hover:bg-green-100 rounded-md transition-colors"
                           title="Sao chép"
                         >
                           <Copy className="w-4 h-4" />
@@ -371,6 +432,94 @@ export function RoleList() {
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   {dialogMode === 'add' ? 'Thêm mới' : 'Lưu thay đổi'}
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Gán Quyền cho Role ──────────────────────────────────────────── */}
+      {isPermModalOpen && permTargetRole && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Key className="w-5 h-5 text-yellow-600" /> Gán Quyền hạn
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Vai trò: <span className="font-semibold text-gray-700">{permTargetRole.roleName}</span>
+                </p>
+              </div>
+              <button onClick={() => setIsPermModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAssignPermissions} className="p-6">
+              {loadingPerms ? (
+                <div className="flex items-center justify-center py-10">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
+                  <span className="text-gray-500 text-sm">Đang tải danh sách quyền...</span>
+                </div>
+              ) : allPermissions.length === 0 ? (
+                <p className="text-sm text-gray-400 italic text-center py-6">
+                  Không có quyền nào trong hệ thống.
+                </p>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm text-gray-600">Chọn các quyền muốn gán:</p>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setSelectedPermIds(allPermissions.map(p => p.permissionID))}
+                        className="text-xs text-blue-600 hover:underline">Chọn tất cả</button>
+                      <span className="text-gray-300">|</span>
+                      <button type="button" onClick={() => setSelectedPermIds([])}
+                        className="text-xs text-gray-500 hover:underline">Bỏ chọn</button>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                    {allPermissions.map(p => (
+                      <label key={p.permissionID}
+                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer border transition-all ${
+                          selectedPermIds.includes(p.permissionID)
+                            ? 'border-yellow-300 bg-yellow-50'
+                            : 'border-gray-200 bg-white hover:bg-gray-50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedPermIds.includes(p.permissionID)}
+                          onChange={() => togglePermId(p.permissionID)}
+                          className="w-4 h-4 text-yellow-600 rounded border-gray-300 focus:ring-yellow-500"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">{p.permissionName}</p>
+                          <code className="text-[10px] text-blue-600 bg-blue-50 rounded px-1.5 py-0.5">{p.code}</code>
+                        </div>
+                        <span className="text-[10px] font-bold uppercase text-gray-400">{p.scope}</span>
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
+                <span className="text-xs text-gray-500">
+                  Đã chọn: <span className="font-semibold text-yellow-600">{selectedPermIds.length}</span> / {allPermissions.length} quyền
+                </span>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => setIsPermModalOpen(false)}
+                    className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-100 font-medium transition-colors text-sm">
+                    Hủy
+                  </button>
+                  <button type="submit" disabled={isAssigning || loadingPerms}
+                    className="px-5 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 font-bold shadow-md transition-all disabled:opacity-50 flex items-center gap-2 text-sm">
+                    {isAssigning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
+                    Lưu phân quyền
+                  </button>
+                </div>
               </div>
             </form>
           </div>
