@@ -236,7 +236,7 @@ export function GeneralLedger() {
                       <th className="px-4 py-3 text-left">Diễn giải</th>
                       <th className="px-4 py-3 text-right w-36">Phát sinh Nợ</th>
                       <th className="px-4 py-3 text-right w-36">Phát sinh Có</th>
-                      <th className="px-4 py-3 text-right w-36">Số dư lũy kế</th>
+                      {/* <th className="px-4 py-3 text-right w-36">Số dư lũy kế</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -247,7 +247,7 @@ export function GeneralLedger() {
                       <td className="px-4 py-3 text-gray-700">Số dư đầu kỳ</td>
                       <td className="px-4 py-3 text-right text-gray-400">—</td>
                       <td className="px-4 py-3 text-right text-gray-400">—</td>
-                      <td className="px-4 py-3 text-right text-blue-700 font-bold">{fmtFull(data.soDuDauKy)}</td>
+                      {/* <td className="px-4 py-3 text-right text-blue-700 font-bold">{fmtFull(data.soDuDauKy)}</td> */}
                     </tr>
 
                     {/* Transaction rows */}
