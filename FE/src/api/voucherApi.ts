@@ -8,6 +8,7 @@ export interface ChiTietChungTu {
   moTa?: string; // <-- Đổi từ dienGiai thành moTa
   taiSanId?: number;
   maTaiSan?: string;
+  tenTaiSan?: string;
 }
 
 export interface ChungTu {

@@ -331,7 +331,10 @@ namespace TH.Asset.ApplicationService.Service
                             taiKhoanCo = ct.TaiKhoanCo,
                             soTien = ct.SoTien,
                             moTa = ct.MoTa,
-                            taiSanId = ct.TaiSanId
+                            taiSanId = ct.TaiSanId,
+
+                            maTaiSan = ct.TaiSan != null ? ct.TaiSan.MaTaiSan : null,
+                            tenTaiSan = ct.TaiSan != null ? ct.TaiSan.TenTaiSan : null
                         }).ToList()
                     })
                     .OrderByDescending(x => x.ngayLap)

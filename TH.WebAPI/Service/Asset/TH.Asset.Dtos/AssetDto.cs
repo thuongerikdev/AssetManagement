@@ -296,6 +296,8 @@ namespace TH.Asset.Dtos
         public decimal? soTien { get; set; }
         public string? moTa { get; set; }
         public int? taiSanId { get; set; }
+        public string? maTaiSan { get; set; }
+        public string? tenTaiSan { get; set; }
     }
 
 

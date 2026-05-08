@@ -157,29 +157,44 @@ export function VoucherDetail() {
           <h3 className="font-semibold text-gray-900">Bảng định khoản ({entries.length} dòng)</h3>
         </div>
 
-        <div className="overflow-x-auto">
+<div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">STT</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">TK Nợ</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">TK Có</th>
+                
+                {/* Sửa tên cột thành Tài sản */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Tài sản</th>
+                
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Diễn giải</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Số tiền</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {entries.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center text-gray-500">Chưa có chi tiết định khoản</td></tr>
+                <tr><td colSpan={6} className="px-6 py-4 text-center text-gray-500">Chưa có chi tiết định khoản</td></tr>
               ) : (
                 entries.map((entry, index) => (
                   <tr key={entry.id || index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.taiKhoanNo}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.taiKhoanCo}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.taiKhoanNo || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.taiKhoanCo || '-'}</td>
+                    
+                    {/* Hiển thị kết hợp: [Mã tài sản] - [Tên tài sản] */}
+                    <td className="px-6 py-4 text-sm font-medium text-blue-600 max-w-[250px]">
+                      {entry.maTaiSan ? (
+                        <span className="line-clamp-2" title={`${entry.maTaiSan} - ${entry.tenTaiSan || ''}`}>
+                          {entry.maTaiSan} {entry.tenTaiSan ? `- ${entry.tenTaiSan}` : ''}
+                        </span>
+                      ) : (
+                        entry.taiSanId ? `#${entry.taiSanId}` : '-'
+                      )}
+                    </td>
+
                     <td className="px-6 py-4">
-                      <p className="text-sm text-gray-900">{entry.moTa}</p>
-                      {entry.maTaiSan && <p className="text-xs text-blue-600 mt-1">Mã TS: {entry.maTaiSan}</p>}
+                      <p className="text-sm text-gray-900 line-clamp-2">{entry.moTa}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
                       {formatCurrency(entry.soTien)}
@@ -190,7 +205,7 @@ export function VoucherDetail() {
             </tbody>
             <tfoot className="bg-gray-50 border-t-2 border-gray-300">
               <tr>
-                <td colSpan={4} className="px-6 py-4 text-right font-semibold text-gray-900">Tổng cộng:</td>
+                <td colSpan={5} className="px-6 py-4 text-right font-semibold text-gray-900">Tổng cộng:</td>
                 <td className="px-6 py-4 text-right font-bold text-blue-600">
                   {formatCurrency(voucher.tongTien)}
                 </td>
