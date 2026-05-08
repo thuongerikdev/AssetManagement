@@ -110,13 +110,13 @@ namespace TH.Asset.ApplicationService.Service
                         await _dbContext.SaveChangesAsync(); // Lưu để lấy ChungTuId
 
                         // 3.3 Tạo các dòng định khoản (Details)
+                        // 3.3 Tạo các dòng định khoản (Details) - CHỈ GHI NHẬN XÓA SỔ TÀI SẢN CỐ ĐỊNH
                         var chiTietList = new List<ChiTietChungTu>();
 
                         string tkNguyenGia = !string.IsNullOrEmpty(taiSan.MaTaiKhoan) ? taiSan.MaTaiKhoan : "211";
                         string tkHaoMon = tkNguyenGia.StartsWith("213") ? "2143" : "2141";
 
-                        // BÚT TOÁN 1: Xóa sổ tài sản
-                        // 1.1 Ghi giảm phần đã khấu hao (Nợ 214 / Có 211)
+                        // Dòng 1: Nợ 214 (Hao mòn lũy kế)
                         if (khauHaoLuyKe > 0)
                         {
                             chiTietList.Add(new ChiTietChungTu
@@ -124,13 +124,13 @@ namespace TH.Asset.ApplicationService.Service
                                 ChungTuId = chungTu.Id,
                                 TaiSanId = taiSan.Id,
                                 TaiKhoanNo = tkHaoMon,
-                                TaiKhoanCo = tkNguyenGia,
+                                TaiKhoanCo = null,
                                 SoTien = khauHaoLuyKe,
                                 MoTa = $"Xóa sổ hao mòn lũy kế TSCĐ {taiSan.MaTaiSan}"
                             });
                         }
 
-                        // 1.2 Ghi nhận Giá trị còn lại vào Chi phí khác (Nợ 811 / Có 211)
+                        // Dòng 2: Nợ 811 (Giá trị còn lại)
                         if (giaTriConLai > 0)
                         {
                             chiTietList.Add(new ChiTietChungTu
@@ -138,25 +138,22 @@ namespace TH.Asset.ApplicationService.Service
                                 ChungTuId = chungTu.Id,
                                 TaiSanId = taiSan.Id,
                                 TaiKhoanNo = "811",
-                                TaiKhoanCo = tkNguyenGia,
+                                TaiKhoanCo = null,
                                 SoTien = giaTriConLai,
-                                MoTa = $"Ghi nhận giá trị còn lại TSCĐ {taiSan.MaTaiSan}"
+                                MoTa = $"Ghi nhận giá trị còn lại TSCĐ {taiSan.MaTaiSan} khi thanh lý"
                             });
                         }
 
-                        // BÚT TOÁN 2: Ghi nhận thu nhập thanh lý (Nợ 111 / Có 711)
-                        if (giaTriThanhLy > 0)
+                        // Dòng 3: Có 211 (Nguyên giá)
+                        chiTietList.Add(new ChiTietChungTu
                         {
-                            chiTietList.Add(new ChiTietChungTu
-                            {
-                                ChungTuId = chungTu.Id,
-                                TaiSanId = taiSan.Id,
-                                TaiKhoanNo = "111", // Hoặc 112, tùy nghiệp vụ
-                                TaiKhoanCo = "711",
-                                SoTien = giaTriThanhLy,
-                                MoTa = $"Thu tiền thanh lý TSCĐ {taiSan.MaTaiSan}"
-                            });
-                        }
+                            ChungTuId = chungTu.Id,
+                            TaiSanId = taiSan.Id,
+                            TaiKhoanNo = null,
+                            TaiKhoanCo = tkNguyenGia,
+                            SoTien = nguyenGia,
+                            MoTa = $"Ghi giảm nguyên giá TSCĐ {taiSan.MaTaiSan} do thanh lý"
+                        });
 
                         _dbContext.chiTietChungTus.AddRange(chiTietList);
                         await _dbContext.SaveChangesAsync();
@@ -234,12 +231,13 @@ namespace TH.Asset.ApplicationService.Service
                         await _dbContext.SaveChangesAsync();
 
                         // 3.3 Định khoản chi tiết
+                        // 3.3 Định khoản chi tiết - CHỈ GHI NHẬN XÓA SỔ TÀI SẢN CỐ ĐỊNH
                         var chiTietList = new List<ChiTietChungTu>();
 
                         string tkNguyenGia = !string.IsNullOrEmpty(taiSan.MaTaiKhoan) ? taiSan.MaTaiKhoan : "211";
                         string tkHaoMon = tkNguyenGia.StartsWith("213") ? "2143" : "2141";
 
-                        // BÚT TOÁN 1: Xóa sổ tài sản
+                        // Dòng 1: Nợ 214 (Hao mòn lũy kế)
                         if (thanhLy.KhauHaoLuyKe > 0)
                         {
                             chiTietList.Add(new ChiTietChungTu
@@ -247,12 +245,13 @@ namespace TH.Asset.ApplicationService.Service
                                 ChungTuId = chungTu.Id,
                                 TaiSanId = taiSan.Id,
                                 TaiKhoanNo = tkHaoMon,
-                                TaiKhoanCo = tkNguyenGia,
+                                TaiKhoanCo = null,
                                 SoTien = thanhLy.KhauHaoLuyKe ?? 0,
                                 MoTa = $"Xóa sổ hao mòn lũy kế TSCĐ {taiSan.MaTaiSan}"
                             });
                         }
 
+                        // Dòng 2: Nợ 811 (Giá trị còn lại)
                         if (thanhLy.GiaTriConLai > 0)
                         {
                             chiTietList.Add(new ChiTietChungTu
@@ -260,25 +259,22 @@ namespace TH.Asset.ApplicationService.Service
                                 ChungTuId = chungTu.Id,
                                 TaiSanId = taiSan.Id,
                                 TaiKhoanNo = "811",
-                                TaiKhoanCo = tkNguyenGia,
+                                TaiKhoanCo = null,
                                 SoTien = thanhLy.GiaTriConLai ?? 0,
-                                MoTa = $"Ghi nhận giá trị còn lại TSCĐ {taiSan.MaTaiSan}"
+                                MoTa = $"Ghi nhận giá trị còn lại TSCĐ {taiSan.MaTaiSan} khi thanh lý"
                             });
                         }
 
-                        // BÚT TOÁN 2: Ghi nhận doanh thu thanh lý
-                        if (thanhLy.GiaTriThanhLy > 0)
+                        // Dòng 3: Có 211 (Nguyên giá)
+                        chiTietList.Add(new ChiTietChungTu
                         {
-                            chiTietList.Add(new ChiTietChungTu
-                            {
-                                ChungTuId = chungTu.Id,
-                                TaiSanId = taiSan.Id,
-                                TaiKhoanNo = "111",
-                                TaiKhoanCo = "711",
-                                SoTien = thanhLy.GiaTriThanhLy ?? 0,
-                                MoTa = $"Thu tiền thanh lý TSCĐ {taiSan.MaTaiSan}"
-                            });
-                        }
+                            ChungTuId = chungTu.Id,
+                            TaiSanId = taiSan.Id,
+                            TaiKhoanNo = null,
+                            TaiKhoanCo = tkNguyenGia,
+                            SoTien = thanhLy.NguyenGia ?? 0,
+                            MoTa = $"Ghi giảm nguyên giá TSCĐ {taiSan.MaTaiSan} do thanh lý"
+                        });
 
                         _dbContext.chiTietChungTus.AddRange(chiTietList);
                     }
