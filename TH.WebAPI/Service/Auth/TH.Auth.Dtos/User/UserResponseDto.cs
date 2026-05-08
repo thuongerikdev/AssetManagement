@@ -71,7 +71,7 @@ namespace TH.Auth.Dtos.User
         public string status { get; set; }
         public bool isEmailVerified { get; set; }
         public ProfileResponseDto? profile { get; set; }
-
+        public List<RoleSlimDto> roles { get; set; } = new();
     }
     public class ProfileResponseDto
     {

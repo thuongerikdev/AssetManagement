@@ -108,6 +108,8 @@ namespace TH.Auth.Infrastructure
             TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedUsers(modelBuilder);
             TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedProfiles(modelBuilder);
             TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedUserRoles(modelBuilder);
+            TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedPermissions(modelBuilder);
+            TH.Auth.Infrastructure.SeedData.AuthSeedData.SeedRolePermissions(modelBuilder);
 
         }
       

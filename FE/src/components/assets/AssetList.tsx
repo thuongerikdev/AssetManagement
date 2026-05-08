@@ -11,6 +11,7 @@ import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationA
 import { accountApi, TaiKhoanKeToan } from '../../api/accountApi'; // <-- IMPORT TÀI KHOẢN KẾ TOÁN
 import * as XLSX from 'xlsx';
 import { useGlobalData } from '../../context/GlobalContext';
+import { UserSelectDropdown } from '../shared/UserSelectDropdown';
 
 // Hàm hỗ trợ tạo tiền tố từ Tên danh mục tự động
 const generatePrefix = (name: string) => {
@@ -339,7 +340,7 @@ export function AssetList() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Danh mục</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Phòng ban</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Nguyên giá</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Giá trị còn lại</th>
+                <th className="px-8 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Giá trị còn lại</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Trạng thái</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Thao tác</th>
             
@@ -755,28 +756,14 @@ export function AssetList() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Nhân viên nhận {isLoadingUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
                   </label>
-                  <select
-                    value={allocFormData.denNguoiDungId || ''}
-                    onChange={(e) => setAllocFormData({...allocFormData, denNguoiDungId: Number(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400"
-                    disabled={!allocFormData.denPhongBanId || usersInDept.length === 0}
-                  >
-                    <option value="">
-                      {!allocFormData.denPhongBanId 
-                        ? '-- Chọn phòng ban trước --' 
-                        : (usersInDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
-                    </option>
-                    {usersInDept.map((user: any) => {
-                      const fullName = user.profile 
-                        ? `${user.profile.lastName} ${user.profile.firstName}`.trim() 
-                        : user.userName;
-                      return (
-                        <option key={user.userID} value={user.userID}>
-                          {fullName} ({user.email || user.userName})
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <UserSelectDropdown
+                    users={usersInDept}
+                    value={allocFormData.denNguoiDungId}
+                    onChange={(id) => setAllocFormData({ ...allocFormData, denNguoiDungId: id })}
+                    disabled={!allocFormData.denPhongBanId}
+                    isLoading={isLoadingUsers}
+                    noDeptSelected={!allocFormData.denPhongBanId}
+                  />
                 </div>
 
                 <div>

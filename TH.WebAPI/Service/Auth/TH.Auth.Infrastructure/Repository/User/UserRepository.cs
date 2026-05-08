@@ -470,8 +470,8 @@ namespace TH.Auth.Infrastructure.Repository.User
 
         public async Task<List<GetUserResponseDto?>> FindByDepartmentID(int departmentID, CancellationToken ct)
         {
-            var user  =  await _db.authUsers
-                .Where( z => z.departmentID == departmentID.ToString())
+            var user = await _db.authUsers
+                .Where(z => z.departmentID == departmentID.ToString())
                 .Select(u => new GetUserResponseDto
                 {
                     userID = u.userID,
@@ -486,10 +486,14 @@ namespace TH.Auth.Infrastructure.Repository.User
                         avatar = u.profile.avatar,
                         gender = u.profile.gender,
                         dateOfBirth = u.profile.dateOfBirth
-                    }
+                    },
+                    roles = u.userRoles!.Select(ur => new RoleSlimDto
+                    {
+                        roleID = ur.role.roleID,
+                        roleName = ur.role.roleName
+                    }).ToList()
                 })
                 .ToListAsync(ct);
-            ;
             return user;
         }
 

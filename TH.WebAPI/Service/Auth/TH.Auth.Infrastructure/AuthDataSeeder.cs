@@ -1,14 +1,25 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TH.Auth.Domain.Role;
 using TH.Auth.Domain.User;
+using TH.Constant;
 using static StackExchange.Redis.Role;
 
 namespace TH.Auth.Infrastructure.SeedData
 {
     public static class AuthSeedData
     {
+        private static readonly List<string> _permKeys =
+            PermissionConstants.Permissions.Keys.ToList();
+
+        private static int Pid(string key)
+        {
+            var idx = _permKeys.IndexOf(key);
+            if (idx < 0) throw new Exception($"Permission key '{key}' not found in PermissionConstants");
+            return idx + 1;
+        }
         // BCrypt hash của "Password123!" (cost=11) - dùng tool ngoài để tạo thực tế
         private const string DEFAULT_PASSWORD_HASH = "$2a$11$48frMocIZOKO42patU1Uze9dR.44pvg.vd1yxtc3XnUdJMwzcld.e";
 
@@ -251,6 +262,209 @@ namespace TH.Auth.Infrastructure.SeedData
             };
 
             modelBuilder.Entity<AuthUserRole>().HasData(userRoles);
+        }
+
+        public static void SeedPermissions(ModelBuilder modelBuilder)
+        {
+            var permissions = _permKeys
+                .Select((key, idx) => new AuthPermission
+                {
+                    permissionID = idx + 1,
+                    permissionName = key,
+                    permissionDescription = PermissionConstants.Permissions[key],
+                    code = PermissionConstants.Permissions[key],
+                    scope = "staff"
+                })
+                .ToList();
+
+            modelBuilder.Entity<AuthPermission>().HasData(permissions);
+        }
+
+        public static void SeedRolePermissions(ModelBuilder modelBuilder)
+        {
+            // ── Nhóm permission dùng chung cho tất cả nhân viên đã đăng nhập ──
+            var authCommon = new[]
+            {
+                "AuthLogin", "AuthLoginStaff", "AuthLoginMobile", "AuthLoginGoogle",
+                "AuthLoginGoogleCallback", "AuthSigninGoogle", "AuthLoginMobileGoogle",
+                "AuthMfaVerify", "AuthRefresh", "AuthLogout", "AuthLogoutSession", "AuthLogoutAll",
+                "AuthRegister", "AuthVerifyRegisterEmail",
+                "AccountMfaTotpStart", "AccountMfaTotpConfirm", "AccountMfaTotpDisable",
+                "AccountPasswordChangeEmailStart", "AccountPasswordChangeEmailVerify",
+                "AccountPasswordChangeMfaVerify", "AccountPasswordChangeCommit",
+                "AccountForgotEmailStart", "AccountForgotEmailVerify",
+                "AccountForgotMfaVerify", "AccountForgotCommit",
+                "UserGetMe", "UserUpdateProfile", "UserUpdateUsername",
+            };
+
+            // ── Role 1: admin_he_thong – toàn quyền ──
+            var adminPerms = _permKeys.ToArray();
+
+            // ── Role 2: ke_toan_tscd ──
+            var keToantscPerms = authCommon.Concat(new[]
+            {
+                "UserGetAll", "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
+                "RoleGetAll", "RoleGetAllScopeUser", "RoleGetByUserId",
+                "PermissionGetAll", "PermissionGetById", "PermissionGetByUserId", "PermissionGetByRoleId",
+                // Tài sản
+                "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine", "TaiSanGenerateCode",
+                "TaiSanCreate", "TaiSanConfirm", "TaiSanUpdate",
+                // Danh mục
+                "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById", "DanhMucTaiSanCreate", "DanhMucTaiSanUpdate",
+                // Phòng ban
+                "PhongBanGetAll", "PhongBanGetById",
+                // Tài khoản kế toán
+                "TaiKhoanKeToanGetAll", "TaiKhoanKeToanGetById", "TaiKhoanKeToanCreate", "TaiKhoanKeToanUpdate",
+                // Lịch sử khấu hao
+                "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
+                "LichSuKhauHaoCreate", "LichSuKhauHaoCreateBulk", "LichSuKhauHaoUpdate", "LichSuKhauHaoDelete",
+                // Chứng từ
+                "ChungTuGetAll", "ChungTuGetById", "ChungTuGetByAsset", "ChungTuGenerateCode",
+                "ChungTuCreate", "ChungTuUpdate", "ChungTuDelete",
+                // Sổ cái
+                "SoCaiGetTomTat", "SoCaiGetChiTiet",
+                // Đính kèm
+                "TaiSanDinhKemGetByAsset", "TaiSanDinhKemUpload",
+                // Thanh lý
+                "ThanhLyTaiSanGetAll", "ThanhLyTaiSanGetById", "ThanhLyTaiSanGetByAsset",
+                "ThanhLyTaiSanCreate", "ThanhLyTaiSanUpdate",
+                // Bảo trì (chỉ xem)
+                "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset",
+                // Điều chuyển (chỉ xem)
+                "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
+            }).Distinct().ToArray();
+
+            // ── Role 3: truong_phong_ke_toan – mở rộng ke_toan_tscd ──
+            var truongPhongKeToanPerms = keToantscPerms.Concat(new[]
+            {
+                "TaiSanDelete",
+                "DanhMucTaiSanDelete",
+                "TaiKhoanKeToanDelete",
+                "TaiSanDinhKemDelete",
+                "PhongBanCreate", "PhongBanUpdate", "PhongBanDelete",
+                "BaoTriTaiSanUpdate", "BaoTriTaiSanDelete",
+                "DieuChuyenTaiSanCreate", "DieuChuyenTaiSanUpdate", "DieuChuyenTaiSanDelete",
+                "ThanhLyTaiSanDelete",
+                "UserSessionGetAll", "UserSessionGetByUserId", "UserSessionGetBySessionId",
+                "AuditLogGetAll", "AuditLogGetById", "AuditLogGetByUserId",
+                "RoleAdd", "RoleUpdate", "RoleDelete", "RoleClone",
+                "PermissionBulkCreate", "PermissionUpdate", "PermissionDelete",
+                "RolePermissionAssign",
+                "UserRoleAssign",
+            }).Distinct().ToArray();
+
+            // ── Role 4: ky_thuat_vien ──
+            var kyThuatVienPerms = authCommon.Concat(new[]
+            {
+                "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine",
+                "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById",
+                "PhongBanGetAll", "PhongBanGetById",
+                // Bảo trì: toàn quyền
+                "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset",
+                "BaoTriTaiSanCreate", "BaoTriTaiSanUpdate", "BaoTriTaiSanDelete",
+                // Điều chuyển: xem + tạo
+                "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
+                "DieuChuyenTaiSanCreate",
+                // Đính kèm
+                "TaiSanDinhKemGetByAsset", "TaiSanDinhKemUpload",
+                // Lịch sử khấu hao (chỉ xem)
+                "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
+                // Chứng từ (chỉ xem)
+                "ChungTuGetAll", "ChungTuGetById", "ChungTuGetByAsset",
+            }).Distinct().ToArray();
+
+            // ── Role 5: truong_phong_ky_thuat – mở rộng ky_thuat_vien ──
+            var truongPhongKyThuatPerms = kyThuatVienPerms.Concat(new[]
+            {
+                "DieuChuyenTaiSanUpdate", "DieuChuyenTaiSanDelete",
+            }).Distinct().ToArray();
+
+            // ── Role 6 & 7: giam_doc / pho_giam_doc – xem toàn diện + audit ──
+            var giamdocPerms = authCommon.Concat(new[]
+            {
+                "UserGetAll", "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
+                "RoleGetAll", "RoleGetAllScopeUser", "RoleGetByUserId",
+                "PermissionGetAll", "PermissionGetById", "PermissionGetByUserId", "PermissionGetByRoleId",
+                "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine",
+                "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById",
+                "PhongBanGetAll", "PhongBanGetById",
+                "TaiKhoanKeToanGetAll", "TaiKhoanKeToanGetById",
+                "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
+                "ChungTuGetAll", "ChungTuGetById", "ChungTuGetByAsset",
+                "SoCaiGetTomTat", "SoCaiGetChiTiet",
+                "TaiSanDinhKemGetByAsset",
+                "ThanhLyTaiSanGetAll", "ThanhLyTaiSanGetById", "ThanhLyTaiSanGetByAsset",
+                "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset",
+                "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
+                "CauHinhHeThongGet",
+                "UserSessionGetAll", "UserSessionGetByUserId", "UserSessionGetBySessionId",
+                "AuditLogGetAll", "AuditLogGetById", "AuditLogGetByUserId",
+            }).Distinct().ToArray();
+
+            // ── Role 8: truong_phong_ban ──
+            var truongPhongBanPerms = authCommon.Concat(new[]
+            {
+                "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
+                "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine",
+                "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById",
+                "PhongBanGetAll", "PhongBanGetById",
+                "TaiSanDinhKemGetByAsset",
+                "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset", "BaoTriTaiSanCreate",
+                "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset", "DieuChuyenTaiSanCreate",
+                "ThanhLyTaiSanGetAll", "ThanhLyTaiSanGetById", "ThanhLyTaiSanGetByAsset",
+                "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
+            }).Distinct().ToArray();
+
+            // ── Role 9: nhan_vien ──
+            var nhanVienPerms = authCommon.Concat(new[]
+            {
+                "TaiSanGetMine", "TaiSanGetById",
+                "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById",
+                "PhongBanGetAll", "PhongBanGetById",
+                "TaiSanDinhKemGetByAsset",
+                "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset", "BaoTriTaiSanCreate",
+                "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset", "DieuChuyenTaiSanCreate",
+            }).Distinct().ToArray();
+
+            // ── Role 10: nhan_vien_nhan_su – mở rộng nhan_vien ──
+            var nhanVienNhanSuPerms = nhanVienPerms.Concat(new[]
+            {
+                "UserGetAll", "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
+                "PhongBanCreate", "PhongBanUpdate",
+                "UserSessionGetByUserId",
+            }).Distinct().ToArray();
+
+            // ── Build entries theo thứ tự roleID ──
+            var rolePerms = new Dictionary<int, string[]>
+            {
+                [1]  = adminPerms,
+                [2]  = keToantscPerms,
+                [3]  = truongPhongKeToanPerms,
+                [4]  = kyThuatVienPerms,
+                [5]  = truongPhongKyThuatPerms,
+                [6]  = giamdocPerms,
+                [7]  = giamdocPerms,
+                [8]  = truongPhongBanPerms,
+                [9]  = nhanVienPerms,
+                [10] = nhanVienNhanSuPerms,
+            };
+
+            var entries = new List<AuthRolePermission>();
+            var id = 1;
+            foreach (var (roleId, keys) in rolePerms.OrderBy(x => x.Key))
+            {
+                foreach (var key in keys)
+                {
+                    entries.Add(new AuthRolePermission
+                    {
+                        rolePermissionID = id++,
+                        roleID = roleId,
+                        permissionID = Pid(key),
+                    });
+                }
+            }
+
+            modelBuilder.Entity<AuthRolePermission>().HasData(entries);
         }
     }
 }

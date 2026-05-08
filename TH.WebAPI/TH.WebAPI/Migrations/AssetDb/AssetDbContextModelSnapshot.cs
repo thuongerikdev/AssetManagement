@@ -8,7 +8,7 @@ using TH.Asset.Infrastructure.Database;
 
 #nullable disable
 
-namespace TH.WebAPI.Migrations
+namespace TH.WebAPI.Migrations.AssetDb
 {
     [DbContext(typeof(AssetDbContext))]
     partial class AssetDbContextModelSnapshot : ModelSnapshot

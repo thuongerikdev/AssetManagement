@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace TH.WebAPI.Migrations.AuthDb
+namespace TH.WebAPI.Migrations
 {
     /// <inheritdoc />
     public partial class AuthV1 : Migration

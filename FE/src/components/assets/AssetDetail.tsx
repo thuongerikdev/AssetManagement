@@ -20,6 +20,7 @@ import { liquidationApi, ThanhLyTaiSan } from '../../api/liquidationApi';
 import { voucherApi } from '../../api/voucherApi';
 import { depreciationHistoryApi } from '../../api/depreciationHistoryApi';
 import { attachmentApi, TaiSanDinhKem, formatFileSize, getFileIcon, ATTACHMENT_BASE_URL } from '../../api/attachmentApi';
+import { UserSelectDropdown } from '../shared/UserSelectDropdown';
 
 const statusConfig: Record<string, { label: string; color: string; value: number }> = {
   '0': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700', value: 0 },
@@ -1159,29 +1160,14 @@ export function AssetDetail() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Nhân viên nhận {isLoadingUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
                   </label>
-                  <select
-                    value={allocFormData.denNguoiDungId || ''}
-                    onChange={(e) => setAllocFormData({...allocFormData, denNguoiDungId: Number(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400"
-                    disabled={!allocFormData.denPhongBanId || usersInDept.length === 0}
-                  >
-                    <option value="">
-                      {!allocFormData.denPhongBanId 
-                        ? '-- Chọn phòng ban trước --' 
-                        : (usersInDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
-                    </option>
-                    {usersInDept.map((user: any) => {
-                      const fullName = user.profile 
-                        ? `${user.profile.firstName} ${user.profile.lastName}` 
-                        : user.userName;
-
-                      return (
-                        <option key={user.userID} value={user.userID}>
-                          {fullName} ({user.email})
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <UserSelectDropdown
+                    users={usersInDept}
+                    value={allocFormData.denNguoiDungId}
+                    onChange={(id) => setAllocFormData({ ...allocFormData, denNguoiDungId: id })}
+                    disabled={!allocFormData.denPhongBanId}
+                    isLoading={isLoadingUsers}
+                    noDeptSelected={!allocFormData.denPhongBanId}
+                  />
                 </div>
 
                 <div>

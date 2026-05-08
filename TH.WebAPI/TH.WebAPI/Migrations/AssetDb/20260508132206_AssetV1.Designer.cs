@@ -9,10 +9,10 @@ using TH.Asset.Infrastructure.Database;
 
 #nullable disable
 
-namespace TH.WebAPI.Migrations
+namespace TH.WebAPI.Migrations.AssetDb
 {
     [DbContext(typeof(AssetDbContext))]
-    [Migration("20260508014901_AssetV1")]
+    [Migration("20260508132206_AssetV1")]
     partial class AssetV1
     {
         /// <inheritdoc />

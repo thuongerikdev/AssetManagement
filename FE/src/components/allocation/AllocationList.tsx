@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { apiClient } from '../../api/client';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
 import { useGlobalData } from '../../context/GlobalContext'; // <-- SỬ DỤNG GLOBAL CONTEXT
+import { UserSelectDropdown } from '../shared/UserSelectDropdown';
 
 // Mapping Loại điều chuyển
 const typeConfig: Record<string, { label: string; color: string; icon: any }> = {
@@ -396,23 +397,14 @@ export function AllocationList() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Nhân viên nhận {isLoadingUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
                   </label>
-                  <select
-                    value={formData.denNguoiDungId || ''}
-                    onChange={(e) => setFormData({...formData, denNguoiDungId: Number(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400"
-                    disabled={!formData.denPhongBanId || usersInDept.length === 0}
-                  >
-                    <option value="">
-                      {!formData.denPhongBanId 
-                        ? '-- Chọn phòng ban trước --' 
-                        : (usersInDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
-                    </option>
-                    {usersInDept.map((user: any) => (
-                      <option key={user.userID} value={user.userID}>
-                        {user.profile?.lastName} {user.profile?.firstName} ({user.userName})
-                      </option>
-                    ))}
-                  </select>
+                  <UserSelectDropdown
+                    users={usersInDept}
+                    value={formData.denNguoiDungId}
+                    onChange={(id) => setFormData({ ...formData, denNguoiDungId: id })}
+                    disabled={!formData.denPhongBanId}
+                    isLoading={isLoadingUsers}
+                    noDeptSelected={!formData.denPhongBanId}
+                  />
                 </div>
 
                 <div>
