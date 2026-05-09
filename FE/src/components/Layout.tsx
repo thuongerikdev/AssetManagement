@@ -26,7 +26,7 @@ import {
   Key
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import logoImage from './login/download.png';
+import logoImage from './login/logo.png';
 
 // Import Global Context
 import { GlobalProvider, useGlobalData } from '../context/GlobalContext';
