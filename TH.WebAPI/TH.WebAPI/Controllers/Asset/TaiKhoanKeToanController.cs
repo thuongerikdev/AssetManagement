@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // POST: api/TaiKhoanKeToan/create
         [HttpPost("create")]
+        [Authorize(Policy = "TaiKhoanKeToanCreate")]
         public async Task<IActionResult> CreateTaiKhoanKeToan([FromBody] CreateTaiKhoanKeToanRequestDto request)
         {
             var result = await _taiKhoanKeToanService.CreateTaiKhoanKeToanAsync(request);
@@ -30,6 +32,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // PUT: api/TaiKhoanKeToan/update
         [HttpPut("update")]
+        [Authorize(Policy = "TaiKhoanKeToanUpdate")]
         public async Task<IActionResult> UpdateTaiKhoanKeToan([FromBody] UpdateTaiKhoanKeToanRequestDto request)
         {
             var result = await _taiKhoanKeToanService.UpdateTaiKhoanKeToanAsync(request);
@@ -37,7 +40,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -47,6 +49,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // DELETE: api/TaiKhoanKeToan/delete/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "TaiKhoanKeToanDelete")]
         public async Task<IActionResult> DeleteTaiKhoanKeToan(int id)
         {
             var result = await _taiKhoanKeToanService.DeleteTaiKhoanKeToanAsync(id);
@@ -54,7 +57,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -64,6 +66,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/TaiKhoanKeToan/get-all
         [HttpGet("get-all")]
+        [Authorize(Policy = "TaiKhoanKeToanGetAll")]
         public async Task<IActionResult> GetAllTaiKhoanKeToan()
         {
             var result = await _taiKhoanKeToanService.GetAllTaiKhoanKeToanAsync();
@@ -76,6 +79,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/TaiKhoanKeToan/get/5
         [HttpGet("get/{id}")]
+        [Authorize(Policy = "TaiKhoanKeToanGetById")]
         public async Task<IActionResult> GetTaiKhoanKeToanById(int id)
         {
             var result = await _taiKhoanKeToanService.GetTaiKhoanKeToanByIdAsync(id);
@@ -83,7 +87,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);

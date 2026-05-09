@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // POST: api/DanhMucTaiSan/create
         [HttpPost("create")]
+        [Authorize(Policy = "DanhMucTaiSanCreate")]
         public async Task<IActionResult> CreateDanhMucTaiSan([FromBody] CreateDanhMucTaiSanRequestDto request)
         {
             var result = await _danhMucTaiSanService.CreateDanhMucTaiSanAsync(request);
@@ -30,6 +32,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // PUT: api/DanhMucTaiSan/update
         [HttpPut("update")]
+        [Authorize(Policy = "DanhMucTaiSanUpdate")]
         public async Task<IActionResult> UpdateDanhMucTaiSan([FromBody] UpdateDanhMucTaiSanRequestDto request)
         {
             var result = await _danhMucTaiSanService.UpdateDanhMucTaiSanAsync(request);
@@ -37,7 +40,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -47,6 +49,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // DELETE: api/DanhMucTaiSan/delete/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "DanhMucTaiSanDelete")]
         public async Task<IActionResult> DeleteDanhMucTaiSan(int id)
         {
             var result = await _danhMucTaiSanService.DeleteDanhMucTaiSanAsync(id);
@@ -54,7 +57,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -64,6 +66,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/DanhMucTaiSan/get-all
         [HttpGet("get-all")]
+        [Authorize(Policy = "DanhMucTaiSanGetAll")]
         public async Task<IActionResult> GetAllDanhMucTaiSan()
         {
             var result = await _danhMucTaiSanService.GetAllDanhMucTaiSanAsync();
@@ -76,6 +79,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/DanhMucTaiSan/get/5
         [HttpGet("get/{id}")]
+        [Authorize(Policy = "DanhMucTaiSanGetById")]
         public async Task<IActionResult> GetDanhMucTaiSanById(int id)
         {
             var result = await _danhMucTaiSanService.GetDanhMucTaiSanByIdAsync(id);
@@ -83,7 +87,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // POST: api/ThanhLyTaiSan/create
         [HttpPost("create")]
+        [Authorize(Policy = "ThanhLyTaiSanCreate")]
         public async Task<IActionResult> CreateThanhLy([FromBody] CreateThanhLyTaiSanRequestDto request)
         {
             var result = await _thanhLyService.CreateThanhLyTaiSanAsync(request);
@@ -30,6 +32,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // PUT: api/ThanhLyTaiSan/update
         [HttpPut("update")]
+        [Authorize(Policy = "ThanhLyTaiSanUpdate")]
         public async Task<IActionResult> UpdateThanhLy([FromBody] UpdateThanhLyTaiSanRequestDto request)
         {
             var result = await _thanhLyService.UpdateThanhLyTaiSanAsync(request);
@@ -37,7 +40,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -47,6 +49,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // DELETE: api/ThanhLyTaiSan/delete/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "ThanhLyTaiSanDelete")]
         public async Task<IActionResult> DeleteThanhLy(int id)
         {
             var result = await _thanhLyService.DeleteThanhLyTaiSanAsync(id);
@@ -54,7 +57,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -64,6 +66,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/ThanhLyTaiSan/get-all
         [HttpGet("get-all")]
+        [Authorize(Policy = "ThanhLyTaiSanGetAll")]
         public async Task<IActionResult> GetAllThanhLy()
         {
             var result = await _thanhLyService.GetAllThanhLyTaiSanAsync();
@@ -76,6 +79,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/ThanhLyTaiSan/get/5
         [HttpGet("get/{id}")]
+        [Authorize(Policy = "ThanhLyTaiSanGetById")]
         public async Task<IActionResult> GetThanhLyById(int id)
         {
             var result = await _thanhLyService.GetThanhLyTaiSanByIdAsync(id);
@@ -83,7 +87,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -91,7 +94,9 @@ namespace TH.WebAPI.Controllers.Asset
             return BadRequest(result);
         }
 
+        // GET: api/ThanhLyTaiSan/get-by-asset/{taiSanId}
         [HttpGet("get-by-asset/{taiSanId}")]
+        [Authorize(Policy = "ThanhLyTaiSanGetByAsset")]
         public async Task<IActionResult> GetThanhLyByTaiSanId(int taiSanId)
         {
             var result = await _thanhLyService.GetByTaiSanIdAsync(taiSanId);
@@ -99,7 +104,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/SoCai/tom-tat?fromDate=2025-01-01&toDate=2025-12-31
         [HttpGet("tom-tat")]
+        [Authorize(Policy = "SoCaiGetTomTat")]
         public async Task<IActionResult> GetTomTat(
             [FromQuery] DateTime? fromDate,
             [FromQuery] DateTime? toDate)
@@ -28,6 +30,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/SoCai/chi-tiet/211?fromDate=2025-01-01&toDate=2025-12-31
         [HttpGet("chi-tiet/{maTaiKhoan}")]
+        [Authorize(Policy = "SoCaiGetChiTiet")]
         public async Task<IActionResult> GetChiTiet(
             string maTaiKhoan,
             [FromQuery] DateTime? fromDate,

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // POST: api/PhongBan/create
         [HttpPost("create")]
+        [Authorize(Policy = "PhongBanCreate")]
         public async Task<IActionResult> CreatePhongBan([FromBody] CreatePhongBanRequestDto request)
         {
             var result = await _phongBanService.CreatePhongBanAsync(request);
@@ -30,6 +32,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // PUT: api/PhongBan/update
         [HttpPut("update")]
+        [Authorize(Policy = "PhongBanUpdate")]
         public async Task<IActionResult> UpdatePhongBan([FromBody] UpdatePhongBanRequestDto request)
         {
             var result = await _phongBanService.UpdatePhongBanAsync(request);
@@ -37,7 +40,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -47,6 +49,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // DELETE: api/PhongBan/delete/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "PhongBanDelete")]
         public async Task<IActionResult> DeletePhongBan(int id)
         {
             var result = await _phongBanService.DeletePhongBanAsync(id);
@@ -63,6 +66,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/PhongBan/get-all
         [HttpGet("get-all")]
+        [Authorize(Policy = "PhongBanGetAll")]
         public async Task<IActionResult> GetAllPhongBan()
         {
             var result = await _phongBanService.GetAllPhongBanAsync();
@@ -75,6 +79,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/PhongBan/get/5
         [HttpGet("get/{id}")]
+        [Authorize(Policy = "PhongBanGetById")]
         public async Task<IActionResult> GetPhongBanById(int id)
         {
             var result = await _phongBanService.GetPhongBanByIdAsync(id);

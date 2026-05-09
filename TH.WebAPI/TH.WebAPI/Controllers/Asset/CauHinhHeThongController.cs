@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -17,8 +18,8 @@ namespace TH.WebAPI.Controllers.Asset
         }
 
         // GET: api/CauHinhHeThong/get
-        // Lấy cấu hình hệ thống hiện tại. Nếu chưa có, Service sẽ tự tạo 1 bản ghi mặc định.
         [HttpGet("get")]
+        [Authorize(Policy = "CauHinhHeThongGet")]
         public async Task<IActionResult> GetCauHinh()
         {
             var result = await _cauHinhService.GetCauHinhAsync();
@@ -30,8 +31,8 @@ namespace TH.WebAPI.Controllers.Asset
         }
 
         // PUT: api/CauHinhHeThong/update
-        // Cập nhật đè lên bản ghi cấu hình hiện tại (không cần truyền ID)
         [HttpPut("update")]
+        [Authorize(Policy = "CauHinhHeThongUpdate")]
         public async Task<IActionResult> UpdateCauHinh([FromBody] CauHinhHeThongRequestDto request)
         {
             var result = await _cauHinhService.UpdateCauHinhAsync(request);

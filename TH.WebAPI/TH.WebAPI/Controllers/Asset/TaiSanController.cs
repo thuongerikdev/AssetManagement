@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // POST: api/TaiSan/create
         [HttpPost("create")]
+        [Authorize(Policy = "TaiSanCreate")]
         public async Task<IActionResult> CreateTaiSan([FromBody] CreateTaiSanRequestDto request)
         {
             var result = await _taiSanService.CreateTaiSanAsync(request);
@@ -30,6 +32,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // PUT: api/TaiSan/update
         [HttpPut("update")]
+        [Authorize(Policy = "TaiSanUpdate")]
         public async Task<IActionResult> UpdateTaiSan([FromBody] UpdateTaiSanRequestDto request)
         {
             var result = await _taiSanService.UpdateTaiSanAsync(request);
@@ -37,7 +40,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -47,6 +49,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // DELETE: api/TaiSan/delete/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "TaiSanDelete")]
         public async Task<IActionResult> DeleteTaiSan(int id)
         {
             var result = await _taiSanService.DeleteTaiSanAsync(id);
@@ -54,7 +57,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -64,6 +66,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/TaiSan/get-all
         [HttpGet("get-all")]
+        [Authorize(Policy = "TaiSanGetAll")]
         public async Task<IActionResult> GetAllTaiSan()
         {
             var result = await _taiSanService.GetAllTaiSanAsync();
@@ -76,6 +79,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/TaiSan/get/5
         [HttpGet("get/{id}")]
+        [Authorize(Policy = "TaiSanGetById")]
         public async Task<IActionResult> GetTaiSanById(int id)
         {
             var result = await _taiSanService.GetTaiSanByIdAsync(id);
@@ -83,7 +87,6 @@ namespace TH.WebAPI.Controllers.Asset
             {
                 return Ok(result);
             }
-            // Trả về NotFound nếu mã lỗi là 404
             if (result.ErrorCode == 404)
             {
                 return NotFound(result);
@@ -91,14 +94,18 @@ namespace TH.WebAPI.Controllers.Asset
             return BadRequest(result);
         }
 
+        // POST: api/TaiSan/confirm/{id}
         [HttpPost("confirm/{id}")]
+        [Authorize(Policy = "TaiSanConfirm")]
         public async Task<IActionResult> ConfirmAsset(int id)
         {
             var result = await _taiSanService.ConfirmAssetAsync(id);
             return Ok(result);
         }
 
+        // GET: api/TaiSan/my-assets/{userId}
         [HttpGet("my-assets/{userId}")]
+        [Authorize(Policy = "TaiSanGetMine")]
         public async Task<IActionResult> GetMyAssets(int userId)
         {
             var result = await _taiSanService.GetTaiSanByUserIdAsync(userId);
@@ -107,6 +114,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/TaiSan/generate-code?danhMucId=1
         [HttpGet("generate-code")]
+        [Authorize(Policy = "TaiSanGenerateCode")]
         public async Task<IActionResult> GenerateMaTaiSan([FromQuery] int danhMucId)
         {
             var result = await _taiSanService.GenerateMaTaiSanAsync(danhMucId);

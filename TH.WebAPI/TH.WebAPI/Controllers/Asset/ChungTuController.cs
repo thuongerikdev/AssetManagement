@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
@@ -18,6 +19,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // POST: api/ChungTu/create
         [HttpPost("create")]
+        [Authorize(Policy = "ChungTuCreate")]
         public async Task<IActionResult> CreateChungTu([FromBody] CreateChungTuRequestDto request)
         {
             var result = await _chungTuService.CreateChungTuAsync(request);
@@ -30,6 +32,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // PUT: api/ChungTu/update
         [HttpPut("update")]
+        [Authorize(Policy = "ChungTuUpdate")]
         public async Task<IActionResult> UpdateChungTu([FromBody] UpdateChungTuRequestDto request)
         {
             var result = await _chungTuService.UpdateChungTuAsync(request);
@@ -46,6 +49,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // DELETE: api/ChungTu/delete/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "ChungTuDelete")]
         public async Task<IActionResult> DeleteChungTu(int id)
         {
             var result = await _chungTuService.DeleteChungTuAsync(id);
@@ -62,6 +66,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/ChungTu/get-all
         [HttpGet("get-all")]
+        [Authorize(Policy = "ChungTuGetAll")]
         public async Task<IActionResult> GetAllChungTu()
         {
             var result = await _chungTuService.GetAllChungTuAsync();
@@ -74,6 +79,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/ChungTu/get/5
         [HttpGet("get/{id}")]
+        [Authorize(Policy = "ChungTuGetById")]
         public async Task<IActionResult> GetChungTuById(int id)
         {
             var result = await _chungTuService.GetChungTuByIdAsync(id);
@@ -87,22 +93,10 @@ namespace TH.WebAPI.Controllers.Asset
             }
             return BadRequest(result);
         }
-        //[HttpPost("post-voucher/{chungTuId}")]
-        //public async Task<IActionResult> PostVoucher(int chungTuId)
-        //{
-        //    var result = await _chungTuService.P(chungTuId);
-        //    if (result.ErrorCode == 200)
-        //    {
-        //        return Ok(result);
-        //    }
-        //    if (result.ErrorCode == 404)
-        //    {
-        //        return NotFound(result);
-        //    }
-        //    return BadRequest(result);
-        //}
 
+        // GET: api/ChungTu/get-by-asset/{taiSanId}
         [HttpGet("get-by-asset/{taiSanId}")]
+        [Authorize(Policy = "ChungTuGetByAsset")]
         public async Task<IActionResult> GetChungTuByTaiSanId(int taiSanId)
         {
             var result = await _chungTuService.GetChungTuByTaiSanIdAsync(taiSanId);
@@ -113,6 +107,7 @@ namespace TH.WebAPI.Controllers.Asset
 
         // GET: api/ChungTu/generate-code?loaiChungTu=ghi_tang
         [HttpGet("generate-code")]
+        [Authorize(Policy = "ChungTuGenerateCode")]
         public async Task<IActionResult> GenerateMaChungTu([FromQuery] string? loaiChungTu)
         {
             var result = await _chungTuService.GenerateMaChungTuAsync(loaiChungTu);
