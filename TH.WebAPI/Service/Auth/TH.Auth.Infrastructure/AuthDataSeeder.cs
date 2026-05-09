@@ -20,6 +20,7 @@ namespace TH.Auth.Infrastructure.SeedData
             if (idx < 0) throw new Exception($"Permission key '{key}' not found in PermissionConstants");
             return idx + 1;
         }
+
         // BCrypt hash của "Password123!" (cost=11) - dùng tool ngoài để tạo thực tế
         private const string DEFAULT_PASSWORD_HASH = "$2a$11$48frMocIZOKO42patU1Uze9dR.44pvg.vd1yxtc3XnUdJMwzcld.e";
 
@@ -28,7 +29,7 @@ namespace TH.Auth.Infrastructure.SeedData
             modelBuilder.Entity<AuthRole>().HasData(
                 new AuthRole { roleID = 1, roleName = "admin_he_thong", roleDescription = "Quản trị viên hệ thống", scope = "staff", isDefault = false },
                 new AuthRole { roleID = 2, roleName = "ke_toan_tscd", roleDescription = "Kế toán tài sản cố định", scope = "staff", isDefault = false },
-                new AuthRole { roleID = 3, roleName = "truong_phong_ke_toan", roleDescription = "Trưởng phòng kế toán", scope = "staff", isDefault = false },
+                // BỎ ROLE 3 (trưởng_phong_ke_toan)
                 new AuthRole { roleID = 4, roleName = "ky_thuat_vien", roleDescription = "Kỹ thuật viên", scope = "staff", isDefault = false },
                 new AuthRole { roleID = 5, roleName = "truong_phong_ky_thuat", roleDescription = "Trưởng phòng kỹ thuật", scope = "staff", isDefault = false },
                 new AuthRole { roleID = 6, roleName = "giam_doc", roleDescription = "Giám đốc", scope = "staff", isDefault = false },
@@ -46,7 +47,7 @@ namespace TH.Auth.Infrastructure.SeedData
             var users = new List<AuthUser>
             {
                 // ===== TÀI KHOẢN ADMIN HỆ THỐNG =====
-                // ID 99: Quản trị viên hệ thống
+                // Đảm bảo scope = "staff"
                 new AuthUser { userID = 99, userName = "admin", email = "admin@thtech.vn", phoneNumber = "0999999999", departmentID = "4", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== BAN GIÁM ĐỐC (Dept 1) – 4 người =====
@@ -181,7 +182,9 @@ namespace TH.Auth.Infrastructure.SeedData
                 new AuthUserRole { userID = 4, roleID = 9, assignedAt = now },  // Thư ký → nhân viên
 
                 // ===== PHÒNG KẾ TOÁN =====
-                new AuthUserRole { userID = 5, roleID = 3, assignedAt = now },  // Trưởng phòng kế toán
+                // Đã xóa Role 3 (Trưởng phòng kế toán). Chuyển User 5 gán tạm Role 8 (Trưởng phòng ban) + Role 2 (Kế toán)
+                new AuthUserRole { userID = 5, roleID = 8, assignedAt = now },  // Trưởng phòng
+                new AuthUserRole { userID = 5, roleID = 2, assignedAt = now },  // Kế toán TSCĐ
                 new AuthUserRole { userID = 6, roleID = 2, assignedAt = now },  // Kế toán TSCĐ
                 new AuthUserRole { userID = 7, roleID = 9, assignedAt = now },  // Nhân viên kế toán
                 new AuthUserRole { userID = 8, roleID = 9, assignedAt = now },  // Nhân viên kế toán
@@ -239,7 +242,7 @@ namespace TH.Auth.Infrastructure.SeedData
                     permissionName = key,
                     permissionDescription = PermissionConstants.Permissions[key],
                     code = PermissionConstants.Permissions[key],
-                    scope = "staff"
+                    scope = "staff" // Đảm bảo scope = "staff"
                 })
                 .ToList();
 
@@ -286,23 +289,7 @@ namespace TH.Auth.Infrastructure.SeedData
                 "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
             }).Distinct().ToArray();
 
-            var truongPhongKeToanPerms = keToantscPerms.Concat(new[]
-            {
-                "TaiSanDelete",
-                "DanhMucTaiSanDelete",
-                "TaiKhoanKeToanDelete",
-                "TaiSanDinhKemDelete",
-                "PhongBanCreate", "PhongBanUpdate", "PhongBanDelete",
-                "BaoTriTaiSanUpdate", "BaoTriTaiSanDelete",
-                "DieuChuyenTaiSanCreate", "DieuChuyenTaiSanUpdate", "DieuChuyenTaiSanDelete",
-                "ThanhLyTaiSanDelete",
-                "UserSessionGetAll", "UserSessionGetByUserId", "UserSessionGetBySessionId",
-                "AuditLogGetAll", "AuditLogGetById", "AuditLogGetByUserId",
-                "RoleAdd", "RoleUpdate", "RoleDelete", "RoleClone",
-                "PermissionBulkCreate", "PermissionUpdate", "PermissionDelete",
-                "RolePermissionAssign",
-                "UserRoleAssign",
-            }).Distinct().ToArray();
+            // Đã xóa mảng truongPhongKeToanPerms
 
             var kyThuatVienPerms = authCommon.Concat(new[]
             {
@@ -378,7 +365,7 @@ namespace TH.Auth.Infrastructure.SeedData
             {
                 [1] = adminPerms,
                 [2] = keToantscPerms,
-                [3] = truongPhongKeToanPerms,
+                // Đã bỏ Role 3
                 [4] = kyThuatVienPerms,
                 [5] = truongPhongKyThuatPerms,
                 [6] = giamdocPerms,
@@ -398,7 +385,6 @@ namespace TH.Auth.Infrastructure.SeedData
 
                     entries.Add(new AuthRolePermission
                     {
-                        // Đã fix lỗi nhảy ID: ID lúc này được cố định dựa vào roleId và permId
                         rolePermissionID = (roleId * 10000) + permId,
                         roleID = roleId,
                         permissionID = permId,
