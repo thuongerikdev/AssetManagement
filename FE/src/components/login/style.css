@@ -42,7 +42,7 @@
 }
 
 .login-main-wrapper .logo {
-    width: 80px; /* Tăng kích thước lên một chút cho dễ nhìn */
+    width: auto; /* Tăng kích thước lên một chút cho dễ nhìn */
     height: auto; 
     /* Bỏ border-radius và background */
     display: flex;
