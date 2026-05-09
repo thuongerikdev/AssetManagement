@@ -20,7 +20,7 @@ namespace TH.Auth.Infrastructure.SeedData
             if (idx < 0) throw new Exception($"Permission key '{key}' not found in PermissionConstants");
             return idx + 1;
         }
-
+        // BCrypt hash của "Password123!" (cost=11) - dùng tool ngoài để tạo thực tế
         private const string DEFAULT_PASSWORD_HASH = "$2a$11$48frMocIZOKO42patU1Uze9dR.44pvg.vd1yxtc3XnUdJMwzcld.e";
 
         public static void SeedRoles(ModelBuilder modelBuilder)

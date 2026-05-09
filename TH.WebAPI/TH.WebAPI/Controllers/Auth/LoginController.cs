@@ -557,7 +557,7 @@ namespace TH.WebAPI.Controllers.Auth
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                Domain = string.IsNullOrWhiteSpace(domain) ? null : domain
+                Domain = null // Ép bằng null để trình duyệt tự nhận diện host
             };
 
             Response.Cookies.Append("fz.access", access, new CookieOptions
