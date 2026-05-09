@@ -42,17 +42,14 @@
 }
 
 .login-main-wrapper .logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    background: #000;
-    color: #fff;
+    width: 80px; /* Tăng kích thước lên một chút cho dễ nhìn */
+    height: auto; 
+    /* Bỏ border-radius và background */
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 32px;
 }
-
 .login-main-wrapper .logo svg {
     width: 24px;
     height: 24px;
