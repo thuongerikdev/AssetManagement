@@ -26,6 +26,7 @@ import {
   Key
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import logoImage from './login/download.png';
 
 // Import Global Context
 import { GlobalProvider, useGlobalData } from '../context/GlobalContext';
@@ -127,7 +128,7 @@ function LayoutInner() {
       >
         <div className="p-4 border-b border-blue-700 flex items-center justify-between">
           <div className="overflow-hidden">
-            <h1 className="font-bold text-xl whitespace-nowrap">{companyName}</h1>
+            <img src={logoImage} alt="Logo" style={{ width: '250px' }} />
             <p className="text-blue-200 text-sm mt-1 whitespace-nowrap">Quản lý Tài sản Cố định</p>
           </div>
           <button
