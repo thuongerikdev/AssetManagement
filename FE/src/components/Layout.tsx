@@ -127,7 +127,7 @@ function LayoutInner() {
       >
         <div className="p-4 border-b border-blue-700 flex items-center justify-between">
           <div className="overflow-hidden">
-            <h1 className="font-bold text-xl whitespace-nowrap">TSCĐ Manager</h1>
+            <h1 className="font-bold text-xl whitespace-nowrap">{companyName}</h1>
             <p className="text-blue-200 text-sm mt-1 whitespace-nowrap">Quản lý Tài sản Cố định</p>
           </div>
           <button
