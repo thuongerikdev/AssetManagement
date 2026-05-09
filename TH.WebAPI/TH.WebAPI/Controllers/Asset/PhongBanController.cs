@@ -126,6 +126,7 @@ namespace TH.WebAPI.Controllers.Asset
                     string roleName = r.roleName ?? "";
 
                     if (roleName.Contains("truong_phong", StringComparison.OrdinalIgnoreCase) ||
+                        roleName.Contains("truong_phong_ban", StringComparison.OrdinalIgnoreCase) ||
                         roleName.Contains("giam_doc", StringComparison.OrdinalIgnoreCase) ||
                         roleName.Contains("admin", StringComparison.OrdinalIgnoreCase))
                     {
