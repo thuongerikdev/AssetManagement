@@ -53,6 +53,10 @@ export const authApi = {
   deleteUser: (id: number) => apiClient.delete(`/user/deleteUser?userId=${id}`),
   createUser: (data: CreateUserRequest) => apiClient.post('/Register/createUser', data),
 
+  getUsersByDepartment: async (departmentId: number) => {
+    return await apiClient.get(`/Auth/User/getbyDepartmentID/${departmentId}`);
+  },
+
   // --- ROLES ---
   getAllRoles: () => apiClient.get('/Role/getall'),
   addRole: (data: any) => apiClient.post('/Role/addRole', data),
