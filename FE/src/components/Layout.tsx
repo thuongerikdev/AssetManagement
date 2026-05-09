@@ -61,7 +61,7 @@ function LayoutInner() {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [companyName, setCompanyName] = useState('TSCĐ Manager');
+  const [companyName, setCompanyName] = useState('CÔNG TY CỔ PHẦN GIẢI PHÁP CHUYỂN ĐỔ SỐ THG');
 
   const isSettingsActive = location.pathname.startsWith('/settings');
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsActive);
