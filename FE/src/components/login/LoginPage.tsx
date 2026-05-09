@@ -96,6 +96,7 @@ export function LoginPage() {
         
         // 1. Lưu token để dùng cho các API khác
         localStorage.setItem('access_token', response.data.token);
+        localStorage.setItem('refresh_token', response.data.refreshToken);
         
         // 2. Lưu luôn thông tin user (ID, Tên, Email...) để hiển thị trên Header/Sidebar
         const userInfo = {
