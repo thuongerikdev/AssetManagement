@@ -44,7 +44,7 @@ interface NavItem {
 
 // 2. GẮN MÃ QUYỀN VÀO TỪNG MENU DỰA TRÊN DATA BẠN CUNG CẤP
 const navItems: NavItem[] = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard }, // Không yêu cầu quyền
+  { path: '/', label: 'Dashboard', icon: LayoutDashboard,requiredPermission: 'tai_san.get_all' }, // Không yêu cầu quyền
   { path: '/assets', label: 'Quản lý Tài sản', icon: Package, requiredPermission: 'tai_san.get_all' },
   { path: '/allocation', label: 'Cấp phát & Điều chuyển', icon: ArrowLeftRight, requiredPermission: 'dieu_chuyen_tai_san.get_all' },
   { path: '/depreciation', label: 'Khấu hao', icon: TrendingDown, requiredPermission: 'lich_su_khau_hao.get_all' },
