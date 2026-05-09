@@ -98,7 +98,7 @@ export function UserList() {
     return users.filter(u =>
       u.fullName.toLowerCase().includes(lower) ||
       u.email.toLowerCase().includes(lower) ||
-      u.userName.toLowerCase().includes(lower),
+      u.userName.toLowerCase().includes(lower)
     );
   }, [users, searchText]);
 
@@ -149,13 +149,18 @@ export function UserList() {
     }
   };
 
+  // ✅ LOGIC MỞ MODAL GÁN ROLE TỰ ĐỘNG MAP ID CŨ
   const openAssignModal = (user: any) => {
     setAssignUser(user);
+    // Danh sách tên role hiện tại của user (VD: ["admin_he_thong", "giam_doc"])
     const currentRoleNames: string[] = user.roles || [];
-    const matched = roles
+    
+    // Đối chiếu tên role để lấy ra mảng Role ID tương ứng
+    const matchedRoleIds = roles
       .filter(r => currentRoleNames.includes(r.roleName))
       .map(r => r.roleID);
-    setSelectedRoleIds(matched);
+      
+    setSelectedRoleIds(matchedRoleIds);
     setIsAssignOpen(true);
   };
 
@@ -164,6 +169,7 @@ export function UserList() {
     if (!assignUser) return;
     setIsAssigning(true);
     try {
+      // ✅ GỌI ĐÚNG API CỦA UserRoleController (authApi.assignRolesToUser)
       const res = await authApi.assignRolesToUser({
         userId: assignUser.userID,
         roleIds: selectedRoleIds,
@@ -171,7 +177,7 @@ export function UserList() {
       if (res.errorCode === 200 || res.errorCode === 201) {
         toast.success('Phân quyền thành công!');
         setIsAssignOpen(false);
-        fetchUsers(true);
+        fetchUsers(true); // Tải lại danh sách user để hiện roles mới
       } else {
         toast.error(res.errorMessage || 'Phân quyền thất bại');
       }
@@ -184,7 +190,7 @@ export function UserList() {
 
   const toggleRoleId = (id: number) => {
     setSelectedRoleIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
 
@@ -286,9 +292,10 @@ export function UserList() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
+                      {/* ✅ ĐÃ FIX LỖI TYPE LUICDE (Error 2322) */}
                       {row.isEmailVerified
-                        ? <CheckCircle2 className="w-5 h-5 text-green-500 mx-auto" title="Đã xác thực" />
-                        : <XCircle className="w-5 h-5 text-red-500 mx-auto" title="Chưa xác thực" />}
+                        ? <span title="Đã xác thực"><CheckCircle2 className="w-5 h-5 text-green-500 mx-auto" /></span>
+                        : <span title="Chưa xác thực"><XCircle className="w-5 h-5 text-red-500 mx-auto" /></span>}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -544,6 +551,7 @@ export function UserList() {
                           : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
                       }`}
                     >
+                      {/* ✅ CHECKBOX TỰ ĐỘNG MAP VALUE TỪ MẢNG selectedRoleIds ĐÃ XỬ LÝ */}
                       <input
                         type="checkbox"
                         checked={selectedRoleIds.includes(r.roleID)}
