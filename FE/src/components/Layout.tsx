@@ -110,7 +110,7 @@ function LayoutInner() {
   const canViewCategories = hasPermission('danh_muc_tai_san.get_all');
   const canViewAccounts = hasPermission('tai_khoan_ke_toan.get_all');
   // Check quyền xem user (Có thể dùng user.get_all hoặc permission tương đương)
-  const canViewUsers = hasPermission('user.admin_get_all') || hasPermission('user.get_all_slim');
+  const canViewUsers = hasPermission('user.admin_get_all')
   const canViewRoles = hasPermission('role.get_all');
   const canViewPermissions = hasPermission('permission.admin_get_all');
 
