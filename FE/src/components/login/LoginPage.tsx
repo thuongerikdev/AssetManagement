@@ -129,7 +129,7 @@ export function LoginPage() {
     <main className="login-main-wrapper">
       <section className="form login-section-wrapper">
         <div className="logo">
-          <img src={logoImage} alt="Logo" style={{ width: '24px', height: '24px' }} />
+          <img src={logoImage} alt="Logo" style={{ width: '250px' }} />
         </div>
 
         <h1 className="form__title">PHẦN MỀM KẾ TOÁN TÀN SẢN CỐ ĐỊNH </h1>
