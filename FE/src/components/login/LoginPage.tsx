@@ -133,7 +133,8 @@ export function LoginPage() {
           </svg>
         </div>
 
-        <h1 className="form__title">PHẦN MỀM KẾ TOÁN TÀN SẢN CỐ ĐỊNH CÔNG TY CỔ PHẦN GIẢI PHÁP CHUYỂN ĐỔ SỐ THG</h1>
+        <h1 className="form__title">PHẦN MỀM KẾ TOÁN TÀN SẢN CỐ ĐỊNH </h1>
+        <h1 className="form__title">CÔNG TY CỔ PHẦN GIẢI PHÁP CHUYỂN ĐỔ SỐ THG</h1>
         <h2> Giảng viên hướng dẫn: Ths.Nguyễn Thanh Sơn</h2>
         <h2> Sinh viên: Vũ Thị Quỳnh Giang</h2>
         <h2> Lớp: CQ60/41.02</h2>
