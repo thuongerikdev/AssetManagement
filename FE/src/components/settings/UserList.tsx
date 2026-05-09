@@ -152,13 +152,14 @@ export function UserList() {
   // ✅ LOGIC MỞ MODAL GÁN ROLE TỰ ĐỘNG MAP ID CŨ
   const openAssignModal = (user: any) => {
     setAssignUser(user);
-    // Danh sách tên role hiện tại của user (VD: ["admin_he_thong", "giam_doc"])
-    const currentRoleNames: string[] = user.roles || [];
     
-    // Đối chiếu tên role để lấy ra mảng Role ID tương ứng
+    // 1. Đưa tất cả tên role user đang có về chữ thường (lowercase)
+    const currentRoleNames: string[] = (user.roles || []).map((r: string) => r.toLowerCase());
+    
+    // 2. Đối chiếu và lấy ID (bắt cả roleID, roleId hoặc id)
     const matchedRoleIds = roles
-      .filter(r => currentRoleNames.includes(r.roleName))
-      .map(r => r.roleID);
+      .filter(r => currentRoleNames.includes((r.roleName || '').toLowerCase()))
+      .map(r => r.roleID ?? r.roleId ?? r.id); // 👈 Cực kỳ quan trọng
       
     setSelectedRoleIds(matchedRoleIds);
     setIsAssignOpen(true);
@@ -542,37 +543,41 @@ export function UserList() {
               {roles.length === 0 ? (
                 <p className="text-sm text-gray-400 italic">Không có vai trò nào trong hệ thống.</p>
               ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                  {roles.map(r => (
-                    <label key={r.roleID}
-                      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-all ${
-                        selectedRoleIds.includes(r.roleID)
-                          ? 'border-indigo-300 bg-indigo-50'
-                          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      {/* ✅ CHECKBOX TỰ ĐỘNG MAP VALUE TỪ MẢNG selectedRoleIds ĐÃ XỬ LÝ */}
-                      <input
-                        type="checkbox"
-                        checked={selectedRoleIds.includes(r.roleID)}
-                        onChange={() => toggleRoleId(r.roleID)}
-                        className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-800">{r.roleName}</p>
-                        {r.roleDescription && (
-                          <p className="text-xs text-gray-500 truncate">{r.roleDescription}</p>
-                        )}
-                      </div>
-                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${
-                        r.scope === 'staff'
-                          ? 'bg-purple-100 text-purple-700'
-                          : 'bg-blue-100 text-blue-700'
-                      }`}>
-                        {r.scope}
-                      </span>
-                    </label>
-                  ))}
+               <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                  {roles.map(r => {
+                    const rId = r.roleID ?? r.roleId ?? r.id; // Lấy ID an toàn
+                    const isChecked = selectedRoleIds.includes(rId);
+
+                    return (
+                      <label key={rId}
+                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-all ${
+                          isChecked
+                            ? 'border-indigo-300 bg-indigo-50'
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleRoleId(rId)} // Truyền đúng ID
+                          className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800">{r.roleName}</p>
+                          {r.roleDescription && (
+                            <p className="text-xs text-gray-500 truncate">{r.roleDescription}</p>
+                          )}
+                        </div>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${
+                          r.scope === 'staff'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {r.scope}
+                        </span>
+                      </label>
+                    );
+                  })}
                 </div>
               )}
 

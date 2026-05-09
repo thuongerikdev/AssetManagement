@@ -171,23 +171,29 @@ export function RoleList() {
   // ==========================================
   // LẤY VÀ GÁN QUYỀN (ASSIGN PERMISSIONS)
   // ==========================================
+  // ✅ ĐÃ SỬA: Lấy chính xác Permission ID từ mảng trả về
   const openPermModal = async (role: any) => {
     setPermTargetRole(role);
     setIsPermModalOpen(true);
     setLoadingPerms(true);
+    
+    // Đảm bảo lấy đúng Role ID để gọi API
+    const targetRoleId = role.roleID ?? role.roleId ?? role.id;
+
     try {
       const [allRes, roleRes] = await Promise.all([
         authApi.getAllPermissions(),
-        authApi.getPermissionsByRoleId(role.roleID), // Hàm gọi API GET quyền của Role này
+        authApi.getPermissionsByRoleId(targetRoleId), // Nhớ đảm bảo authApi gọi đúng /api/Permission/getbyRoleID/
       ]);
       
       if (allRes.errorCode === 200) {
         setAllPermissions(allRes.data || []);
       }
       
-      // ✅ BƯỚC QUAN TRỌNG: Extract đúng permissionID để hiển thị tick
       if (roleRes.errorCode === 200 && roleRes.data) {
-        setSelectedPermIds(roleRes.data.map((p: any) => p.permissionID));
+        // Lấy đúng permissionID (kể cả khi BE parse thành chữ thường)
+        const existingIds = roleRes.data.map((p: any) => p.permissionID ?? p.permissionId ?? p.id);
+        setSelectedPermIds(existingIds);
       } else {
         setSelectedPermIds([]);
       }
@@ -548,28 +554,33 @@ export function RoleList() {
                         className="text-xs text-gray-500 hover:underline">Bỏ chọn</button>
                     </div>
                   </div>
-                  <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
-                    {allPermissions.map(p => (
-                      <label key={p.permissionID}
-                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer border transition-all ${
-                          selectedPermIds.includes(p.permissionID)
-                            ? 'border-yellow-300 bg-yellow-50'
-                            : 'border-gray-200 bg-white hover:bg-gray-50'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedPermIds.includes(p.permissionID)}
-                          onChange={() => togglePermId(p.permissionID)}
-                          className="w-4 h-4 text-yellow-600 rounded border-gray-300 focus:ring-yellow-500"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">{p.permissionName}</p>
-                          <code className="text-[10px] text-blue-600 bg-blue-50 rounded px-1.5 py-0.5">{p.code}</code>
-                        </div>
-                        <span className="text-[10px] font-bold uppercase text-gray-400">{p.scope}</span>
-                      </label>
-                    ))}
+              <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                    {allPermissions.map(p => {
+                      const pId = p.permissionID ?? p.permissionId ?? p.id; // Lấy ID an toàn
+                      const isChecked = selectedPermIds.includes(pId);
+
+                      return (
+                        <label key={pId}
+                          className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer border transition-all ${
+                            isChecked
+                              ? 'border-yellow-300 bg-yellow-50'
+                              : 'border-gray-200 bg-white hover:bg-gray-50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => togglePermId(pId)} // Truyền đúng ID
+                            className="w-4 h-4 text-yellow-600 rounded border-gray-300 focus:ring-yellow-500"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">{p.permissionName}</p>
+                            <code className="text-[10px] text-blue-600 bg-blue-50 rounded px-1.5 py-0.5">{p.code}</code>
+                          </div>
+                          <span className="text-[10px] font-bold uppercase text-gray-400">{p.scope}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </>
               )}
