@@ -3,7 +3,7 @@ import { Calculator, FileText, Download, AlertCircle, Loader2, CheckCircle, Refr
 import { toast } from "sonner";
 import { useGlobalData } from '../../context/GlobalContext';
 import { depreciationHistoryApi, LichSuKhauHao } from '../../api/depreciationHistoryApi';
-import { exportBangTinhKhauHao } from '../../utils/excelExport';
+import { exportBangKhauHaoExcel } from '../../utils/excelExport';
 
 interface DepreciationAsset {
   id: number;
@@ -272,14 +272,18 @@ export function DepreciationList() {
               <Calculator className="w-5 h-5" /> Tính Khấu hao
             </button>
             <button
-              onClick={() => exportBangTinhKhauHao(
-                tableAssets.map(a => rawAssets.find((r: any) => r.id === a.id) ?? a),
-                selectedMonth
-              )}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <Download className="w-5 h-5" /> Xuất Bảng KH TSCĐ
-            </button>
+  onClick={() => {
+    try {
+      exportBangKhauHaoExcel(tableAssets, selectedMonth);
+      toast.success("Xuất bảng trích khấu hao Excel thành công!");
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi tạo file Excel.");
+    }
+  }}
+  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+>
+  <Download className="w-5 h-5" /> Xuất Bảng KH TSCĐ
+</button>
           </div>
         </div>
       </div>

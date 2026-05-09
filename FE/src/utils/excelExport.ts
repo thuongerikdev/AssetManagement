@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+
 
 // ── Format helpers ────────────────────────────────────────────────────────────
 const fmtDate = (d?: string | null) =>
@@ -545,3 +545,121 @@ export function exportBangTinhKhauHao(assets: any[], period?: string) {
   XLSX.utils.book_append_sheet(wb, ws, 'Bảng KH TSCĐ');
   XLSX.writeFile(wb, `Bang_Trich_KH_TSCD_${period ?? new Date().toISOString().substring(0,7)}.xlsx`);
 }
+
+
+
+import * as XLSX from 'xlsx';
+
+export const exportBangKhauHaoExcel = (assets: any[], selectedMonth: string) => {
+  const [year, month] = selectedMonth.split('-');
+  const today = new Date();
+  const currentDay = today.getDate().toString().padStart(2, '0');
+  const currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
+  const currentYear = today.getFullYear();
+
+  // Tạo mảng 2 chiều chứa dữ liệu từng dòng trong Excel
+  const wsData: any[][] = [];
+
+  // --- HEADER ---
+  wsData.push(["Đơn vị: ..........................................."]);
+  wsData.push(["Địa chỉ: .........................................."]);
+  wsData.push([]); // Dòng trống
+  
+  // Tiêu đề báo cáo
+  wsData.push(["BẢNG TRÍCH KHẤU HAO TÀI SẢN CỐ ĐỊNH"]);
+  wsData.push([`Tháng ${month} năm ${year}`]);
+  wsData.push([]); // Dòng trống
+
+  // --- BẢNG DỮ LIỆU ---
+  const tableHeaders = [
+    "Mã TSCĐ",
+    "Tên TSCĐ",
+    "Ngày sử dụng",
+    "Nguyên giá",
+    "Hao mòn trong kỳ",
+    "Hao mòn lũy kế",
+    "Giá trị còn lại"
+  ];
+  wsData.push(tableHeaders);
+
+  let sumNguyenGia = 0;
+  let sumHaoMonKy = 0;
+  let sumHaoMonLuyKe = 0;
+  let sumGiaTriConLai = 0;
+
+  // Dữ liệu từng tài sản
+  assets.forEach(asset => {
+    sumNguyenGia += (asset.originalValue || 0);
+    sumHaoMonKy += (asset.monthlyDepreciation || 0);
+    sumHaoMonLuyKe += (asset.accumulatedDepreciation || 0);
+    sumGiaTriConLai += (asset.remainingValue || 0);
+
+    wsData.push([
+      asset.code || "",
+      asset.name || "",
+      asset.ngayCapPhatStr || "",
+      asset.originalValue || 0,          // Để kiểu số (number) để Excel dễ tính toán
+      asset.monthlyDepreciation || 0,
+      asset.accumulatedDepreciation || 0,
+      asset.remainingValue || 0
+    ]);
+  });
+
+  // Dòng Tổng cộng
+  wsData.push([
+    "Tổng cộng",
+    null, // Cột Tên (để gộp ô)
+    null, // Cột Ngày (để gộp ô)
+    sumNguyenGia,
+    sumHaoMonKy,
+    sumHaoMonLuyKe,
+    sumGiaTriConLai
+  ]);
+
+  // --- FOOTER CHỮ KÝ ---
+  wsData.push([]);
+  wsData.push([]);
+  wsData.push([null, null, null, null, null, `Ngày ${currentDay} tháng ${currentMonth} năm ${currentYear}`]);
+  wsData.push(["Người lập", null, "Kế toán trưởng", null, null, "Giám đốc"]);
+  wsData.push(["(Ký, họ tên)", null, "(Ký, họ tên)", null, null, "(Ký, họ tên, đóng dấu)"]);
+
+  // --- CẤU HÌNH SHEET ---
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Gộp ô (Merge cells)
+  ws['!merges'] = [
+    // Gộp ô tiêu đề
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 6 } }, // BẢNG TRÍCH KHẤU HAO...
+    { s: { r: 4, c: 0 }, e: { r: 4, c: 6 } }, // Tháng... năm...
+    
+    // Gộp ô dòng Tổng cộng (gộp 3 cột đầu: Mã, Tên, Ngày SD)
+    { s: { r: wsData.length - 6, c: 0 }, e: { r: wsData.length - 6, c: 2 } }, 
+    
+    // Gộp ô Ngày tháng năm
+    { s: { r: wsData.length - 3, c: 5 }, e: { r: wsData.length - 3, c: 6 } }, 
+    
+    // Gộp ô vùng chữ ký
+    { s: { r: wsData.length - 2, c: 0 }, e: { r: wsData.length - 2, c: 1 } }, // Người lập
+    { s: { r: wsData.length - 2, c: 2 }, e: { r: wsData.length - 2, c: 4 } }, // Kế toán trưởng
+    { s: { r: wsData.length - 2, c: 5 }, e: { r: wsData.length - 2, c: 6 } }, // Giám đốc
+    { s: { r: wsData.length - 1, c: 0 }, e: { r: wsData.length - 1, c: 1 } }, // (Ký, họ tên) - 1
+    { s: { r: wsData.length - 1, c: 2 }, e: { r: wsData.length - 1, c: 4 } }, // (Ký, họ tên) - 2
+    { s: { r: wsData.length - 1, c: 5 }, e: { r: wsData.length - 1, c: 6 } }, // (Ký, họ tên) - 3
+  ];
+
+  // Chỉnh độ rộng các cột cho đẹp
+  ws['!cols'] = [
+    { wch: 15 }, // Mã TSCĐ
+    { wch: 35 }, // Tên TSCĐ
+    { wch: 15 }, // Ngày sử dụng
+    { wch: 20 }, // Nguyên giá
+    { wch: 20 }, // Hao mòn trong kỳ
+    { wch: 20 }, // Hao mòn lũy kế
+    { wch: 20 }  // Giá trị còn lại
+  ];
+
+  // Lưu file
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Khau_Hao");
+  XLSX.writeFile(wb, `Bang_Trich_Khau_Hao_Thang_${month}_${year}.xlsx`);
+};
