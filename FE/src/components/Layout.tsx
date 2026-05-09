@@ -129,7 +129,7 @@ function LayoutInner() {
         <div className="p-4 border-b border-blue-700 flex items-center justify-between">
           <div className="overflow-hidden">
             <img src={logoImage} alt="Logo" style={{ width: '250px' }} />
-            <p className="text-blue-200 text-sm mt-1 whitespace-nowrap">Quản lý Tài sản Cố định</p>
+            {/* <p className="text-blue-200 text-sm mt-1 whitespace-nowrap">Quản lý Tài sản Cố định</p> */}
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
