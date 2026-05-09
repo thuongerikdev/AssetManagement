@@ -183,7 +183,7 @@ export function MaintenanceList() {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
           >
             <Plus className="w-5 h-5" />
-            Ghi nhận sửa chữa
+            Ghi nhận 
           </Link>
         </div>
       </div>

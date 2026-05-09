@@ -248,9 +248,9 @@ export function GeneralJournal() {
             <FileText className="w-4 h-4" /> Xuất Word
           </button>
           
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm text-white transition-colors shadow-sm">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm text-white transition-colors shadow-sm">
             <Plus className="w-4 h-4" /> Tạo bút toán
-          </button>
+          </button> */}
         </div>
       </div>
 

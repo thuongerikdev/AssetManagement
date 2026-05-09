@@ -46,7 +46,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard,requiredPermission: 'tai_san.get_all' }, // Không yêu cầu quyền
   { path: '/assets', label: 'Quản lý Tài sản', icon: Package, requiredPermission: 'tai_san.get_all' },
-  { path: '/allocation', label: 'Cấp phát & Điều chuyển', icon: ArrowLeftRight, requiredPermission: 'dieu_chuyen_tai_san.get_all' },
+  { path: '/allocation', label: 'Cấp phát - Điều chuyển', icon: ArrowLeftRight, requiredPermission: 'dieu_chuyen_tai_san.get_all' },
   { path: '/depreciation', label: 'Khấu hao', icon: TrendingDown, requiredPermission: 'lich_su_khau_hao.get_all' },
   { path: '/maintenance', label: 'Bảo trì - Sửa chữa', icon: Wrench, requiredPermission: 'bao_tri_tai_san.get_all' },
   { path: '/liquidation', label: 'Thanh lý', icon: Trash2, requiredPermission: 'thanh_ly_tai_san.get_all' },
@@ -331,7 +331,7 @@ function LayoutInner() {
             </div>
             
             <div className="flex items-center gap-5 ml-auto">
-              <button 
+              {/* <button 
                 onClick={() => refreshData()}
                 disabled={isLoadingGlobal}
                 className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 bg-gray-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200 hover:border-blue-200 disabled:opacity-50"
@@ -339,7 +339,7 @@ function LayoutInner() {
               >
                 <RefreshCw className={`w-4 h-4 ${isLoadingGlobal ? 'animate-spin text-blue-600' : ''}`} />
                 <span className="hidden sm:block">{isLoadingGlobal ? 'Đang đồng bộ...' : 'Làm mới'}</span>
-              </button>
+              </button> */}
 
               <button className="relative text-gray-600 hover:text-gray-900 focus:outline-none">
                 <Bell className="w-5 h-5" />

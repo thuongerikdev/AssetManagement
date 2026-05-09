@@ -139,7 +139,7 @@ export function LiquidationList() {
           </button>
 
           <Link to="/liquidation/new" className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-md transition-all">
-            <Plus className="w-5 h-5" /> Tạo Phiếu thanh lý
+            <Plus className="w-5 h-5" /> Tạo phiếu thanh lý
           </Link>
         </div>
       </div>
