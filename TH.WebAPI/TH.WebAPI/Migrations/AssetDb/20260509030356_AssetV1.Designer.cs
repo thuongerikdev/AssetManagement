@@ -12,7 +12,7 @@ using TH.Asset.Infrastructure.Database;
 namespace TH.WebAPI.Migrations.AssetDb
 {
     [DbContext(typeof(AssetDbContext))]
-    [Migration("20260508140801_AssetV1")]
+    [Migration("20260509030356_AssetV1")]
     partial class AssetV1
     {
         /// <inheritdoc />
@@ -173,309 +173,237 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 2,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 18000000m,
+                            TaiKhoanCo = "111",
                             TaiKhoanNo = "2114",
                             TaiSanId = 75
                         },
                         new
                         {
                             Id = 2,
-                            ChungTuId = 2,
-                            MoTa = "Thanh toán tiền mặt",
+                            ChungTuId = 3,
+                            MoTa = "Xóa sổ nguyên giá TSCĐ",
                             SoTien = 18000000m,
-                            TaiKhoanCo = "111",
+                            TaiKhoanCo = "2114",
                             TaiSanId = 75
                         },
                         new
                         {
                             Id = 3,
                             ChungTuId = 3,
-                            MoTa = "Xóa sổ nguyên giá TSCĐ",
+                            MoTa = "Xóa sổ hao mòn lũy kế",
                             SoTien = 18000000m,
-                            TaiKhoanCo = "2114",
+                            TaiKhoanNo = "2141",
                             TaiSanId = 75
                         },
                         new
                         {
                             Id = 4,
-                            ChungTuId = 3,
-                            MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 18000000m,
-                            TaiKhoanNo = "2141",
-                            TaiSanId = 75
+                            ChungTuId = 4,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 16000000m,
+                            TaiKhoanCo = "111",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 76
                         },
                         new
                         {
                             Id = 5,
-                            ChungTuId = 4,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            ChungTuId = 5,
+                            MoTa = "Xóa sổ nguyên giá TSCĐ",
                             SoTien = 16000000m,
-                            TaiKhoanNo = "2114",
+                            TaiKhoanCo = "2114",
                             TaiSanId = 76
                         },
                         new
                         {
                             Id = 6,
-                            ChungTuId = 4,
-                            MoTa = "Thanh toán tiền mặt",
+                            ChungTuId = 5,
+                            MoTa = "Xóa sổ hao mòn lũy kế",
                             SoTien = 16000000m,
-                            TaiKhoanCo = "111",
+                            TaiKhoanNo = "2141",
                             TaiSanId = 76
                         },
                         new
                         {
                             Id = 7,
-                            ChungTuId = 5,
-                            MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 16000000m,
-                            TaiKhoanCo = "2114",
-                            TaiSanId = 76
+                            ChungTuId = 6,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 17000000m,
+                            TaiKhoanCo = "111",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 77
                         },
                         new
                         {
                             Id = 8,
-                            ChungTuId = 5,
-                            MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 16000000m,
-                            TaiKhoanNo = "2141",
-                            TaiSanId = 76
+                            ChungTuId = 7,
+                            MoTa = "Xóa sổ nguyên giá TSCĐ",
+                            SoTien = 17000000m,
+                            TaiKhoanCo = "2114",
+                            TaiSanId = 77
                         },
                         new
                         {
                             Id = 9,
-                            ChungTuId = 6,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            ChungTuId = 7,
+                            MoTa = "Xóa sổ hao mòn lũy kế",
                             SoTien = 17000000m,
-                            TaiKhoanNo = "2114",
+                            TaiKhoanNo = "2141",
                             TaiSanId = 77
                         },
                         new
                         {
                             Id = 10,
-                            ChungTuId = 6,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 17000000m,
+                            ChungTuId = 8,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 14000000m,
                             TaiKhoanCo = "111",
-                            TaiSanId = 77
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 78
                         },
                         new
                         {
                             Id = 11,
-                            ChungTuId = 7,
+                            ChungTuId = 9,
                             MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 17000000m,
+                            SoTien = 14000000m,
                             TaiKhoanCo = "2114",
-                            TaiSanId = 77
+                            TaiSanId = 78
                         },
                         new
                         {
                             Id = 12,
-                            ChungTuId = 7,
+                            ChungTuId = 9,
                             MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 17000000m,
+                            SoTien = 14000000m,
                             TaiKhoanNo = "2141",
-                            TaiSanId = 77
+                            TaiSanId = 78
                         },
                         new
                         {
                             Id = 13,
-                            ChungTuId = 8,
+                            ChungTuId = 10,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 14000000m,
+                            SoTien = 15000000m,
+                            TaiKhoanCo = "111",
                             TaiKhoanNo = "2114",
-                            TaiSanId = 78
+                            TaiSanId = 79
                         },
                         new
                         {
                             Id = 14,
-                            ChungTuId = 8,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 14000000m,
-                            TaiKhoanCo = "111",
-                            TaiSanId = 78
+                            ChungTuId = 11,
+                            MoTa = "Xóa sổ nguyên giá TSCĐ",
+                            SoTien = 15000000m,
+                            TaiKhoanCo = "2114",
+                            TaiSanId = 79
                         },
                         new
                         {
                             Id = 15,
-                            ChungTuId = 9,
-                            MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 14000000m,
-                            TaiKhoanCo = "2114",
-                            TaiSanId = 78
+                            ChungTuId = 11,
+                            MoTa = "Xóa sổ hao mòn lũy kế",
+                            SoTien = 15000000m,
+                            TaiKhoanNo = "2141",
+                            TaiSanId = 79
                         },
                         new
                         {
                             Id = 16,
-                            ChungTuId = 9,
-                            MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 14000000m,
-                            TaiKhoanNo = "2141",
-                            TaiSanId = 78
+                            ChungTuId = 12,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 13000000m,
+                            TaiKhoanCo = "111",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 80
                         },
                         new
                         {
                             Id = 17,
-                            ChungTuId = 10,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 15000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 79
+                            ChungTuId = 13,
+                            MoTa = "Xóa sổ nguyên giá TSCĐ",
+                            SoTien = 13000000m,
+                            TaiKhoanCo = "2114",
+                            TaiSanId = 80
                         },
                         new
                         {
                             Id = 18,
-                            ChungTuId = 10,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 15000000m,
-                            TaiKhoanCo = "111",
-                            TaiSanId = 79
+                            ChungTuId = 13,
+                            MoTa = "Xóa sổ hao mòn lũy kế",
+                            SoTien = 13000000m,
+                            TaiKhoanNo = "2141",
+                            TaiSanId = 80
                         },
                         new
                         {
                             Id = 19,
-                            ChungTuId = 11,
-                            MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 15000000m,
-                            TaiKhoanCo = "2114",
-                            TaiSanId = 79
+                            ChungTuId = 14,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 35000000m,
+                            TaiKhoanCo = "111",
+                            TaiKhoanNo = "2112",
+                            TaiSanId = 81
                         },
                         new
                         {
                             Id = 20,
-                            ChungTuId = 11,
-                            MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 15000000m,
-                            TaiKhoanNo = "2141",
-                            TaiSanId = 79
+                            ChungTuId = 15,
+                            MoTa = "Xóa sổ nguyên giá TSCĐ",
+                            SoTien = 35000000m,
+                            TaiKhoanCo = "2112",
+                            TaiSanId = 81
                         },
                         new
                         {
                             Id = 21,
-                            ChungTuId = 12,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 13000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 80
+                            ChungTuId = 15,
+                            MoTa = "Xóa sổ hao mòn lũy kế",
+                            SoTien = 35000000m,
+                            TaiKhoanNo = "2141",
+                            TaiSanId = 81
                         },
                         new
                         {
                             Id = 22,
-                            ChungTuId = 12,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 13000000m,
+                            ChungTuId = 16,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 12000000m,
                             TaiKhoanCo = "111",
-                            TaiSanId = 80
+                            TaiKhoanNo = "2112",
+                            TaiSanId = 82
                         },
                         new
                         {
                             Id = 23,
-                            ChungTuId = 13,
+                            ChungTuId = 17,
                             MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 13000000m,
-                            TaiKhoanCo = "2114",
-                            TaiSanId = 80
+                            SoTien = 12000000m,
+                            TaiKhoanCo = "2112",
+                            TaiSanId = 82
                         },
                         new
                         {
                             Id = 24,
-                            ChungTuId = 13,
+                            ChungTuId = 17,
                             MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 13000000m,
+                            SoTien = 12000000m,
                             TaiKhoanNo = "2141",
-                            TaiSanId = 80
+                            TaiSanId = 82
                         },
                         new
                         {
                             Id = 25,
-                            ChungTuId = 14,
+                            ChungTuId = 18,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 35000000m,
+                            SoTien = 8000000m,
+                            TaiKhoanCo = "111",
                             TaiKhoanNo = "2112",
-                            TaiSanId = 81
+                            TaiSanId = 83
                         },
                         new
                         {
                             Id = 26,
-                            ChungTuId = 14,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "111",
-                            TaiSanId = 81
-                        },
-                        new
-                        {
-                            Id = 27,
-                            ChungTuId = 15,
-                            MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "2112",
-                            TaiSanId = 81
-                        },
-                        new
-                        {
-                            Id = 28,
-                            ChungTuId = 15,
-                            MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 35000000m,
-                            TaiKhoanNo = "2141",
-                            TaiSanId = 81
-                        },
-                        new
-                        {
-                            Id = 29,
-                            ChungTuId = 16,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 12000000m,
-                            TaiKhoanNo = "2112",
-                            TaiSanId = 82
-                        },
-                        new
-                        {
-                            Id = 30,
-                            ChungTuId = 16,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 12000000m,
-                            TaiKhoanCo = "111",
-                            TaiSanId = 82
-                        },
-                        new
-                        {
-                            Id = 31,
-                            ChungTuId = 17,
-                            MoTa = "Xóa sổ nguyên giá TSCĐ",
-                            SoTien = 12000000m,
-                            TaiKhoanCo = "2112",
-                            TaiSanId = 82
-                        },
-                        new
-                        {
-                            Id = 32,
-                            ChungTuId = 17,
-                            MoTa = "Xóa sổ hao mòn lũy kế",
-                            SoTien = 12000000m,
-                            TaiKhoanNo = "2141",
-                            TaiSanId = 82
-                        },
-                        new
-                        {
-                            Id = 33,
-                            ChungTuId = 18,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 8000000m,
-                            TaiKhoanNo = "2112",
-                            TaiSanId = 83
-                        },
-                        new
-                        {
-                            Id = 34,
-                            ChungTuId = 18,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 8000000m,
-                            TaiKhoanCo = "111",
-                            TaiSanId = 83
-                        },
-                        new
-                        {
-                            Id = 35,
                             ChungTuId = 19,
                             MoTa = "Xóa sổ nguyên giá TSCĐ",
                             SoTien = 8000000m,
@@ -484,7 +412,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 36,
+                            Id = 27,
                             ChungTuId = 19,
                             MoTa = "Xóa sổ hao mòn lũy kế",
                             SoTien = 5066666.54m,
@@ -493,7 +421,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 37,
+                            Id = 28,
                             ChungTuId = 19,
                             MoTa = "Thu tiền thanh lý",
                             SoTien = 293333.346m,
@@ -502,7 +430,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 38,
+                            Id = 29,
                             ChungTuId = 19,
                             MoTa = "Lỗ thanh lý tài sản",
                             SoTien = 2640000.114m,
@@ -511,25 +439,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 39,
+                            Id = 30,
                             ChungTuId = 20,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 5000000m,
+                            TaiKhoanCo = "111",
                             TaiKhoanNo = "2112",
                             TaiSanId = 84
                         },
                         new
                         {
-                            Id = 40,
-                            ChungTuId = 20,
-                            MoTa = "Thanh toán tiền mặt",
-                            SoTien = 5000000m,
-                            TaiKhoanCo = "111",
-                            TaiSanId = 84
-                        },
-                        new
-                        {
-                            Id = 41,
+                            Id = 31,
                             ChungTuId = 21,
                             MoTa = "Xóa sổ nguyên giá TSCĐ",
                             SoTien = 5000000m,
@@ -538,7 +458,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 42,
+                            Id = 32,
                             ChungTuId = 21,
                             MoTa = "Xóa sổ hao mòn lũy kế",
                             SoTien = 5000000m,
@@ -547,313 +467,177 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 43,
+                            Id = 33,
                             ChungTuId = 22,
                             MoTa = "Ghi tăng nguyên giá Dell Latitude 5540 (i7/16GB/512GB)",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "331",
                             TaiKhoanNo = "2114",
                             TaiSanId = 85
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ChungTuId = 23,
+                            MoTa = "Ghi tăng nguyên giá Dell Latitude 5540 (i7/16GB/512GB)",
+                            SoTien = 28000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 86
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ChungTuId = 24,
+                            MoTa = "Ghi tăng nguyên giá HP EliteBook 840 G10 (i5/16GB/512GB)",
+                            SoTien = 26000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 87
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ChungTuId = 25,
+                            MoTa = "Ghi tăng nguyên giá HP EliteBook 840 G10 (i5/16GB/512GB)",
+                            SoTien = 26000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 88
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ChungTuId = 26,
+                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad E16 Gen 1 (i5/16GB/512GB)",
+                            SoTien = 22000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 89
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ChungTuId = 27,
+                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad E16 Gen 1 (i5/16GB/512GB)",
+                            SoTien = 22000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 90
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ChungTuId = 28,
+                            MoTa = "Ghi tăng nguyên giá Asus ExpertBook B5 Flip (i7/16GB/512GB)",
+                            SoTien = 30000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 91
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ChungTuId = 29,
+                            MoTa = "Ghi tăng nguyên giá Asus ExpertBook B5 Flip (i7/16GB/512GB)",
+                            SoTien = 30000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 92
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ChungTuId = 30,
+                            MoTa = "Ghi tăng nguyên giá Apple MacBook Air 13\" M3 (8GB/256GB)",
+                            SoTien = 29000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 93
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ChungTuId = 31,
+                            MoTa = "Ghi tăng nguyên giá Apple MacBook Air 13\" M3 (8GB/256GB)",
+                            SoTien = 29000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 94
+                        },
+                        new
+                        {
+                            Id = 43,
+                            ChungTuId = 32,
+                            MoTa = "Ghi tăng nguyên giá Dell XPS 13 Plus 9320 (i7/32GB/1TB)",
+                            SoTien = 38000000m,
+                            TaiKhoanCo = "331",
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 95
                         },
                         new
                         {
                             Id = 44,
-                            ChungTuId = 22,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 28000000m,
+                            ChungTuId = 33,
+                            MoTa = "Ghi tăng nguyên giá Dell XPS 13 Plus 9320 (i7/32GB/1TB)",
+                            SoTien = 38000000m,
                             TaiKhoanCo = "331",
-                            TaiSanId = 85
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 96
                         },
                         new
                         {
                             Id = 45,
-                            ChungTuId = 23,
-                            MoTa = "Ghi tăng nguyên giá Dell Latitude 5540 (i7/16GB/512GB)",
-                            SoTien = 28000000m,
+                            ChungTuId = 34,
+                            MoTa = "Ghi tăng nguyên giá HP Spectre x360 14 OLED (i7/16GB/512GB)",
+                            SoTien = 42000000m,
+                            TaiKhoanCo = "331",
                             TaiKhoanNo = "2114",
-                            TaiSanId = 86
+                            TaiSanId = 97
                         },
                         new
                         {
                             Id = 46,
-                            ChungTuId = 23,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 28000000m,
+                            ChungTuId = 35,
+                            MoTa = "Ghi tăng nguyên giá HP Spectre x360 14 OLED (i7/16GB/512GB)",
+                            SoTien = 42000000m,
                             TaiKhoanCo = "331",
-                            TaiSanId = 86
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 98
                         },
                         new
                         {
                             Id = 47,
-                            ChungTuId = 24,
-                            MoTa = "Ghi tăng nguyên giá HP EliteBook 840 G10 (i5/16GB/512GB)",
-                            SoTien = 26000000m,
+                            ChungTuId = 36,
+                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad X1 Carbon Gen 12 (i7/16GB/1TB)",
+                            SoTien = 48000000m,
+                            TaiKhoanCo = "331",
                             TaiKhoanNo = "2114",
-                            TaiSanId = 87
+                            TaiSanId = 99
                         },
                         new
                         {
                             Id = 48,
-                            ChungTuId = 24,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 26000000m,
+                            ChungTuId = 37,
+                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad X1 Carbon Gen 12 (i7/16GB/1TB)",
+                            SoTien = 48000000m,
                             TaiKhoanCo = "331",
-                            TaiSanId = 87
+                            TaiKhoanNo = "2114",
+                            TaiSanId = 100
                         },
                         new
                         {
                             Id = 49,
-                            ChungTuId = 25,
-                            MoTa = "Ghi tăng nguyên giá HP EliteBook 840 G10 (i5/16GB/512GB)",
-                            SoTien = 26000000m,
+                            ChungTuId = 38,
+                            MoTa = "Ghi tăng nguyên giá TSCĐ",
+                            SoTien = 85000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
-                            TaiSanId = 88
+                            TaiSanId = 1
                         },
                         new
                         {
                             Id = 50,
-                            ChungTuId = 25,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 26000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 88
-                        },
-                        new
-                        {
-                            Id = 51,
-                            ChungTuId = 26,
-                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad E16 Gen 1 (i5/16GB/512GB)",
-                            SoTien = 22000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 89
-                        },
-                        new
-                        {
-                            Id = 52,
-                            ChungTuId = 26,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 89
-                        },
-                        new
-                        {
-                            Id = 53,
-                            ChungTuId = 27,
-                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad E16 Gen 1 (i5/16GB/512GB)",
-                            SoTien = 22000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 90
-                        },
-                        new
-                        {
-                            Id = 54,
-                            ChungTuId = 27,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 90
-                        },
-                        new
-                        {
-                            Id = 55,
-                            ChungTuId = 28,
-                            MoTa = "Ghi tăng nguyên giá Asus ExpertBook B5 Flip (i7/16GB/512GB)",
-                            SoTien = 30000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 91
-                        },
-                        new
-                        {
-                            Id = 56,
-                            ChungTuId = 28,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 30000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 91
-                        },
-                        new
-                        {
-                            Id = 57,
-                            ChungTuId = 29,
-                            MoTa = "Ghi tăng nguyên giá Asus ExpertBook B5 Flip (i7/16GB/512GB)",
-                            SoTien = 30000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 92
-                        },
-                        new
-                        {
-                            Id = 58,
-                            ChungTuId = 29,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 30000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 92
-                        },
-                        new
-                        {
-                            Id = 59,
-                            ChungTuId = 30,
-                            MoTa = "Ghi tăng nguyên giá Apple MacBook Air 13\" M3 (8GB/256GB)",
-                            SoTien = 29000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 93
-                        },
-                        new
-                        {
-                            Id = 60,
-                            ChungTuId = 30,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 29000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 93
-                        },
-                        new
-                        {
-                            Id = 61,
-                            ChungTuId = 31,
-                            MoTa = "Ghi tăng nguyên giá Apple MacBook Air 13\" M3 (8GB/256GB)",
-                            SoTien = 29000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 94
-                        },
-                        new
-                        {
-                            Id = 62,
-                            ChungTuId = 31,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 29000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 94
-                        },
-                        new
-                        {
-                            Id = 63,
-                            ChungTuId = 32,
-                            MoTa = "Ghi tăng nguyên giá Dell XPS 13 Plus 9320 (i7/32GB/1TB)",
-                            SoTien = 38000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 95
-                        },
-                        new
-                        {
-                            Id = 64,
-                            ChungTuId = 32,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 38000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 95
-                        },
-                        new
-                        {
-                            Id = 65,
-                            ChungTuId = 33,
-                            MoTa = "Ghi tăng nguyên giá Dell XPS 13 Plus 9320 (i7/32GB/1TB)",
-                            SoTien = 38000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 96
-                        },
-                        new
-                        {
-                            Id = 66,
-                            ChungTuId = 33,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 38000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 96
-                        },
-                        new
-                        {
-                            Id = 67,
-                            ChungTuId = 34,
-                            MoTa = "Ghi tăng nguyên giá HP Spectre x360 14 OLED (i7/16GB/512GB)",
-                            SoTien = 42000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 97
-                        },
-                        new
-                        {
-                            Id = 68,
-                            ChungTuId = 34,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 42000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 97
-                        },
-                        new
-                        {
-                            Id = 69,
-                            ChungTuId = 35,
-                            MoTa = "Ghi tăng nguyên giá HP Spectre x360 14 OLED (i7/16GB/512GB)",
-                            SoTien = 42000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 98
-                        },
-                        new
-                        {
-                            Id = 70,
-                            ChungTuId = 35,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 42000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 98
-                        },
-                        new
-                        {
-                            Id = 71,
-                            ChungTuId = 36,
-                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad X1 Carbon Gen 12 (i7/16GB/1TB)",
-                            SoTien = 48000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 99
-                        },
-                        new
-                        {
-                            Id = 72,
-                            ChungTuId = 36,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 48000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 99
-                        },
-                        new
-                        {
-                            Id = 73,
-                            ChungTuId = 37,
-                            MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad X1 Carbon Gen 12 (i7/16GB/1TB)",
-                            SoTien = 48000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 100
-                        },
-                        new
-                        {
-                            Id = 74,
-                            ChungTuId = 37,
-                            MoTa = "Phải trả nhà cung cấp Laptop",
-                            SoTien = 48000000m,
-                            TaiKhoanCo = "331",
-                            TaiSanId = 100
-                        },
-                        new
-                        {
-                            Id = 75,
-                            ChungTuId = 38,
-                            MoTa = "Ghi tăng nguyên giá TSCĐ",
-                            SoTien = 85000000m,
-                            TaiKhoanNo = "2114",
-                            TaiSanId = 1
-                        },
-                        new
-                        {
-                            Id = 76,
-                            ChungTuId = 38,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 85000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 1
-                        },
-                        new
-                        {
-                            Id = 77,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0001 tháng 01/2025",
                             SoTien = 2361111.11m,
@@ -863,25 +647,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 78,
+                            Id = 51,
                             ChungTuId = 39,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 32000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 2
                         },
                         new
                         {
-                            Id = 79,
-                            ChungTuId = 39,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 32000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 2
-                        },
-                        new
-                        {
-                            Id = 80,
+                            Id = 52,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0002 tháng 01/2025",
                             SoTien = 888888.89m,
@@ -891,25 +667,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 81,
+                            Id = 53,
                             ChungTuId = 40,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 3
                         },
                         new
                         {
-                            Id = 82,
-                            ChungTuId = 40,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 3
-                        },
-                        new
-                        {
-                            Id = 83,
+                            Id = 54,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0003 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -919,25 +687,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 84,
+                            Id = 55,
                             ChungTuId = 41,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 4
                         },
                         new
                         {
-                            Id = 85,
-                            ChungTuId = 41,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 4
-                        },
-                        new
-                        {
-                            Id = 86,
+                            Id = 56,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0004 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -947,25 +707,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 87,
+                            Id = 57,
                             ChungTuId = 42,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 38000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 5
                         },
                         new
                         {
-                            Id = 88,
-                            ChungTuId = 42,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 38000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 5
-                        },
-                        new
-                        {
-                            Id = 89,
+                            Id = 58,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0005 tháng 01/2025",
                             SoTien = 1055555.56m,
@@ -975,25 +727,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 90,
+                            Id = 59,
                             ChungTuId = 43,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 24000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 6
                         },
                         new
                         {
-                            Id = 91,
-                            ChungTuId = 43,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 24000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 6
-                        },
-                        new
-                        {
-                            Id = 92,
+                            Id = 60,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0006 tháng 01/2025",
                             SoTien = 666666.67m,
@@ -1003,25 +747,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 93,
+                            Id = 61,
                             ChungTuId = 44,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 18000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 7
                         },
                         new
                         {
-                            Id = 94,
-                            ChungTuId = 44,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 18000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 7
-                        },
-                        new
-                        {
-                            Id = 95,
+                            Id = 62,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0007 tháng 01/2025",
                             SoTien = 500000m,
@@ -1031,25 +767,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 96,
+                            Id = 63,
                             ChungTuId = 45,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 16000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 8
                         },
                         new
                         {
-                            Id = 97,
-                            ChungTuId = 45,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 16000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 8
-                        },
-                        new
-                        {
-                            Id = 98,
+                            Id = 64,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0008 tháng 01/2025",
                             SoTien = 444444.44m,
@@ -1059,25 +787,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 99,
+                            Id = 65,
                             ChungTuId = 46,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 980000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2113",
                             TaiSanId = 9
                         },
                         new
                         {
-                            Id = 100,
-                            ChungTuId = 46,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 980000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 9
-                        },
-                        new
-                        {
-                            Id = 101,
+                            Id = 66,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao OTO-0009 tháng 01/2025",
                             SoTien = 8166666.67m,
@@ -1087,25 +807,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 67,
                             ChungTuId = 47,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 920000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2113",
                             TaiSanId = 10
                         },
                         new
                         {
-                            Id = 103,
-                            ChungTuId = 47,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 920000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 10
-                        },
-                        new
-                        {
-                            Id = 104,
+                            Id = 68,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao OTO-0010 tháng 01/2025",
                             SoTien = 7666666.67m,
@@ -1115,25 +827,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 105,
+                            Id = 69,
                             ChungTuId = 48,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 32000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 11
                         },
                         new
                         {
-                            Id = 106,
-                            ChungTuId = 48,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 32000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 11
-                        },
-                        new
-                        {
-                            Id = 107,
+                            Id = 70,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0011 tháng 01/2025",
                             SoTien = 888888.89m,
@@ -1143,25 +847,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 108,
+                            Id = 71,
                             ChungTuId = 49,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 25000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 12
                         },
                         new
                         {
-                            Id = 109,
-                            ChungTuId = 49,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 25000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 12
-                        },
-                        new
-                        {
-                            Id = 110,
+                            Id = 72,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0012 tháng 01/2025",
                             SoTien = 694444.44m,
@@ -1171,25 +867,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 111,
+                            Id = 73,
                             ChungTuId = 50,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 13
                         },
                         new
                         {
-                            Id = 112,
-                            ChungTuId = 50,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 13
-                        },
-                        new
-                        {
-                            Id = 113,
+                            Id = 74,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0013 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -1199,25 +887,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 114,
+                            Id = 75,
                             ChungTuId = 51,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 18000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 14
                         },
                         new
                         {
-                            Id = 115,
-                            ChungTuId = 51,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 18000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 14
-                        },
-                        new
-                        {
-                            Id = 116,
+                            Id = 76,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0014 tháng 01/2025",
                             SoTien = 500000m,
@@ -1227,25 +907,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 117,
+                            Id = 77,
                             ChungTuId = 52,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 16000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 15
                         },
                         new
                         {
-                            Id = 118,
-                            ChungTuId = 52,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 16000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 15
-                        },
-                        new
-                        {
-                            Id = 119,
+                            Id = 78,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0015 tháng 01/2025",
                             SoTien = 444444.44m,
@@ -1255,25 +927,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 120,
+                            Id = 79,
                             ChungTuId = 53,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 16000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 16
                         },
                         new
                         {
-                            Id = 121,
-                            ChungTuId = 53,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 16000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 16
-                        },
-                        new
-                        {
-                            Id = 122,
+                            Id = 80,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0016 tháng 01/2025",
                             SoTien = 444444.44m,
@@ -1283,25 +947,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 123,
+                            Id = 81,
                             ChungTuId = 54,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 13000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 17
                         },
                         new
                         {
-                            Id = 124,
-                            ChungTuId = 54,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 13000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 17
-                        },
-                        new
-                        {
-                            Id = 125,
+                            Id = 82,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0017 tháng 01/2025",
                             SoTien = 361111.11m,
@@ -1311,25 +967,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 126,
+                            Id = 83,
                             ChungTuId = 55,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 18
                         },
                         new
                         {
-                            Id = 127,
-                            ChungTuId = 55,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 18
-                        },
-                        new
-                        {
-                            Id = 128,
+                            Id = 84,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0018 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -1339,25 +987,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 129,
+                            Id = 85,
                             ChungTuId = 56,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 60000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 19
                         },
                         new
                         {
-                            Id = 130,
-                            ChungTuId = 56,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 60000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 19
-                        },
-                        new
-                        {
-                            Id = 131,
+                            Id = 86,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0019 tháng 01/2025",
                             SoTien = 1666666.67m,
@@ -1367,25 +1007,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 132,
+                            Id = 87,
                             ChungTuId = 57,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 48000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 20
                         },
                         new
                         {
-                            Id = 133,
-                            ChungTuId = 57,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 48000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 20
-                        },
-                        new
-                        {
-                            Id = 134,
+                            Id = 88,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0020 tháng 01/2025",
                             SoTien = 1333333.33m,
@@ -1395,25 +1027,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 135,
+                            Id = 89,
                             ChungTuId = 58,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 280000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 21
                         },
                         new
                         {
-                            Id = 136,
-                            ChungTuId = 58,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 280000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 21
-                        },
-                        new
-                        {
-                            Id = 137,
+                            Id = 90,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0021 tháng 01/2025",
                             SoTien = 4666666.67m,
@@ -1423,25 +1047,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 138,
+                            Id = 91,
                             ChungTuId = 59,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 280000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 22
                         },
                         new
                         {
-                            Id = 139,
-                            ChungTuId = 59,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 280000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 22
-                        },
-                        new
-                        {
-                            Id = 140,
+                            Id = 92,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0022 tháng 01/2025",
                             SoTien = 4666666.67m,
@@ -1451,25 +1067,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 141,
+                            Id = 93,
                             ChungTuId = 60,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 240000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 23
                         },
                         new
                         {
-                            Id = 142,
-                            ChungTuId = 60,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 240000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 23
-                        },
-                        new
-                        {
-                            Id = 143,
+                            Id = 94,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0023 tháng 01/2025",
                             SoTien = 4000000m,
@@ -1479,25 +1087,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 144,
+                            Id = 95,
                             ChungTuId = 61,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 320000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 24
                         },
                         new
                         {
-                            Id = 145,
-                            ChungTuId = 61,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 320000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 24
-                        },
-                        new
-                        {
-                            Id = 146,
+                            Id = 96,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0024 tháng 01/2025",
                             SoTien = 5333333.33m,
@@ -1507,25 +1107,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 147,
+                            Id = 97,
                             ChungTuId = 62,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 48000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 25
                         },
                         new
                         {
-                            Id = 148,
-                            ChungTuId = 62,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 48000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 25
-                        },
-                        new
-                        {
-                            Id = 149,
+                            Id = 98,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0025 tháng 01/2025",
                             SoTien = 800000m,
@@ -1535,25 +1127,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 150,
+                            Id = 99,
                             ChungTuId = 63,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 120000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 26
                         },
                         new
                         {
-                            Id = 151,
-                            ChungTuId = 63,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 120000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 26
-                        },
-                        new
-                        {
-                            Id = 152,
+                            Id = 100,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0026 tháng 01/2025",
                             SoTien = 2000000m,
@@ -1563,25 +1147,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 153,
+                            Id = 101,
                             ChungTuId = 64,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 95000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 27
                         },
                         new
                         {
-                            Id = 154,
-                            ChungTuId = 64,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 95000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 27
-                        },
-                        new
-                        {
-                            Id = 155,
+                            Id = 102,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0027 tháng 01/2025",
                             SoTien = 1583333.33m,
@@ -1591,25 +1167,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 156,
+                            Id = 103,
                             ChungTuId = 65,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 42000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 28
                         },
                         new
                         {
-                            Id = 157,
-                            ChungTuId = 65,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 42000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 28
-                        },
-                        new
-                        {
-                            Id = 158,
+                            Id = 104,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0028 tháng 01/2025",
                             SoTien = 700000m,
@@ -1619,25 +1187,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 159,
+                            Id = 105,
                             ChungTuId = 66,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 36000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 29
                         },
                         new
                         {
-                            Id = 160,
-                            ChungTuId = 66,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 36000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 29
-                        },
-                        new
-                        {
-                            Id = 161,
+                            Id = 106,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0029 tháng 01/2025",
                             SoTien = 600000m,
@@ -1647,25 +1207,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 162,
+                            Id = 107,
                             ChungTuId = 67,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 30
                         },
                         new
                         {
-                            Id = 163,
-                            ChungTuId = 67,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 30
-                        },
-                        new
-                        {
-                            Id = 164,
+                            Id = 108,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao SRV-0030 tháng 01/2025",
                             SoTien = 366666.67m,
@@ -1675,25 +1227,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 165,
+                            Id = 109,
                             ChungTuId = 68,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 31
                         },
                         new
                         {
-                            Id = 166,
-                            ChungTuId = 68,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 31
-                        },
-                        new
-                        {
-                            Id = 167,
+                            Id = 110,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0031 tháng 01/2025",
                             SoTien = 1250000m,
@@ -1703,25 +1247,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 168,
+                            Id = 111,
                             ChungTuId = 69,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 65000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 32
                         },
                         new
                         {
-                            Id = 169,
-                            ChungTuId = 69,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 65000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 32
-                        },
-                        new
-                        {
-                            Id = 170,
+                            Id = 112,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0032 tháng 01/2025",
                             SoTien = 1805555.56m,
@@ -1731,25 +1267,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 171,
+                            Id = 113,
                             ChungTuId = 70,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 90000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 33
                         },
                         new
                         {
-                            Id = 172,
-                            ChungTuId = 70,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 90000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 33
-                        },
-                        new
-                        {
-                            Id = 173,
+                            Id = 114,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0033 tháng 01/2025",
                             SoTien = 2500000m,
@@ -1759,25 +1287,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 174,
+                            Id = 115,
                             ChungTuId = 71,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 15000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 34
                         },
                         new
                         {
-                            Id = 175,
-                            ChungTuId = 71,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 15000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 34
-                        },
-                        new
-                        {
-                            Id = 176,
+                            Id = 116,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0034 tháng 01/2025",
                             SoTien = 416666.67m,
@@ -1787,25 +1307,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 177,
+                            Id = 117,
                             ChungTuId = 72,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 15000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 35
                         },
                         new
                         {
-                            Id = 178,
-                            ChungTuId = 72,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 15000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 35
-                        },
-                        new
-                        {
-                            Id = 179,
+                            Id = 118,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0035 tháng 01/2025",
                             SoTien = 416666.67m,
@@ -1815,25 +1327,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 180,
+                            Id = 119,
                             ChungTuId = 73,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 36
                         },
                         new
                         {
-                            Id = 181,
-                            ChungTuId = 73,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 36
-                        },
-                        new
-                        {
-                            Id = 182,
+                            Id = 120,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0036 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -1843,25 +1347,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 183,
+                            Id = 121,
                             ChungTuId = 74,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 3500000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 37
                         },
                         new
                         {
-                            Id = 184,
-                            ChungTuId = 74,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 3500000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 37
-                        },
-                        new
-                        {
-                            Id = 185,
+                            Id = 122,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0037 tháng 01/2025",
                             SoTien = 97222.22m,
@@ -1871,25 +1367,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 186,
+                            Id = 123,
                             ChungTuId = 75,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 3500000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 38
                         },
                         new
                         {
-                            Id = 187,
-                            ChungTuId = 75,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 3500000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 38
-                        },
-                        new
-                        {
-                            Id = 188,
+                            Id = 124,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0038 tháng 01/2025",
                             SoTien = 97222.22m,
@@ -1899,25 +1387,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 189,
+                            Id = 125,
                             ChungTuId = 76,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 20000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 39
                         },
                         new
                         {
-                            Id = 190,
-                            ChungTuId = 76,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 20000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 39
-                        },
-                        new
-                        {
-                            Id = 191,
+                            Id = 126,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0039 tháng 01/2025",
                             SoTien = 555555.56m,
@@ -1927,25 +1407,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 192,
+                            Id = 127,
                             ChungTuId = 77,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 120000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2112",
                             TaiSanId = 40
                         },
                         new
                         {
-                            Id = 193,
-                            ChungTuId = 77,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 120000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 40
-                        },
-                        new
-                        {
-                            Id = 194,
+                            Id = 128,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao NET-0040 tháng 01/2025",
                             SoTien = 3333333.33m,
@@ -1955,25 +1427,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 195,
+                            Id = 129,
                             ChungTuId = 78,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 41
                         },
                         new
                         {
-                            Id = 196,
-                            ChungTuId = 78,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 41
-                        },
-                        new
-                        {
-                            Id = 197,
+                            Id = 130,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0041 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -1983,25 +1447,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 198,
+                            Id = 131,
                             ChungTuId = 79,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 29000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 42
                         },
                         new
                         {
-                            Id = 199,
-                            ChungTuId = 79,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 29000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 42
-                        },
-                        new
-                        {
-                            Id = 200,
+                            Id = 132,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0042 tháng 01/2025",
                             SoTien = 805555.56m,
@@ -2011,25 +1467,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 201,
+                            Id = 133,
                             ChungTuId = 80,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 35000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 43
                         },
                         new
                         {
-                            Id = 202,
-                            ChungTuId = 80,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 43
-                        },
-                        new
-                        {
-                            Id = 203,
+                            Id = 134,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0043 tháng 01/2025",
                             SoTien = 972222.22m,
@@ -2039,25 +1487,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 204,
+                            Id = 135,
                             ChungTuId = 81,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 44
                         },
                         new
                         {
-                            Id = 205,
-                            ChungTuId = 81,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 44
-                        },
-                        new
-                        {
-                            Id = 206,
+                            Id = 136,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0044 tháng 01/2025",
                             SoTien = 1250000m,
@@ -2067,25 +1507,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 207,
+                            Id = 137,
                             ChungTuId = 82,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 38000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 45
                         },
                         new
                         {
-                            Id = 208,
-                            ChungTuId = 82,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 38000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 45
-                        },
-                        new
-                        {
-                            Id = 209,
+                            Id = 138,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0045 tháng 01/2025",
                             SoTien = 1055555.56m,
@@ -2095,25 +1527,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 210,
+                            Id = 139,
                             ChungTuId = 83,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 46
                         },
                         new
                         {
-                            Id = 211,
-                            ChungTuId = 83,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 46
-                        },
-                        new
-                        {
-                            Id = 212,
+                            Id = 140,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0046 tháng 01/2025",
                             SoTien = 1250000m,
@@ -2123,25 +1547,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 213,
+                            Id = 141,
                             ChungTuId = 84,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 47
                         },
                         new
                         {
-                            Id = 214,
-                            ChungTuId = 84,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 47
-                        },
-                        new
-                        {
-                            Id = 215,
+                            Id = 142,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0047 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -2151,25 +1567,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 216,
+                            Id = 143,
                             ChungTuId = 85,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 48
                         },
                         new
                         {
-                            Id = 217,
-                            ChungTuId = 85,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 48
-                        },
-                        new
-                        {
-                            Id = 218,
+                            Id = 144,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0048 tháng 01/2025",
                             SoTien = 1250000m,
@@ -2179,25 +1587,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 219,
+                            Id = 145,
                             ChungTuId = 86,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 49
                         },
                         new
                         {
-                            Id = 220,
-                            ChungTuId = 86,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 49
-                        },
-                        new
-                        {
-                            Id = 221,
+                            Id = 146,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0049 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -2207,25 +1607,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 222,
+                            Id = 147,
                             ChungTuId = 87,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 50
                         },
                         new
                         {
-                            Id = 223,
-                            ChungTuId = 87,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 50
-                        },
-                        new
-                        {
-                            Id = 224,
+                            Id = 148,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0050 tháng 01/2025",
                             SoTien = 1250000m,
@@ -2235,25 +1627,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 225,
+                            Id = 149,
                             ChungTuId = 88,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 51
                         },
                         new
                         {
-                            Id = 226,
-                            ChungTuId = 88,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 51
-                        },
-                        new
-                        {
-                            Id = 227,
+                            Id = 150,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0051 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -2263,25 +1647,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 228,
+                            Id = 151,
                             ChungTuId = 89,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 52
                         },
                         new
                         {
-                            Id = 229,
-                            ChungTuId = 89,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 52
-                        },
-                        new
-                        {
-                            Id = 230,
+                            Id = 152,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0052 tháng 01/2025",
                             SoTien = 1250000m,
@@ -2291,25 +1667,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 231,
+                            Id = 153,
                             ChungTuId = 90,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 53
                         },
                         new
                         {
-                            Id = 232,
-                            ChungTuId = 90,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 53
-                        },
-                        new
-                        {
-                            Id = 233,
+                            Id = 154,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0053 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -2319,25 +1687,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 234,
+                            Id = 155,
                             ChungTuId = 91,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 45000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 54
                         },
                         new
                         {
-                            Id = 235,
-                            ChungTuId = 91,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 45000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 54
-                        },
-                        new
-                        {
-                            Id = 236,
+                            Id = 156,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0054 tháng 01/2025",
                             SoTien = 1250000m,
@@ -2347,25 +1707,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 237,
+                            Id = 157,
                             ChungTuId = 92,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 55
                         },
                         new
                         {
-                            Id = 238,
-                            ChungTuId = 92,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 55
-                        },
-                        new
-                        {
-                            Id = 239,
+                            Id = 158,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0055 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -2375,25 +1727,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 240,
+                            Id = 159,
                             ChungTuId = 93,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 35000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 56
                         },
                         new
                         {
-                            Id = 241,
-                            ChungTuId = 93,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 56
-                        },
-                        new
-                        {
-                            Id = 242,
+                            Id = 160,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0056 tháng 01/2025",
                             SoTien = 972222.22m,
@@ -2403,25 +1747,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 243,
+                            Id = 161,
                             ChungTuId = 94,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 57
                         },
                         new
                         {
-                            Id = 244,
-                            ChungTuId = 94,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 57
-                        },
-                        new
-                        {
-                            Id = 245,
+                            Id = 162,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0057 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -2431,25 +1767,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 246,
+                            Id = 163,
                             ChungTuId = 95,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 35000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 58
                         },
                         new
                         {
-                            Id = 247,
-                            ChungTuId = 95,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 58
-                        },
-                        new
-                        {
-                            Id = 248,
+                            Id = 164,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0058 tháng 01/2025",
                             SoTien = 972222.22m,
@@ -2459,25 +1787,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 249,
+                            Id = 165,
                             ChungTuId = 96,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 59
                         },
                         new
                         {
-                            Id = 250,
-                            ChungTuId = 96,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 59
-                        },
-                        new
-                        {
-                            Id = 251,
+                            Id = 166,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0059 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -2487,25 +1807,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 252,
+                            Id = 167,
                             ChungTuId = 97,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 35000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 60
                         },
                         new
                         {
-                            Id = 253,
-                            ChungTuId = 97,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 60
-                        },
-                        new
-                        {
-                            Id = 254,
+                            Id = 168,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0060 tháng 01/2025",
                             SoTien = 972222.22m,
@@ -2515,25 +1827,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 255,
+                            Id = 169,
                             ChungTuId = 98,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 61
                         },
                         new
                         {
-                            Id = 256,
-                            ChungTuId = 98,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 61
-                        },
-                        new
-                        {
-                            Id = 257,
+                            Id = 170,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0061 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -2543,25 +1847,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 258,
+                            Id = 171,
                             ChungTuId = 99,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 35000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 62
                         },
                         new
                         {
-                            Id = 259,
-                            ChungTuId = 99,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 62
-                        },
-                        new
-                        {
-                            Id = 260,
+                            Id = 172,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0062 tháng 01/2025",
                             SoTien = 972222.22m,
@@ -2571,25 +1867,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 261,
+                            Id = 173,
                             ChungTuId = 100,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 63
                         },
                         new
                         {
-                            Id = 262,
-                            ChungTuId = 100,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 63
-                        },
-                        new
-                        {
-                            Id = 263,
+                            Id = 174,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0063 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -2599,25 +1887,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 264,
+                            Id = 175,
                             ChungTuId = 101,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 35000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 64
                         },
                         new
                         {
-                            Id = 265,
-                            ChungTuId = 101,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 35000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 64
-                        },
-                        new
-                        {
-                            Id = 266,
+                            Id = 176,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0064 tháng 01/2025",
                             SoTien = 972222.22m,
@@ -2627,25 +1907,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 267,
+                            Id = 177,
                             ChungTuId = 102,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 65
                         },
                         new
                         {
-                            Id = 268,
-                            ChungTuId = 102,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 65
-                        },
-                        new
-                        {
-                            Id = 269,
+                            Id = 178,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0065 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -2655,25 +1927,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 270,
+                            Id = 179,
                             ChungTuId = 103,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 66
                         },
                         new
                         {
-                            Id = 271,
-                            ChungTuId = 103,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 66
-                        },
-                        new
-                        {
-                            Id = 272,
+                            Id = 180,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0066 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -2683,25 +1947,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 273,
+                            Id = 181,
                             ChungTuId = 104,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 28000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 67
                         },
                         new
                         {
-                            Id = 274,
-                            ChungTuId = 104,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 28000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 67
-                        },
-                        new
-                        {
-                            Id = 275,
+                            Id = 182,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0067 tháng 01/2025",
                             SoTien = 777777.78m,
@@ -2711,25 +1967,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 276,
+                            Id = 183,
                             ChungTuId = 105,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 22000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 68
                         },
                         new
                         {
-                            Id = 277,
-                            ChungTuId = 105,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 22000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 68
-                        },
-                        new
-                        {
-                            Id = 278,
+                            Id = 184,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0068 tháng 01/2025",
                             SoTien = 611111.11m,
@@ -2739,25 +1987,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 279,
+                            Id = 185,
                             ChungTuId = 106,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 95000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 69
                         },
                         new
                         {
-                            Id = 280,
-                            ChungTuId = 106,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 95000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 69
-                        },
-                        new
-                        {
-                            Id = 281,
+                            Id = 186,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0069 tháng 01/2025",
                             SoTien = 2638888.89m,
@@ -2767,25 +2007,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 282,
+                            Id = 187,
                             ChungTuId = 107,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 75000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 70
                         },
                         new
                         {
-                            Id = 283,
-                            ChungTuId = 107,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 75000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 70
-                        },
-                        new
-                        {
-                            Id = 284,
+                            Id = 188,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0070 tháng 01/2025",
                             SoTien = 2083333.33m,
@@ -2795,25 +2027,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 285,
+                            Id = 189,
                             ChungTuId = 108,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 65000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 71
                         },
                         new
                         {
-                            Id = 286,
-                            ChungTuId = 108,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 65000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 71
-                        },
-                        new
-                        {
-                            Id = 287,
+                            Id = 190,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0071 tháng 01/2025",
                             SoTien = 1805555.56m,
@@ -2823,25 +2047,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 288,
+                            Id = 191,
                             ChungTuId = 109,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 72
                         },
                         new
                         {
-                            Id = 289,
-                            ChungTuId = 109,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 72
-                        },
-                        new
-                        {
-                            Id = 290,
+                            Id = 192,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0072 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -2851,25 +2067,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 291,
+                            Id = 193,
                             ChungTuId = 110,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 55000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 73
                         },
                         new
                         {
-                            Id = 292,
-                            ChungTuId = 110,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 55000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 73
-                        },
-                        new
-                        {
-                            Id = 293,
+                            Id = 194,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0073 tháng 01/2025",
                             SoTien = 1527777.78m,
@@ -2879,25 +2087,17 @@ namespace TH.WebAPI.Migrations.AssetDb
                         },
                         new
                         {
-                            Id = 294,
+                            Id = 195,
                             ChungTuId = 111,
                             MoTa = "Ghi tăng nguyên giá TSCĐ",
                             SoTien = 42000000m,
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 74
                         },
                         new
                         {
-                            Id = 295,
-                            ChungTuId = 111,
-                            MoTa = "Thanh toán chuyển khoản",
-                            SoTien = 42000000m,
-                            TaiKhoanCo = "112",
-                            TaiSanId = 74
-                        },
-                        new
-                        {
-                            Id = 296,
+                            Id = 196,
                             ChungTuId = 1,
                             MoTa = "Trích khấu hao LAP-0074 tháng 01/2025",
                             SoTien = 1166666.67m,

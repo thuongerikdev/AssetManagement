@@ -5,14 +5,14 @@ using System.Linq;
 using TH.Auth.Domain.Role;
 using TH.Auth.Domain.User;
 using TH.Constant;
-using static StackExchange.Redis.Role;
 
 namespace TH.Auth.Infrastructure.SeedData
 {
     public static class AuthSeedData
     {
+        // Đã fix lỗi nhảy ID: Dùng OrderBy để cố định thứ tự
         private static readonly List<string> _permKeys =
-            PermissionConstants.Permissions.Keys.ToList();
+            PermissionConstants.Permissions.Keys.OrderBy(k => k).ToList();
 
         private static int Pid(string key)
         {
@@ -20,10 +20,8 @@ namespace TH.Auth.Infrastructure.SeedData
             if (idx < 0) throw new Exception($"Permission key '{key}' not found in PermissionConstants");
             return idx + 1;
         }
-        // BCrypt hash của "Password123!" (cost=11) - dùng tool ngoài để tạo thực tế
-        private const string DEFAULT_PASSWORD_HASH = "$2a$11$48frMocIZOKO42patU1Uze9dR.44pvg.vd1yxtc3XnUdJMwzcld.e";
 
-       
+        private const string DEFAULT_PASSWORD_HASH = "$2a$11$48frMocIZOKO42patU1Uze9dR.44pvg.vd1yxtc3XnUdJMwzcld.e";
 
         public static void SeedRoles(ModelBuilder modelBuilder)
         {
@@ -45,99 +43,61 @@ namespace TH.Auth.Infrastructure.SeedData
         {
             var now = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-            //var defaultHash = hasher.Hash("Password123!");
-
-            // =====================================================
-            // TỔNG: 35 USERS (ID 1–35)
-            // BGD=1(4) | KT=2(5) | NS=3(2) | TECH=4(3)
-            // PROD=5(5) | DEV=6(10) | PMO=7(3) | DESIGN=8(3)
-            // =====================================================
             var users = new List<AuthUser>
             {
+                // ===== TÀI KHOẢN ADMIN HỆ THỐNG =====
+                // ID 99: Quản trị viên hệ thống
+                new AuthUser { userID = 99, userName = "admin", email = "admin@thtech.vn", phoneNumber = "0999999999", departmentID = "4", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
+
                 // ===== BAN GIÁM ĐỐC (Dept 1) – 4 người =====
-                // ID 1: Giám đốc
                 new AuthUser { userID = 1, userName = "pham.quoc.hung", email = "pqhung@thtech.vn", phoneNumber = "0901234001", departmentID = "1", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 2: Phó Giám đốc 1
                 new AuthUser { userID = 2, userName = "tran.thanh.tung", email = "tttung@thtech.vn", phoneNumber = "0901234002", departmentID = "1", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 3: Phó Giám đốc 2
                 new AuthUser { userID = 3, userName = "nguyen.minh.chau", email = "nmchau@thtech.vn", phoneNumber = "0901234003", departmentID = "1", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 4: Thư ký Ban Giám đốc
                 new AuthUser { userID = 4, userName = "le.quang.binh", email = "lqbinh@thtech.vn", phoneNumber = "0901234004", departmentID = "1", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG KẾ TOÁN (Dept 2) – 5 người =====
-                // ID 5: Trưởng phòng kế toán
                 new AuthUser { userID = 5, userName = "nguyen.thi.huong", email = "nthuong.kt@thtech.vn", phoneNumber = "0902234001", departmentID = "2", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 6: Kế toán TSCĐ
                 new AuthUser { userID = 6, userName = "le.bao.ngoc", email = "lbngoc.kt@thtech.vn", phoneNumber = "0902234002", departmentID = "2", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 7: Kế toán tổng hợp
                 new AuthUser { userID = 7, userName = "tran.van.hai", email = "tvhai.kt@thtech.vn", phoneNumber = "0902234003", departmentID = "2", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 8: Kế toán thuế
                 new AuthUser { userID = 8, userName = "pham.thi.mai", email = "ptmai.kt@thtech.vn", phoneNumber = "0902234004", departmentID = "2", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 9: Kế toán công nợ
                 new AuthUser { userID = 9, userName = "vo.xuan.truong", email = "vxtruong.kt@thtech.vn", phoneNumber = "0902234005", departmentID = "2", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG NHÂN SỰ (Dept 3) – 2 người =====
-                // ID 10: Trưởng phòng nhân sự
                 new AuthUser { userID = 10, userName = "hoang.thu.ha", email = "htha.ns@thtech.vn", phoneNumber = "0903234001", departmentID = "3", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 11: Nhân viên nhân sự
                 new AuthUser { userID = 11, userName = "bui.thi.linh", email = "btlinh.ns@thtech.vn", phoneNumber = "0903234002", departmentID = "3", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG KỸ THUẬT (Dept 4) – 3 người =====
-                // ID 12: Trưởng phòng kỹ thuật
                 new AuthUser { userID = 12, userName = "do.van.tai", email = "dvtai.tech@thtech.vn", phoneNumber = "0904234001", departmentID = "4", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 13: Kỹ thuật viên hạ tầng
                 new AuthUser { userID = 13, userName = "nguyen.cong.minh", email = "ncminh.tech@thtech.vn", phoneNumber = "0904234002", departmentID = "4", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 14: Kỹ thuật viên mạng
                 new AuthUser { userID = 14, userName = "ha.thi.loan", email = "htloan.tech@thtech.vn", phoneNumber = "0904234003", departmentID = "4", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG SẢN PHẨM (Dept 5) – 5 người =====
-                // ID 15: Trưởng phòng sản phẩm
                 new AuthUser { userID = 15, userName = "ly.minh.quan", email = "lmquan.prod@thtech.vn", phoneNumber = "0905234001", departmentID = "5", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 16: Product Manager
                 new AuthUser { userID = 16, userName = "dinh.thi.bich.ngoc", email = "dtbngoc.prod@thtech.vn", phoneNumber = "0905234002", departmentID = "5", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 17: Product Owner
                 new AuthUser { userID = 17, userName = "phan.huu.phuoc", email = "phphuoc.prod@thtech.vn", phoneNumber = "0905234003", departmentID = "5", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 18: Business Analyst
                 new AuthUser { userID = 18, userName = "vu.thi.thuy.dung", email = "vttdung.prod@thtech.vn", phoneNumber = "0905234004", departmentID = "5", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 19: Product Designer
                 new AuthUser { userID = 19, userName = "cao.ngoc.anh", email = "cnanh.prod@thtech.vn", phoneNumber = "0905234005", departmentID = "5", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG PHÁT TRIỂN PHẦN MỀM (Dept 6) – 10 người =====
-                // ID 20: Trưởng phòng phát triển
                 new AuthUser { userID = 20, userName = "dang.huu.thanh", email = "dhthanh.dev@thtech.vn", phoneNumber = "0906234001", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 21: Senior Developer
                 new AuthUser { userID = 21, userName = "nguyen.van.dung", email = "nvdung.dev@thtech.vn", phoneNumber = "0906234002", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 22: Backend Developer
                 new AuthUser { userID = 22, userName = "tran.thi.kim.oanh", email = "ttkoanh.dev@thtech.vn", phoneNumber = "0906234003", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 23: Frontend Developer
                 new AuthUser { userID = 23, userName = "le.hoang.nam", email = "lhnam.dev@thtech.vn", phoneNumber = "0906234004", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 24: Full-stack Developer
                 new AuthUser { userID = 24, userName = "pham.tuan.anh", email = "ptanh.dev@thtech.vn", phoneNumber = "0906234005", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 25: Mobile Developer
                 new AuthUser { userID = 25, userName = "vu.duc.manh", email = "vdmanh.dev@thtech.vn", phoneNumber = "0906234006", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 26: Backend Developer
                 new AuthUser { userID = 26, userName = "hoang.thi.hong", email = "hthong.dev@thtech.vn", phoneNumber = "0906234007", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 27: DevOps Engineer
                 new AuthUser { userID = 27, userName = "bui.thanh.phong", email = "btphong.dev@thtech.vn", phoneNumber = "0906234008", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 28: Junior Developer
                 new AuthUser { userID = 28, userName = "do.thanh.dat", email = "dtdat.dev@thtech.vn", phoneNumber = "0906234009", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 29: Junior Developer
                 new AuthUser { userID = 29, userName = "luu.thi.bao.chau", email = "ltbchau.dev@thtech.vn", phoneNumber = "0906234010", departmentID = "6", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG QUẢN LÝ DỰ ÁN (Dept 7) – 3 người =====
-                // ID 30: Trưởng phòng / PMO Lead
                 new AuthUser { userID = 30, userName = "vu.thanh.long", email = "vtlong.pmo@thtech.vn", phoneNumber = "0907234001", departmentID = "7", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 31: Project Manager
                 new AuthUser { userID = 31, userName = "nguyen.ba.kien", email = "nbkien.pmo@thtech.vn", phoneNumber = "0907234002", departmentID = "7", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 32: Business Analyst / Scrum Master
                 new AuthUser { userID = 32, userName = "tran.thi.phuong", email = "ttphuong.pmo@thtech.vn", phoneNumber = "0907234003", departmentID = "7", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
 
                 // ===== PHÒNG THIẾT KẾ UI/UX (Dept 8) – 3 người =====
-                // ID 33: Lead Designer / Trưởng phòng
                 new AuthUser { userID = 33, userName = "phan.ngoc.yen", email = "pnyen.design@thtech.vn", phoneNumber = "0908234001", departmentID = "8", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 34: UI Designer
                 new AuthUser { userID = 34, userName = "cao.thi.bich", email = "ctbich.design@thtech.vn", phoneNumber = "0908234002", departmentID = "8", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
-                // ID 35: UX Researcher / Motion Designer
                 new AuthUser { userID = 35, userName = "truong.van.khai", email = "tvkhai.design@thtech.vn", phoneNumber = "0908234003", departmentID = "8", passwordHash = DEFAULT_PASSWORD_HASH, isEmailVerified = true, status = "Active", tokenVersion = 1, scope = "staff", createdAt = now, updatedAt = now },
             };
 
@@ -148,6 +108,9 @@ namespace TH.Auth.Infrastructure.SeedData
         {
             var profiles = new List<AuthProfile>
             {
+                // ===== TÀI KHOẢN ADMIN =====
+                new AuthProfile { profileID = 99, userID = 99, firstName = "System", lastName = "Admin", gender = "Nam" },
+
                 // ===== BAN GIÁM ĐỐC =====
                 new AuthProfile { profileID = 1,  userID = 1,  firstName = "Phạm Quốc",     lastName = "Hùng",   gender = "Nam" },
                 new AuthProfile { profileID = 2,  userID = 2,  firstName = "Trần Thanh",     lastName = "Tùng",   gender = "Nam" },
@@ -187,7 +150,7 @@ namespace TH.Auth.Infrastructure.SeedData
                 new AuthProfile { profileID = 26, userID = 26, firstName = "Hoàng Thị",      lastName = "Hồng",   gender = "Nữ"  },
                 new AuthProfile { profileID = 27, userID = 27, firstName = "Bùi Thanh",      lastName = "Phong",  gender = "Nam" },
                 new AuthProfile { profileID = 28, userID = 28, firstName = "Đỗ Thành",       lastName = "Đạt",    gender = "Nam" },
-                new AuthProfile { profileID = 29, userID = 29, firstName = "Lưu Thị Bảo",   lastName = "Châu",   gender = "Nữ"  },
+                new AuthProfile { profileID = 29, userID = 29, firstName = "Lưu Thị Bảo",    lastName = "Châu",   gender = "Nữ"  },
 
                 // ===== PHÒNG QUẢN LÝ DỰ ÁN =====
                 new AuthProfile { profileID = 30, userID = 30, firstName = "Vũ Thành",       lastName = "Long",   gender = "Nam" },
@@ -208,6 +171,9 @@ namespace TH.Auth.Infrastructure.SeedData
             var now = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var userRoles = new List<AuthUserRole>
             {
+                // ===== TÀI KHOẢN ADMIN =====
+                new AuthUserRole { userID = 99, roleID = 1, assignedAt = now }, // Cấp quyền admin_he_thong cho user admin
+
                 // ===== BAN GIÁM ĐỐC =====
                 new AuthUserRole { userID = 1, roleID = 6, assignedAt = now },  // Giám đốc
                 new AuthUserRole { userID = 2, roleID = 7, assignedAt = now },  // Phó GĐ
@@ -282,7 +248,6 @@ namespace TH.Auth.Infrastructure.SeedData
 
         public static void SeedRolePermissions(ModelBuilder modelBuilder)
         {
-            // ── Nhóm permission dùng chung cho tất cả nhân viên đã đăng nhập ──
             var authCommon = new[]
             {
                 "AuthLogin", "AuthLoginStaff", "AuthLoginMobile", "AuthLoginGoogle",
@@ -297,44 +262,30 @@ namespace TH.Auth.Infrastructure.SeedData
                 "UserGetMe", "UserUpdateProfile", "UserUpdateUsername",
             };
 
-            // ── Role 1: admin_he_thong – toàn quyền ──
             var adminPerms = _permKeys.ToArray();
 
-            // ── Role 2: ke_toan_tscd ──
             var keToantscPerms = authCommon.Concat(new[]
             {
                 "UserGetAll", "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
                 "RoleGetAll", "RoleGetAllScopeUser", "RoleGetByUserId",
                 "PermissionGetAll", "PermissionGetById", "PermissionGetByUserId", "PermissionGetByRoleId",
-                // Tài sản
                 "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine", "TaiSanGenerateCode",
                 "TaiSanCreate", "TaiSanConfirm", "TaiSanUpdate",
-                // Danh mục
                 "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById", "DanhMucTaiSanCreate", "DanhMucTaiSanUpdate",
-                // Phòng ban
                 "PhongBanGetAll", "PhongBanGetById",
-                // Tài khoản kế toán
                 "TaiKhoanKeToanGetAll", "TaiKhoanKeToanGetById", "TaiKhoanKeToanCreate", "TaiKhoanKeToanUpdate",
-                // Lịch sử khấu hao
                 "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
                 "LichSuKhauHaoCreate", "LichSuKhauHaoCreateBulk", "LichSuKhauHaoUpdate", "LichSuKhauHaoDelete",
-                // Chứng từ
                 "ChungTuGetAll", "ChungTuGetById", "ChungTuGetByAsset", "ChungTuGenerateCode",
                 "ChungTuCreate", "ChungTuUpdate", "ChungTuDelete",
-                // Sổ cái
                 "SoCaiGetTomTat", "SoCaiGetChiTiet",
-                // Đính kèm
                 "TaiSanDinhKemGetByAsset", "TaiSanDinhKemUpload",
-                // Thanh lý
                 "ThanhLyTaiSanGetAll", "ThanhLyTaiSanGetById", "ThanhLyTaiSanGetByAsset",
                 "ThanhLyTaiSanCreate", "ThanhLyTaiSanUpdate",
-                // Bảo trì (chỉ xem)
                 "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset",
-                // Điều chuyển (chỉ xem)
                 "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
             }).Distinct().ToArray();
 
-            // ── Role 3: truong_phong_ke_toan – mở rộng ke_toan_tscd ──
             var truongPhongKeToanPerms = keToantscPerms.Concat(new[]
             {
                 "TaiSanDelete",
@@ -353,33 +304,25 @@ namespace TH.Auth.Infrastructure.SeedData
                 "UserRoleAssign",
             }).Distinct().ToArray();
 
-            // ── Role 4: ky_thuat_vien ──
             var kyThuatVienPerms = authCommon.Concat(new[]
             {
                 "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine",
                 "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById",
                 "PhongBanGetAll", "PhongBanGetById",
-                // Bảo trì: toàn quyền
                 "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset",
                 "BaoTriTaiSanCreate", "BaoTriTaiSanUpdate", "BaoTriTaiSanDelete",
-                // Điều chuyển: xem + tạo
                 "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
                 "DieuChuyenTaiSanCreate",
-                // Đính kèm
                 "TaiSanDinhKemGetByAsset", "TaiSanDinhKemUpload",
-                // Lịch sử khấu hao (chỉ xem)
                 "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
-                // Chứng từ (chỉ xem)
                 "ChungTuGetAll", "ChungTuGetById", "ChungTuGetByAsset",
             }).Distinct().ToArray();
 
-            // ── Role 5: truong_phong_ky_thuat – mở rộng ky_thuat_vien ──
             var truongPhongKyThuatPerms = kyThuatVienPerms.Concat(new[]
             {
                 "DieuChuyenTaiSanUpdate", "DieuChuyenTaiSanDelete",
             }).Distinct().ToArray();
 
-            // ── Role 6 & 7: giam_doc / pho_giam_doc – xem toàn diện + audit ──
             var giamdocPerms = authCommon.Concat(new[]
             {
                 "UserGetAll", "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
@@ -401,7 +344,6 @@ namespace TH.Auth.Infrastructure.SeedData
                 "AuditLogGetAll", "AuditLogGetById", "AuditLogGetByUserId",
             }).Distinct().ToArray();
 
-            // ── Role 8: truong_phong_ban ──
             var truongPhongBanPerms = authCommon.Concat(new[]
             {
                 "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
@@ -415,7 +357,6 @@ namespace TH.Auth.Infrastructure.SeedData
                 "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
             }).Distinct().ToArray();
 
-            // ── Role 9: nhan_vien ──
             var nhanVienPerms = authCommon.Concat(new[]
             {
                 "TaiSanGetMine", "TaiSanGetById",
@@ -426,7 +367,6 @@ namespace TH.Auth.Infrastructure.SeedData
                 "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset", "DieuChuyenTaiSanCreate",
             }).Distinct().ToArray();
 
-            // ── Role 10: nhan_vien_nhan_su – mở rộng nhan_vien ──
             var nhanVienNhanSuPerms = nhanVienPerms.Concat(new[]
             {
                 "UserGetAll", "UserGetAllSlim", "UserGetSlimById", "UserGetByDepartmentId",
@@ -434,32 +374,34 @@ namespace TH.Auth.Infrastructure.SeedData
                 "UserSessionGetByUserId",
             }).Distinct().ToArray();
 
-            // ── Build entries theo thứ tự roleID ──
             var rolePerms = new Dictionary<int, string[]>
             {
-                [1]  = adminPerms,
-                [2]  = keToantscPerms,
-                [3]  = truongPhongKeToanPerms,
-                [4]  = kyThuatVienPerms,
-                [5]  = truongPhongKyThuatPerms,
-                [6]  = giamdocPerms,
-                [7]  = giamdocPerms,
-                [8]  = truongPhongBanPerms,
-                [9]  = nhanVienPerms,
+                [1] = adminPerms,
+                [2] = keToantscPerms,
+                [3] = truongPhongKeToanPerms,
+                [4] = kyThuatVienPerms,
+                [5] = truongPhongKyThuatPerms,
+                [6] = giamdocPerms,
+                [7] = giamdocPerms,
+                [8] = truongPhongBanPerms,
+                [9] = nhanVienPerms,
                 [10] = nhanVienNhanSuPerms,
             };
 
             var entries = new List<AuthRolePermission>();
-            var id = 1;
+
             foreach (var (roleId, keys) in rolePerms.OrderBy(x => x.Key))
             {
                 foreach (var key in keys)
                 {
+                    int permId = Pid(key);
+
                     entries.Add(new AuthRolePermission
                     {
-                        rolePermissionID = id++,
+                        // Đã fix lỗi nhảy ID: ID lúc này được cố định dựa vào roleId và permId
+                        rolePermissionID = (roleId * 10000) + permId,
                         roleID = roleId,
-                        permissionID = Pid(key),
+                        permissionID = permId,
                     });
                 }
             }
