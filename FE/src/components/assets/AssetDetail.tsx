@@ -7,6 +7,8 @@ import {
   Package, AlertCircle, Calculator, UserPlus, Upload, Download
 } from 'lucide-react';
 import { toast } from "sonner";
+// Thay thế dòng import excel cũ
+import { exportTheTSCDWord } from '../../utils/wordExport';
 
 // APIs
 import { apiClient } from '../../api/client';
@@ -601,15 +603,26 @@ export function AssetDetail() {
           </Link>
 
           <button
-            onClick={() => asset && exportTheeTSCD(asset, categories, departments)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-          >
-            <Download className="w-4 h-4" /> Xuất Thẻ TSCĐ
-          </button>
+              onClick={async () => {
+                if (asset) {
+                  try {
+                    await exportTheTSCDWord(asset, categories, departments);
+                    toast.success("Xuất thẻ tài sản thành công!");
+                  } catch (error) {
+                    toast.error("Có lỗi xảy ra khi tạo file Word.");
+                    console.error(error);
+                  }
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+            >
+              <FileText className="w-4 h-4" /> {/* Có thể thay thế <Download /> bằng <FileText /> hoặc giữ nguyên */}
+              Xuất Thẻ TSCĐ
+            </button>
 
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
             <Printer className="w-4 h-4" /> In thông tin
-          </button>
+          </button> */}
         </div>
       </div>
 
