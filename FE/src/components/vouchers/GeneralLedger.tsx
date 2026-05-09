@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, RefreshCw, Download, TrendingUp, TrendingDown, Scale } from 'lucide-react';
+import { BookOpen, RefreshCw, Download, TrendingUp, TrendingDown, Scale, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { generalLedgerApi, SoCaiChiTietResponse } from '../../api/generalLedgerApi';
-
+import { exportSoCaiWord } from '../../utils/wordExport';
 const ACCOUNTS = [
   { ma: '211', ten: 'Tài sản cố định hữu hình' },
   { ma: '214', ten: 'Hao mòn tài sản cố định' },
@@ -45,6 +45,23 @@ export function GeneralLedger() {
   useEffect(() => { load(); }, [selectedMa, fromDate, toDate]);
 
   const selectedAccount = ACCOUNTS.find(a => a.ma === selectedMa)!;
+
+  const exportWord = async () => {
+    if (!data) return;
+    try {
+      await exportSoCaiWord(
+        data, 
+        selectedAccount.ma, 
+        data.tenTaiKhoan ?? selectedAccount.ten, 
+        fromDate, 
+        toDate
+      );
+      toast.success("Xuất sổ cái Word thành công!");
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi xuất file Word.");
+      console.error(error);
+    }
+  };
 
   const exportExcel = () => {
     if (!data) return;
@@ -107,12 +124,12 @@ export function GeneralLedger() {
               Làm mới
             </button>
             <button
-              onClick={exportExcel}
+              onClick={exportWord}
               disabled={!data}
-              className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
             >
-              <Download className="w-4 h-4" />
-              Xuất Excel
+              <FileText className="w-4 h-4" />
+              Xuất Word
             </button>
           </div>
         </div>

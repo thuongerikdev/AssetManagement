@@ -361,3 +361,239 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
   const buffer = await Packer.toBlob(doc);
   saveAs(buffer, `Bang_Trich_Khau_Hao_Thang_${month}_${year}.docx`);
 };
+
+// Thêm hàm này vào cuối file src/utils/wordExport.ts
+
+export const exportSoCaiWord = async (
+  data: any,
+  accountCode: string,
+  accountName: string,
+  fromDate: string,
+  toDate: string
+) => {
+  const fromYear = new Date(fromDate).getFullYear();
+  const toYear = new Date(toDate).getFullYear();
+  const displayYear = fromYear === toYear ? fromYear.toString() : `${fromYear} - ${toYear}`;
+
+  const today = new Date();
+  const day = today.getDate().toString().padStart(2, '0');
+  const currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
+  const currentYear = today.getFullYear();
+
+  // Định dạng viền ẩn
+  const noBorders = {
+    top: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    left: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+  };
+
+  const doc = new Document({
+    sections: [{
+      properties: {
+        page: {
+          margin: { top: 1000, right: 1000, bottom: 1000, left: 1000 },
+          size: { orientation: PageOrientation.LANDSCAPE },
+        },
+      },
+      children: [
+        // HEADER
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: noBorders,
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  width: { size: 40, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ children: [new TextRun({ text: "Đơn vị: ...........................................", bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: "Địa chỉ: ..........................................", bold: true })] }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 60, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mẫu số S03b-DN", bold: true })] }),
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC\nngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20 })]
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+
+        new Paragraph({ text: "", spacing: { after: 200 } }),
+
+        // TÊN TIÊU ĐỀ
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: "SỔ CÁI", bold: true, size: 32 })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: "(Dùng cho hình thức kế toán Nhật ký chung)", italics: true })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: `Năm: ${displayYear}`, bold: true })],
+          spacing: { after: 200 }
+        }),
+        
+        new Paragraph({ children: [new TextRun({ text: `Tên tài khoản: ${accountName}` })] }),
+        new Paragraph({ children: [new TextRun({ text: `Số hiệu: ${accountCode}` })], spacing: { after: 200 } }),
+
+        // BẢNG SỔ CÁI
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          rows: [
+            // Row 1 (Header cấp 1)
+            new TableRow({
+              children: [
+                new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày, tháng\nghi sổ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Chứng từ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Diễn giải", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nhật ký chung", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số hiệu TK\nđối ứng", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số tiền", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+              ],
+            }),
+            // Row 2 (Header cấp 2)
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số\nhiệu", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày,\ntháng", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Trang\nsổ", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "STT\ndòng", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nợ", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Có", bold: true })] })] }),
+              ],
+            }),
+            // Row Tiêu đề cột chữ cái A,B,C...
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "A" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "B" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "C" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "D" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "E" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "G" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "H" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "1" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "2" })] }),
+              ],
+            }),
+
+            // DÒNG: Số dư đầu kỳ
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "- Số dư đầu kỳ", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: data.soDuDauKy >= 0 ? formatVND(data.soDuDauKy) : "", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: data.soDuDauKy < 0 ? formatVND(Math.abs(data.soDuDauKy)) : "", bold: true })] })] }),
+              ],
+            }),
+
+            // DATA ROWS: Các bút toán phát sinh
+            ...(data.butToans || []).map((b: any) => new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.ngayHachToan ? new Date(b.ngayHachToan).toLocaleDateString('vi-VN') : "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.maChungTu || "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.ngayHachToan ? new Date(b.ngayHachToan).toLocaleDateString('vi-VN') : "" })] }),
+                new TableCell({ children: [new Paragraph({ text: b.dienGiai || "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }), // Trang sổ (NKC)
+                new TableCell({ children: [new Paragraph({ text: "" })] }), // STT Dòng (NKC)
+                new TableCell({ children: [new Paragraph({ text: "" })] }), // TK Đối ứng
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: b.phatSinhNo > 0 ? formatVND(b.phatSinhNo) : "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: b.phatSinhCo > 0 ? formatVND(b.phatSinhCo) : "" })] }),
+              ],
+            })),
+
+            // DÒNG: Cộng số phát sinh
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "- Cộng số phát sinh", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: formatVND(data.phatSinhNo), bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: formatVND(data.phatSinhCo), bold: true })] })] }),
+              ],
+            }),
+
+            // DÒNG: Số dư cuối kỳ
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "- Số dư cuối kỳ", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: data.soDuCuoiKy >= 0 ? formatVND(data.soDuCuoiKy) : "", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: data.soDuCuoiKy < 0 ? formatVND(Math.abs(data.soDuCuoiKy)) : "", bold: true })] })] }),
+              ],
+            }),
+          ],
+        }),
+
+        // FOOTER & CHỮ KÝ
+        new Paragraph({ spacing: { before: 200 }, children: [new TextRun("Sổ này có .... trang, đánh số từ trang số 01 đến trang ....")] }),
+        new Paragraph({ spacing: { before: 100 }, children: [new TextRun("Ngày mở sổ:................................................................")] }),
+        
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          spacing: { before: 200, after: 100 },
+          children: [new TextRun({ text: `Ngày ${day} tháng ${currentMonth} năm ${currentYear}`, italics: true })]
+        }),
+
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: noBorders,
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Người ghi sổ", bold: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "(Ký, họ tên)", italics: true })] }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Kế toán trưởng", bold: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "(Ký, họ tên)", italics: true })] }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 34, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Người đại diện theo pháp luật", bold: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "(Ký, họ tên, đóng dấu)", italics: true })] }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }],
+  });
+
+  const buffer = await Packer.toBlob(doc);
+  saveAs(buffer, `So_Cai_${accountCode}_${fromDate}_${toDate}.docx`);
+};
