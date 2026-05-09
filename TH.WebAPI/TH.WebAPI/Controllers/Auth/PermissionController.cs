@@ -16,8 +16,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("BulkCreate")]
-        [Authorize(Policy = "PermissionManage")]
-
+        [Authorize(Policy = "PermissionBulkCreate")]
         public async Task<IActionResult> BulkCreatePermissionsAsync(List<CreatePermissionScopeUserRequestDto> reqs, CancellationToken ct)
         {
             try
@@ -33,7 +32,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPut("updatePermission")]
-        [Authorize(Policy = "PermissionManage")]
+        [Authorize(Policy = "PermissionUpdate")]
         public async Task<IActionResult> UpdatePermissionAsync(UpdatePermissionScopeUserRequestDto req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -55,7 +54,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpDelete("delete")]
-        [Authorize(Policy = "PermissionManage")]
+        [Authorize(Policy = "PermissionDelete")]
         public async Task<IActionResult> DeletePermissionAsync([FromQuery] int permissionId, CancellationToken ct)
         {
             try
@@ -75,7 +74,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("getall")]
-        //[Authorize(Policy = "PermissionRead")]
+        [Authorize(Policy = "PermissionGetAll")]
         public async Task<IActionResult> GetAllPermissions(CancellationToken ct)
         {
             var result = await _permissionService.GetAllPermissionsAsynWhereScopeUserc(ct);
@@ -87,7 +86,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("getbyid/{permissionId}")]
-        [Authorize(Policy = "PermissionRead")]
+        [Authorize(Policy = "PermissionGetById")]
         public async Task<IActionResult> GetPermissionByIdAsync(int permissionId, CancellationToken ct)
         {
             var result = await _permissionService.GetPermissionByIdAsyncWhereScopeUser(permissionId, ct);
@@ -98,7 +97,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("getbyUserID/{ID}")]
-        [Authorize(Policy = "PermissionRead")]
+        [Authorize(Policy = "PermissionGetByUserId")]
         public async Task<IActionResult> GetPermissionByCodeAsync(int ID, CancellationToken ct)
         {
             var result = await _permissionService.GetPermissionsByUserIdAsyncWhereScopeUser(ID, ct);
@@ -110,7 +109,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("getbyRoleID/{ID}")]
-        [Authorize(Policy = "PermissionRead")]
+        [Authorize(Policy = "PermissionGetByRoleId")]
         public async Task<IActionResult> GetPermissionByRoleIdAsync(int ID, CancellationToken ct)
         {
             var result = await _permissionService.GettPermissionByRoleIdAsyncWhereScopeUser(ID, ct);
@@ -122,7 +121,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("admin/getall")]
-        [Authorize(Policy = "PermissionReadAdmin")]
+        [Authorize(Policy = "PermissionAdminGetAll")]
         public async Task<IActionResult> GetAllPermissionsAdmin(CancellationToken ct)
         {
             var result = await _permissionService.GetAllPermissionsAsync(ct);
@@ -134,7 +133,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("admin/getbyid/{permissionId}")]
-        [Authorize(Policy = "PermissionReadAdmin")]
+        [Authorize(Policy = "PermissionAdminGetById")]
         public async Task<IActionResult> GetPermissionByIdAsyncAdmin(int permissionId, CancellationToken ct)
         {
             var result = await _permissionService.GetPermissionByIdAsync(permissionId, ct);
@@ -145,7 +144,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("admin/getbyUserID/{ID}")]
-        [Authorize(Policy = "PermissionReadAdmin")]
+        [Authorize(Policy = "PermissionAdminGetByUserId")]
         public async Task<IActionResult> GetPermissionByCodeAsyncAdmin(int ID, CancellationToken ct)
         {
             var result = await _permissionService.GetPermissionsByUserIdAsync(ID, ct);
@@ -156,7 +155,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("admin/getbyRoleID/{ID}")]
-        [Authorize(Policy = "PermissionReadAdmin")]
+        [Authorize(Policy = "PermissionAdminGetByRoleId")]
         public async Task<IActionResult> GetPermissionByRoleIdAsyncAdmin(int ID, CancellationToken ct)
         {
             var result = await _permissionService.GetPermissionByRoleIdAsync(ID, ct);
@@ -172,8 +171,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpPost("admin/BulkCreate")]
-        [Authorize(Policy = "PermissionManageAdmin")]
-
+        [Authorize(Policy = "PermissionAdminBulkCreate")]
         public async Task<IActionResult> AdminBulkCreatePermissionsAsync(List<CreatePermissionRequestDto> reqs, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -203,7 +201,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(results);
         }
         [HttpPost("admin/addPermission")]
-        [Authorize(Policy = "PermissionManageAdmin")]
+        [Authorize(Policy = "PermissionAdminAdd")]
         public async Task<IActionResult> AdminAddPermissionAsync(CreatePermissionRequestDto req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -227,7 +225,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPut("admin/updatePermission")]
-        [Authorize(Policy = "PermissionManageAdmin")]
+        [Authorize(Policy = "PermissionAdminUpdate")]
         public async Task<IActionResult> AdminUpdatePermissionAsync(UpdatePermissionRequestDto req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -249,7 +247,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpDelete("admin/delete")]
-        [Authorize(Policy = "PermissionManageAdmin")]
+        [Authorize(Policy = "PermissionAdminDelete")]
         public async Task<IActionResult> AdminDeletePermissionAsync([FromQuery] int permissionId, CancellationToken ct)
         {
             try

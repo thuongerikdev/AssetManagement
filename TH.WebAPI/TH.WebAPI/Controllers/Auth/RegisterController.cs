@@ -15,6 +15,7 @@ namespace TH.WebAPI.Controllers.Auth
             _authRegisterService = authRegisterService;
         }
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterRequest registerRequest, CancellationToken ct)
         {
             var result = await _authRegisterService.RegisterAsync(registerRequest, ct);
@@ -26,6 +27,7 @@ namespace TH.WebAPI.Controllers.Auth
 
         }
         [HttpPost("verifyRegisterEmail")]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyRegisterEmail(VerifyEmailRequest verifyEmailRequest, CancellationToken ct)
         {
             var result = await _authRegisterService.VerifyEmailAsync(verifyEmailRequest, ct);
@@ -36,7 +38,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpPost("createUser")]
-        //[Authorize(Policy = "RoleManage")]
+        [Authorize(Policy = "AuthCreateUser")]
         public async Task<IActionResult> CreateUser(SimpleCreateUserRequest createUserRequest, CancellationToken ct)
         {
             var result = await _authRegisterService.CreateSimpleUserAsync(createUserRequest, ct);

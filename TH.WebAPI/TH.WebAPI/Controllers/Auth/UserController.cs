@@ -29,8 +29,8 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
 
-        [Authorize]
         [HttpGet("me")]
+        [Authorize(Policy = "UserGetMe")]
         public async Task<IActionResult> Me(CancellationToken ct)
         {
             var userIdStr = User.FindFirst("userId")?.Value
@@ -47,7 +47,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("GetUserSlimById/{userID}")]
-        [Authorize(Policy = "UserReadDetails")]
+        [Authorize(Policy = "UserGetSlimById")]
         public async Task<IActionResult> GetUserSlimById(int userID, CancellationToken ct)
         {
             var result = await _userService.GetSlimUserWhereScopeUserByID(userID, ct);
@@ -59,7 +59,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("getAllUsers")]
-        //[Authorize(Policy = "UserReadDetails")]
+        [Authorize(Policy = "UserGetAll")]
         public async Task<IActionResult> GetAllUsersFull(CancellationToken ct)
         {
             var result = await _userService.GetAllUserWhereScopeUserAsync(ct);
@@ -83,7 +83,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpPut("update/username")]
-        [Authorize(Policy = "UserUpdateProfile")]
+        [Authorize(Policy = "UserUpdateUsername")]
         public async Task<IActionResult> UpdateUsername([FromQuery] int userId, [FromQuery] string newUsername, CancellationToken ct)
         {
             var result = await _userService.AuthUpdateUserName(userId, newUsername, ct);
@@ -94,7 +94,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("admin/getAllUsers")]
-        //[Authorize(Policy = "UserReadDetailsAdmin")]
+        [Authorize(Policy = "UserAdminGetAll")]
         public async Task<IActionResult> GetAllUsersAdminFull(CancellationToken ct)
         {
             var result = await _userService.GetAllUserAsync(ct);
@@ -106,7 +106,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("admin/GetUserSlimById/{userID}")]
-        [Authorize(Policy = "UserReadDetailsAdmin")]
+        [Authorize(Policy = "UserAdminGetSlimById")]
         public async Task<IActionResult> AdminGetUserSlimById(int userID, CancellationToken ct)
         {
             var result = await _userService.GetSlimUserByID(userID, ct);
@@ -119,7 +119,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpGet("admin/getUserById")]
-        //[Authorize(Policy = "UserReadDetailsAdmin")]
+        [Authorize(Policy = "UserAdminGetById")]
         public async Task<IActionResult> GetUserById(int userId, CancellationToken ct)
         {
             var result = await _userService.GetUserByIDAsync(userId, ct);
@@ -131,7 +131,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("getAllUsersSlim")]
-        [Authorize(Policy = "UserReadDetailsAdmin")]
+        [Authorize(Policy = "UserGetAllSlim")]
         public async Task<IActionResult> GetAllUsers(CancellationToken ct)
         {
             var result = await _userService.GetAllSlimAsync(ct);
@@ -143,6 +143,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("GetByDepartmentId/{departmentID}")]
+        [Authorize(Policy = "UserGetByDepartmentId")]
         public async Task<IActionResult> GetByDepartmentId(int departmentID, CancellationToken ct)
         {
             var result = await _userService.GetByDepartmentID(departmentID, ct);

@@ -68,6 +68,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpPost("StaffLogin")]
+        [AllowAnonymous]
         public async Task<IActionResult> StaffLogin([FromBody] LoginRequest loginRequest, CancellationToken ct)
         {
             var result = await _authLoginService.LoginStaffAsync(loginRequest, ct);
@@ -137,6 +138,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("logout")]
+        [Authorize(Policy = "AuthLogout")]
         public async Task<IActionResult> Logout([FromServices] IAuthLoginService svc, CancellationToken ct)
         {
             var rt = Request.Cookies[RefreshCookie];
@@ -150,6 +152,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("logout/session/{sessionId:int}")]
+        [Authorize(Policy = "AuthLogoutSession")]
         public async Task<IActionResult> LogoutSession(int sessionId, [FromServices] IAuthLoginService svc, CancellationToken ct)
         {
             var userIdStr = User.FindFirstValue("userId");
@@ -162,6 +165,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("logout/all")]
+        [Authorize(Policy = "AuthLogoutAll")]
         public async Task<IActionResult> LogoutAll([FromServices] IAuthLoginService svc, CancellationToken ct)
         {
             var userIdStr = User.FindFirstValue("userId");

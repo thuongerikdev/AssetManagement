@@ -15,7 +15,7 @@ namespace TH.WebAPI.Controllers.Auth
             _roleService = roleService;
         }
         [HttpGet("getall")]
-        //[Authorize(Policy = "RoleRead")]
+        [Authorize(Policy = "RoleGetAll")]
         public async Task<IActionResult> GetAllRoles(CancellationToken ct)
         {
             var result = await _roleService.GetAllRolesAsync(ct);
@@ -26,7 +26,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("getallscope-user")]
-        [Authorize(Policy = "RoleRead")]
+        [Authorize(Policy = "RoleGetAllScopeUser")]
         public async Task<IActionResult> GetAllRolesWhereScopeUser(CancellationToken ct)
         {
             var result = await _roleService.GetAllRoleWhereScopeUser(ct);
@@ -41,7 +41,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpPost("addRole")]
-        [Authorize(Policy = "RoleManage")]
+        [Authorize(Policy = "RoleAdd")]
         public async Task<IActionResult> AddRoleAsync(AddRoleWhereScopeUserRequest req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -63,7 +63,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpPut("updateRole")]
-        [Authorize(Policy = "RoleManage")]
+        [Authorize(Policy = "RoleUpdate")]
         public async Task<IActionResult> UpdateRoleAsync(UpdateRoleWhereScopeUserRequest req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -85,7 +85,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpDelete("deleteRole/{roleID}")]
-        [Authorize(Policy = "RoleManage")]
+        [Authorize(Policy = "RoleDelete")]
         public async Task<IActionResult> DeleteRoleAsync(int roleID, CancellationToken ct)
         {
             try
@@ -105,7 +105,7 @@ namespace TH.WebAPI.Controllers.Auth
         //Admin Role Management
 
         [HttpPost("admin/addRole")]
-        [Authorize(Policy = "RoleManageAdmin")]
+        [Authorize(Policy = "RoleAdminAdd")]
         public async Task<IActionResult> AdminAddRoleAsync(AddRoleRequest req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -127,7 +127,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpPut("admin/updateRole")]
-        [Authorize(Policy = "RoleManageAdmin")]
+        [Authorize(Policy = "RoleAdminUpdate")]
         public async Task<IActionResult> AdminUpdateRoleAsync(UpdateRoleRequest req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -149,7 +149,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpDelete("admin/deleteRole/{roleID}")]
-        [Authorize(Policy = "RoleManageAdmin")]
+        [Authorize(Policy = "RoleAdminDelete")]
         public async Task<IActionResult> AdminDeleteRoleAsync(int roleID, CancellationToken ct)
         {
             try
@@ -168,7 +168,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpGet("getRoleByUserID/{userID}")]
-        [Authorize(Policy = "RoleRead")]
+        [Authorize(Policy = "RoleGetByUserId")]
         public async Task<IActionResult> GetRoleByUserID(int userID, CancellationToken ct)
         {
             try
@@ -187,7 +187,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("clonerole")]
-        [Authorize(Policy = "RoleManage")]
+        [Authorize(Policy = "RoleClone")]
         public async Task<IActionResult> CloneRoleAsync(CloneUserRoleRequest req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -209,7 +209,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpPost("admin/clonerole")]
-        [Authorize(Policy = "RoleManageAdmin")]
+        [Authorize(Policy = "RoleAdminClone")]
         public async Task<IActionResult> AdminCloneRoleAsync(CloneRoleRequest req, CancellationToken ct)
         {
             if (!ModelState.IsValid)

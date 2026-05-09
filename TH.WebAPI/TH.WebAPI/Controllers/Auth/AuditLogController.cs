@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TH.Auth.ApplicationService.Service.MFA;
 
@@ -7,7 +7,6 @@ namespace TH.WebAPI.Controllers.Auth
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AuditLogManage")]
     public class AuditLogController : Controller
     {
         private readonly IAuthAuditLogService _auditLogService;
@@ -16,6 +15,7 @@ namespace TH.WebAPI.Controllers.Auth
             _auditLogService = auditLogService;
         }
         [HttpGet("getall")]
+        [Authorize(Policy = "AuditLogGetAll")]
         public async Task<IActionResult> GetAllAuditLogs(CancellationToken ct)
         {
             var result = await _auditLogService.GetAllLogsAsync(ct);
@@ -26,6 +26,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("getbyid/{id}")]
+        [Authorize(Policy = "AuditLogGetById")]
         public async Task<IActionResult> GetAuditLogById(int id, CancellationToken ct)
         {
             var result = await _auditLogService.GetLogsByID(id, ct);
@@ -36,6 +37,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("getbyuser/{userId}")]
+        [Authorize(Policy = "AuditLogGetByUserId")]
         public async Task<IActionResult> GetAuditLogsByUserId(int userId, CancellationToken ct)
         {
             var result = await _auditLogService.GetLogsByUserIdAsync(userId, ct);

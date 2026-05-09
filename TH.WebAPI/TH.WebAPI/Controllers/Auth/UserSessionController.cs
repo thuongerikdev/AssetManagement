@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TH.Auth.ApplicationService.Service.MFA;
 
@@ -6,7 +6,6 @@ namespace TH.WebAPI.Controllers.Auth
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "UserSessionManage")]
     public class UserSessionController : Controller
     {
         private readonly IAuthUserSessionService _userSessionService;
@@ -15,6 +14,7 @@ namespace TH.WebAPI.Controllers.Auth
             _userSessionService = userSessionService;
         }
         [HttpGet("getall")]
+        [Authorize(Policy = "UserSessionGetAll")]
         public async Task<IActionResult> GetAllUserSessions(CancellationToken ct)
         {
             var result = await _userSessionService.GetAllSessionsAsync(ct);
@@ -25,6 +25,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("getByUserId/{userId}")]
+        [Authorize(Policy = "UserSessionGetByUserId")]
         public async Task<IActionResult> GetUserSessionsByUserId(int userId, CancellationToken ct)
         {
             var result = await _userSessionService.GetActiveSessionsByUserIdAsync(userId, ct);
@@ -35,6 +36,7 @@ namespace TH.WebAPI.Controllers.Auth
             return Ok(result);
         }
         [HttpGet("getBySessionId/{sessionId}")]
+        [Authorize(Policy = "UserSessionGetBySessionId")]
         public async Task<IActionResult> GetUserSessionBySessionId(int sessionId, CancellationToken ct)
         {
             var result = await _userSessionService.FindByIdAsync(sessionId, ct);

@@ -15,7 +15,7 @@ namespace TH.WebAPI.Controllers.Auth
             _authUserRoleService = authUserRoleService;
         }
         [HttpPost("assign-roles")]
-        [Authorize(Policy = "RoleAssign")]
+        [Authorize(Policy = "UserRoleAssign")]
         public async Task<IActionResult> AssignRolesToUser([FromBody] UserRoleRequestDto req, CancellationToken ct)
         {
             if (!ModelState.IsValid)
@@ -37,7 +37,7 @@ namespace TH.WebAPI.Controllers.Auth
             }
         }
         [HttpPost("admin/assign-roles")]
-        [Authorize(Policy = "RoleAssignAdmin")]
+        [Authorize(Policy = "UserRoleAdminAssign")]
         public async Task<IActionResult> AssignRolesToUserAdmin([FromBody] UserRoleRequestDto req, CancellationToken ct)
         {
             if (!ModelState.IsValid)

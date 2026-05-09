@@ -30,7 +30,7 @@ namespace TH.WebAPI.Controllers.Auth
         // ===== MFA (TOTP) =====
 
         [HttpPost("mfa/totp/start")]
-        [Authorize(Policy = "AccountMfaSetup")]
+        [Authorize(Policy = "AccountMfaTotpStart")]
         public async Task<IActionResult> StartTotp(CancellationToken ct)
         {
             var uid = CurrentUserId();
@@ -59,7 +59,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("mfa/totp/confirm")]
-        [Authorize(Policy = "AccountMfaSetup")]
+        [Authorize(Policy = "AccountMfaTotpConfirm")]
         public async Task<IActionResult> ConfirmTotp([FromBody] ConfirmTotpRequest req, CancellationToken ct)
         {
             var uid = CurrentUserId();
@@ -70,7 +70,7 @@ namespace TH.WebAPI.Controllers.Auth
         }
 
         [HttpPost("mfa/totp/disable")]
-        [Authorize(Policy = "AccountMfaSetup")]
+        [Authorize(Policy = "AccountMfaTotpDisable")]
         public async Task<IActionResult> DisableTotp([FromBody] DisableMfaRequest req, CancellationToken ct)
         {
             var uid = CurrentUserId();
@@ -84,7 +84,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpPost("password/change/email/start")]
-        [Authorize(Policy = "AccountChangePassword")]
+        [Authorize(Policy = "AccountPasswordChangeEmailStart")]
         public async Task<IActionResult> StartChangeByEmail([FromBody] StartChangeByEmailRequest req, CancellationToken ct)
         {
             var res = await _pwd.StartChangeByEmailAsync(req.email, ct);
@@ -94,7 +94,7 @@ namespace TH.WebAPI.Controllers.Auth
 
 
         [HttpPost("password/change/email/verify")]
-        [Authorize(Policy = "AccountChangePassword")]
+        [Authorize(Policy = "AccountPasswordChangeEmailVerify")]
         public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailCodeRequest req, CancellationToken ct)
         {
             var res = await _pwd.VerifyEmailCodeAsync(req.email, req.code, ct);
@@ -104,7 +104,7 @@ namespace TH.WebAPI.Controllers.Auth
         // ===== Password change via MFA (TOTP) =====
 
         [HttpPost("password/change/mfa/verify")]
-        [Authorize(Policy = "AccountChangePassword")]
+        [Authorize(Policy = "AccountPasswordChangeMfaVerify")]
         public async Task<IActionResult> VerifyMfa([FromBody] VerifyMfaCodeRequest req, CancellationToken ct)
         {
             var uid = CurrentUserId();
@@ -115,7 +115,7 @@ namespace TH.WebAPI.Controllers.Auth
 
         // ===== Commit change (common) =====
         [HttpPost("password/change/commit")]
-        [Authorize(Policy = "AccountChangePassword")]
+        [Authorize(Policy = "AccountPasswordChangeCommit")]
         public async Task<IActionResult> CommitChange([FromBody] CommitPasswordChangeRequest req, CancellationToken ct)
         {
             var uid = CurrentUserId();
