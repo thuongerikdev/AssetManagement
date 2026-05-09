@@ -112,7 +112,7 @@ function LayoutInner() {
   // Check quyền xem user (Có thể dùng user.get_all hoặc permission tương đương)
   const canViewUsers = hasPermission('user.get_all') || hasPermission('user.get_all_slim');
   const canViewRoles = hasPermission('role.get_all');
-  const canViewPermissions = hasPermission('permission.get_all');
+  const canViewPermissions = hasPermission('permission.admin_get_all');
 
   // Nếu user không có bất kỳ quyền cấu hình nào -> Ẩn luôn menu cha "Cấu hình"
   const canViewSettingsMenu = canViewSystem || canViewDepartments || canViewCategories || canViewAccounts || canViewUsers || canViewRoles || canViewPermissions;
