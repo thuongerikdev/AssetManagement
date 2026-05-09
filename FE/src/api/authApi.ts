@@ -62,7 +62,7 @@ export const authApi = {
   getRolesByUserId: (userId: number) => apiClient.get(`/Role/getRoleByUserID/${userId}`),
 
   // --- PERMISSIONS ---
-  getAllPermissions: () => apiClient.get('/permission/getall'),
+  getAllPermissions: () => apiClient.get('/permission/admin/getall'),
   addPermission: (data: any) => apiClient.post('/permission/BulkCreate', [data]),
   updatePermission: (data: any) => apiClient.put('/permission/updatePermission', data),
   deletePermission: (id: number) => apiClient.delete(`/permission/delete?permissionId=${id}`),
