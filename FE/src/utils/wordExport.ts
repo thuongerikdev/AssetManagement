@@ -1,6 +1,7 @@
 import {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  WidthType, AlignmentType, BorderStyle, VerticalAlign
+  WidthType, AlignmentType, BorderStyle, VerticalAlign,
+  PageOrientation
 } from "docx";
 import { saveAs } from "file-saver";
 import { TaiSan } from "../api/assetApi";
@@ -8,10 +9,6 @@ import { Department } from "../api/departmentApi";
 import { AssetCategory } from "../api/assetCategoryApi";
 
 // Hàm hỗ trợ format tiền
-const formatVND = (value?: number) => {
-  if (value === undefined) return "";
-  return new Intl.NumberFormat('vi-VN').format(value);
-};
 
 export const exportTheTSCDWord = async (
   asset: TaiSan,
@@ -229,4 +226,138 @@ export const exportTheTSCDWord = async (
   // Xuất file
   const buffer = await Packer.toBlob(doc);
   saveAs(buffer, `The_TSCD_${asset.maTaiSan}.docx`);
+};
+const formatVND = (value?: number) => {
+  if (value === undefined || value === null) return "";
+  return new Intl.NumberFormat('vi-VN').format(value);
+};
+
+export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string) => {
+  const [year, month] = selectedMonth.split('-');
+  
+  const today = new Date();
+  const day = today.getDate().toString().padStart(2, '0');
+  const currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
+  const currentYear = today.getFullYear();
+
+  // Định dạng viền ẩn cho các bảng dùng để căn lề Header / Footer
+  const noBorders = {
+    top: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    left: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+  };
+
+  const doc = new Document({
+    sections: [{
+      properties: {
+        page: {
+          margin: { top: 1000, right: 1000, bottom: 1000, left: 1000 },
+          // Chuyển trang sang khổ ngang để chứa đủ 7 cột bảng
+          size: { orientation: PageOrientation.LANDSCAPE }, 
+        },
+      },
+      children: [
+        // HEADER: Đơn vị / Địa chỉ
+        new Paragraph({ children: [new TextRun({ text: "Đơn vị: ...........................................", bold: true })] }),
+        new Paragraph({ children: [new TextRun({ text: "Địa chỉ: ..........................................", bold: true })] }),
+        
+        new Paragraph({ text: "", spacing: { after: 300 } }),
+
+        // TÊN TIÊU ĐỀ
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: "BẢNG TRÍCH KHẤU HAO TÀI SẢN CỐ ĐỊNH", bold: true, size: 32 })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: `Tháng ${month} năm ${year}`, italics: true })],
+          spacing: { after: 400 }
+        }),
+
+        // BẢNG DỮ LIỆU CHÍNH
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          rows: [
+            // Dòng Tiêu đề Bảng
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mã TSCĐ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Tên TSCĐ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày sử dụng", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nguyên giá", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Hao mòn trong kỳ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Hao mòn lũy kế", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Giá trị còn lại", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+              ],
+            }),
+            // Render tự động Data Bảng
+            ...assets.map(asset => new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: asset.code || "" })] }),
+                new TableCell({ children: [new Paragraph({ text: asset.name || "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: asset.ngayCapPhatStr || "" })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: formatVND(asset.originalValue) })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: formatVND(asset.monthlyDepreciation) })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: formatVND(asset.accumulatedDepreciation) })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: formatVND(asset.remainingValue) })] }),
+              ]
+            })),
+            // Dòng Tổng Cộng
+            new TableRow({
+              children: [
+                new TableCell({ columnSpan: 3, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Tổng cộng", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: formatVND(assets.reduce((sum: number, a: any) => sum + (a.originalValue || 0), 0)), bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: formatVND(assets.reduce((sum: number, a: any) => sum + (a.monthlyDepreciation || 0), 0)), bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: formatVND(assets.reduce((sum: number, a: any) => sum + (a.accumulatedDepreciation || 0), 0)), bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: formatVND(assets.reduce((sum: number, a: any) => sum + (a.remainingValue || 0), 0)), bold: true })] })] }),
+              ]
+            })
+          ],
+        }),
+
+        // CHỮ KÝ FOOTER
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          spacing: { before: 400, after: 100 },
+          children: [new TextRun({ text: `Ngày ${day} tháng ${currentMonth} năm ${currentYear}`, italics: true })]
+        }),
+
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: noBorders,
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Người lập", bold: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "(Ký, họ tên)", italics: true })] }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Kế toán trưởng", bold: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "(Ký, họ tên)", italics: true })] }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 34, type: WidthType.PERCENTAGE },
+                  children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Giám đốc", bold: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "(Ký, họ tên, đóng dấu)", italics: true })] }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }],
+  });
+
+  const buffer = await Packer.toBlob(doc);
+  saveAs(buffer, `Bang_Trich_Khau_Hao_Thang_${month}_${year}.docx`);
 };

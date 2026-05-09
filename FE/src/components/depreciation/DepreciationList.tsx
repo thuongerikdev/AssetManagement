@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useGlobalData } from '../../context/GlobalContext';
 import { depreciationHistoryApi, LichSuKhauHao } from '../../api/depreciationHistoryApi';
 import { exportBangKhauHaoExcel } from '../../utils/excelExport';
+import { exportBangKhauHaoWord } from '../../utils/wordExport';
 
 interface DepreciationAsset {
   id: number;
@@ -272,12 +273,12 @@ export function DepreciationList() {
               <Calculator className="w-5 h-5" /> Tính Khấu hao
             </button>
             <button
-  onClick={() => {
+  onClick={async () => {
     try {
-      exportBangKhauHaoExcel(tableAssets, selectedMonth);
-      toast.success("Xuất bảng trích khấu hao Excel thành công!");
+      await exportBangKhauHaoWord(tableAssets, selectedMonth);
+      toast.success("Xuất bảng trích khấu hao thành công!");
     } catch (error) {
-      toast.error("Có lỗi xảy ra khi tạo file Excel.");
+      toast.error("Có lỗi xảy ra khi tạo file Word.");
     }
   }}
   className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
