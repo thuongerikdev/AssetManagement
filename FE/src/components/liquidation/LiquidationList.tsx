@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import { Plus, Search, Trash2, Eye, Edit, X, Save, AlertCircle, CheckCircle, FileCheck, RefreshCw } from 'lucide-react';
+import { Plus, Search, Trash2, Eye, Edit, X, Save, AlertCircle, FileCheck, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { liquidationApi, ThanhLyTaiSan } from '../../api/liquidationApi';
 import { useGlobalData } from '../../context/GlobalContext'; // <-- IMPORT GLOBAL CONTEXT
@@ -8,7 +8,7 @@ import { useGlobalData } from '../../context/GlobalContext'; // <-- IMPORT GLOBA
 const statusConfig: Record<string, { label: string; color: string }> = {
   'ChoDuyet': { label: 'Chờ duyệt', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
   'DaDuyet': { label: 'Đã duyệt', color: 'bg-blue-100 text-blue-700 border-blue-200' },
-  'DaHoanThanh': { label: 'Hoàn thành', color: 'bg-green-100 text-green-700 border-green-200' },
+  'DaHoanThanh': { label: 'Đã thanh lý', color: 'bg-green-100 text-green-700 border-green-200' },
 };
 
 // ==========================================
@@ -100,29 +100,6 @@ export function LiquidationList() {
     }
   };
 
-  // === HÀM XỬ LÝ LUỒNG DUYỆT (WORKFLOW) ===
-  const handleUpdateStatus = async (record: ThanhLyTaiSan, newStatus: string, actionName: string) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn ${actionName} tài sản này?`)) return;
-
-    setIsSubmitting(true);
-    try {
-      const payload = { ...record, trangThai: newStatus };
-      const response = await liquidationApi.update(payload);
-      
-      if (response.errorCode === 200) {
-        toast.success(`${actionName} thành công!`);
-        setIsModalOpen(false);
-        handleRefreshAll(); // Ép hệ thống làm mới dữ liệu
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error) {
-      toast.error('Lỗi kết nối máy chủ khi duyệt.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const formatCurrency = (value?: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
   };
@@ -146,7 +123,7 @@ export function LiquidationList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-gray-900 text-2xl">Thanh lý - Giảm Tài sản</h1>
-          <p className="text-sm text-gray-500">Quản lý luồng duyệt thanh lý tài sản cố định</p>
+          <p className="text-sm text-gray-500">Quản lý phiếu thanh lý tài sản cố định</p>
         </div>
         
         <div className="flex gap-2">
@@ -258,7 +235,7 @@ export function LiquidationList() {
                         Trạng thái hiện tại: {statusConfig[selectedRecord.trangThai?.toString() || 'ChoDuyet']?.label}
                       </span>
                     </div>
-                    {selectedRecord.trangThai === 'DaHoanThanh' && <span className="text-xs font-semibold">(Đã sinh chứng từ)</span>}
+                    {selectedRecord.trangThai === 'DaHoanThanh' && <span className="text-xs font-semibold">(Chứng từ đã được ghi nhận)</span>}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -344,35 +321,10 @@ export function LiquidationList() {
               ) : (
                 <>
                   <button onClick={() => setIsModalOpen(false)} className="px-6 py-2 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors">Đóng</button>
-                  
-                  <div className="flex gap-3">
-                    {/* NẾU ĐANG CHỜ DUYỆT: CÓ THỂ SỬA HOẶC BẤM DUYỆT */}
-                    {selectedRecord.trangThai === 'ChoDuyet' && (
-                      <>
-                        <button onClick={() => setIsEditMode(true)} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-medium transition-colors">
-                          <Edit className="w-4 h-4" /> Sửa thông tin
-                        </button>
-                        <button 
-                          disabled={isSubmitting}
-                          onClick={() => handleUpdateStatus(selectedRecord, 'DaDuyet', 'Duyệt')} 
-                          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium shadow-md transition-colors"
-                        >
-                          <CheckCircle className="w-5 h-5" /> Duyệt phiếu
-                        </button>
-                      </>
-                    )}
 
-                    {/* NẾU ĐÃ DUYỆT: BẤM HOÀN THÀNH ĐỂ GHI SỔ */}
-                    {selectedRecord.trangThai === 'DaDuyet' && (
-                      <button 
-                        disabled={isSubmitting}
-                        onClick={() => handleUpdateStatus(selectedRecord, 'DaHoanThanh', 'Hoàn thành và Ghi sổ')} 
-                        className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-md transition-colors"
-                      >
-                        <FileCheck className="w-5 h-5" /> Duyệt và & Sinh chứng từ
-                      </button>
-                    )}
-                  </div>
+                  <button onClick={() => setIsEditMode(true)} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-medium transition-colors">
+                    <Edit className="w-4 h-4" /> Sửa thông tin
+                  </button>
                 </>
               )}
             </div>

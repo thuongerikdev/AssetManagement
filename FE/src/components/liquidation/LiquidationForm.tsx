@@ -18,7 +18,7 @@ export function LiquidationForm() {
     giaTriThanhLy: 0,
     lyDo: '',
     ghiChu: '',
-    trangThai: 'ChoDuyet' // Giả sử mặc định chọn: 1 - Đã hoàn thành (Chốt thanh lý luôn)
+    trangThai: 'DaHoanThanh'
   });
 
   useEffect(() => {
@@ -42,8 +42,8 @@ export function LiquidationForm() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const numberFields = ['giaTriThanhLy', 'trangThai'];
+    const { name, value } = e.target;
+    const numberFields = ['giaTriThanhLy'];
 
     setFormData(prev => ({
       ...prev,
@@ -109,8 +109,8 @@ export function LiquidationForm() {
           <p className="text-sm text-red-900 font-medium">Lưu ý khi thanh lý</p>
           <ul className="text-sm text-red-700 mt-2 space-y-1 list-disc list-inside">
             <li>Hệ thống sẽ tự động lấy sổ sách để tính toán lãi/lỗ thanh lý</li>
-            <li>Tự động sinh chứng từ giảm tài sản và bút toán kế toán</li>
-            <li>Trạng thái tài sản sẽ tự động được chuyển sang "Đã thanh lý" nếu phiếu được duyệt/hoàn thành</li>
+            <li><strong>Tạo phiếu sẽ sinh chứng từ ngay lập tức</strong>, không cần qua bước duyệt</li>
+            <li>Trạng thái tài sản sẽ tự động được chuyển sang "Đã thanh lý"</li>
           </ul>
         </div>
       </div>
@@ -224,22 +224,6 @@ export function LiquidationForm() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Trạng thái <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="trangThai"
-                value={formData.trangThai ?? 0}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value={0}>Chờ duyệt</option>
-                <option value={1}>Đã duyệt</option> 
-                <option value={2}>Hoàn thành (Ghi sổ)</option> {/* <--- THÊM/SỬA THÀNH SỐ 2 */}
-              </select>
-            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Ghi chú thêm

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Send, ArrowLeftRight, Search, Clock, X, Save, RefreshCw } from 'lucide-react';
+import { Send, ArrowLeftRight, Search, Clock, X, Save, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../api/client';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
@@ -16,6 +16,7 @@ const typeConfig: Record<string, { label: string; color: string; icon: any }> = 
 const statusConfig: Record<string, { label: string; color: string }> = {
   'da_hoan_thanh': { label: 'Hoàn thành', color: 'bg-green-100 text-green-700' },
   'cho_xu_ly': { label: 'Chờ xử lý', color: 'bg-yellow-100 text-yellow-700' },
+  'tu_choi': { label: 'Từ chối', color: 'bg-red-100 text-red-700' },
 };
 
 // ==========================================
@@ -143,9 +144,58 @@ export function AllocationList() {
   // Hàm gộp chung làm mới toàn bộ hệ thống
   const handleRefreshAll = async () => {
     await Promise.all([
-      refreshData(),      // Làm mới Tài sản & Phòng ban từ Global
-      fetchRecords(true)  // Làm mới Phiếu cấp phát
+      refreshData(),
+      fetchRecords(true)
     ]);
+  };
+
+  // Xác nhận hoàn thành (cho_xu_ly → da_hoan_thanh)
+  // Với LuanChuyen: BE dựa vào loaiDieuChuyen để quyết định không sinh chứng từ
+  const handleApprove = async (record: DieuChuyenTaiSan) => {
+    const label = record.loaiDieuChuyen === 'CapPhat' ? 'cấp phát' : 'điều chuyển';
+    if (!window.confirm(`Xác nhận hoàn thành phiếu ${label} này?`)) return;
+
+    setIsSubmitting(true);
+    try {
+      const payload = { ...record, trangThai: 'da_hoan_thanh' };
+      const response = await assetAllocationApi.update(payload);
+      if (response.errorCode === 200) {
+        toast.success('Xác nhận thành công!');
+        handleRefreshAll();
+      } else {
+        toast.error(response.message || 'Có lỗi xảy ra.');
+      }
+    } catch {
+      toast.error('Lỗi kết nối máy chủ.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Từ chối phiếu (cho_xu_ly → tu_choi)
+  const handleReject = async (record: DieuChuyenTaiSan) => {
+    const lyDo = window.prompt('Nhập lý do từ chối (bắt buộc):');
+    if (lyDo === null) return; // Hủy
+    if (!lyDo.trim()) {
+      toast.error('Vui lòng nhập lý do từ chối!');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = { ...record, trangThai: 'tu_choi', ghiChu: lyDo.trim() };
+      const response = await assetAllocationApi.update(payload);
+      if (response.errorCode === 200) {
+        toast.success('Đã từ chối phiếu.');
+        handleRefreshAll();
+      } else {
+        toast.error(response.message || 'Có lỗi xảy ra.');
+      }
+    } catch {
+      toast.error('Lỗi kết nối máy chủ.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -189,6 +239,8 @@ export function AllocationList() {
   // ==========================================
   // 4. USE_MEMO BỘ LỌC ĐỂ RENDER MƯỢT MÀ
   // ==========================================
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+
   const filteredRecords = useMemo(() => {
     return records.filter(record => {
       if (record.loaiDieuChuyen === 'ThuHoi') return false;
@@ -196,12 +248,13 @@ export function AllocationList() {
       const asset = getAsset(record.taiSanId!);
       const searchStr = `${asset?.maTaiSan} ${asset?.tenTaiSan}`.toLowerCase();
       const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
-      
+
       const matchesType = filterType === 'all' || record.loaiDieuChuyen === filterType;
-      
-      return matchesSearch && matchesType;
+      const matchesStatus = filterStatus === 'all' || record.trangThai === filterStatus;
+
+      return matchesSearch && matchesType && matchesStatus;
     });
-  }, [records, assets, searchTerm, filterType]);
+  }, [records, assets, searchTerm, filterType, filterStatus]);
 
   const isScreenLoading = isLoadingGlobal || isLoadingRecords;
 
@@ -255,6 +308,16 @@ export function AllocationList() {
               <option value="all">Tất cả loại</option>
               <option value="CapPhat">Cấp phát</option>
               <option value="LuanChuyen">Điều chuyển</option>
+            </select>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Tất cả trạng thái</option>
+              <option value="cho_xu_ly">Chờ xử lý</option>
+              <option value="da_hoan_thanh">Hoàn thành</option>
+              <option value="tu_choi">Từ chối</option>
             </select>
           </div>
         </div>
@@ -317,11 +380,29 @@ export function AllocationList() {
                     </div>
                   </div>
                   
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <div className="text-right flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Clock className="w-4 h-4" />
                       {record.ngayThucHien ? new Date(record.ngayThucHien).toLocaleDateString('vi-VN') : 'N/A'}
                     </div>
+                    {record.trangThai === 'cho_xu_ly' && (
+                      <div className="flex gap-2 mt-1">
+                        <button
+                          disabled={isSubmitting}
+                          onClick={() => handleApprove(record)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" /> Xác nhận
+                        </button>
+                        <button
+                          disabled={isSubmitting}
+                          onClick={() => handleReject(record)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors shadow-sm"
+                        >
+                          <XCircle className="w-3.5 h-3.5" /> Từ chối
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

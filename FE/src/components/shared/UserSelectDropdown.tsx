@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, Crown } from 'lucide-react';
 
 interface UserRole {
@@ -45,7 +45,9 @@ function getFullName(user: UserOption): string {
 
 export function UserSelectDropdown({ users, value, onChange, disabled, isLoading, noDeptSelected }: Props) {
   const [open, setOpen] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handle = (e: MouseEvent) => {
@@ -54,6 +56,38 @@ export function UserSelectDropdown({ users, value, onChange, disabled, isLoading
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, []);
+
+  // Cập nhật vị trí dropdown mỗi khi mở để tránh bị khuất trong modal overflow
+  const updateDropdownPosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const dropdownHeight = Math.min(256, users.length * 48 + 60);
+
+    if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+      // Mở lên trên nếu không đủ chỗ bên dưới
+      setDropdownStyle({
+        position: 'fixed',
+        bottom: window.innerHeight - rect.top,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 9999,
+      });
+    } else {
+      setDropdownStyle({
+        position: 'fixed',
+        top: rect.bottom,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 9999,
+      });
+    }
+  }, [users.length]);
+
+  const handleToggle = () => {
+    if (!open) updateDropdownPosition();
+    setOpen(o => !o);
+  };
 
   // Sort: trưởng phòng lên đầu
   const heads = users.filter(isTruongPhong);
@@ -74,9 +108,10 @@ export function UserSelectDropdown({ users, value, onChange, disabled, isLoading
     <div ref={ref} className="relative">
       {/* Trigger button */}
       <button
+        ref={triggerRef}
         type="button"
         disabled={isDisabled}
-        onClick={() => setOpen(o => !o)}
+        onClick={handleToggle}
         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-left flex items-center justify-between bg-white disabled:bg-gray-50 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
       >
         <span className="flex items-center gap-1.5 truncate min-w-0">
@@ -99,9 +134,9 @@ export function UserSelectDropdown({ users, value, onChange, disabled, isLoading
         />
       </button>
 
-      {/* Dropdown list */}
+      {/* Dropdown list — dùng fixed để không bị khuất bởi overflow của modal */}
       {open && !isDisabled && (
-        <div className="absolute z-[9999] w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-64 overflow-y-auto">
+        <div style={dropdownStyle} className="bg-white border border-gray-200 rounded-lg shadow-xl max-h-64 overflow-y-auto">
           {/* Clear option */}
           <div
             className="px-4 py-2 text-sm text-gray-400 hover:bg-gray-50 cursor-pointer border-b border-gray-100"

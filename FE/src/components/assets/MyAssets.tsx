@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Monitor, CheckCircle, Package, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
+import { Monitor, CheckCircle, Package, AlertTriangle, Clock, RefreshCw, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { assetApi, TaiSan } from '../../api/assetApi';
+import { assetAllocationApi } from '../../api/assetAllocationApi';
 
 // ==========================================
 // 1. BIẾN CACHE CỤC BỘ TRÊN RAM (Dành riêng cho My Assets)
@@ -65,13 +66,76 @@ export function MyAssets() {
         const response = await assetApi.confirm(id);
         if (response.errorCode === 200) {
           toast.success('Ký nhận tài sản thành công!');
-          fetchMyAssets(true); // Ép tải lại từ server để thẻ chuyển sang màu xanh ngay lập tức
+          fetchMyAssets(true);
         } else {
           toast.error(response.message || 'Có lỗi xảy ra');
         }
       } catch (error) {
         toast.error('Lỗi kết nối máy chủ');
       }
+    }
+  };
+
+  const handleReject = async (asset: TaiSan) => {
+    if (!asset.id) return;
+    if (!window.confirm('Bạn có chắc muốn từ chối nhận tài sản này?')) return;
+
+    try {
+      // Lấy lịch sử điều chuyển của tài sản để xác định loại (CapPhat / LuanChuyen)
+      const allocationRes = await assetAllocationApi.getByAssetId(asset.id);
+      if (allocationRes.errorCode !== 200) {
+        toast.error('Không lấy được thông tin phiếu điều chuyển.');
+        return;
+      }
+
+      const records: any[] = allocationRes.data || [];
+      // Tìm phiếu mới nhất đang chờ xử lý
+      const pendingRecord = records
+        .filter((r: any) => r.trangThai === 'cho_xu_ly')
+        .sort((a: any, b: any) => new Date(b.ngayTao).getTime() - new Date(a.ngayTao).getTime())[0];
+
+      if (!pendingRecord) {
+        toast.error('Không tìm thấy phiếu đang chờ xử lý.');
+        return;
+      }
+
+      const isCapPhat = pendingRecord.loaiDieuChuyen === 'CapPhat';
+
+      // Cập nhật trạng thái tài sản
+      const assetPayload: TaiSan = isCapPhat
+        ? {
+            // CapPhat từ chối → về chờ phân phát, xóa người nhận
+            ...asset,
+            trangThai: 0,
+            phongBanId: undefined,
+            nguoiDungId: undefined,
+            ngayCapPhat: undefined,
+          }
+        : {
+            // LuanChuyen từ chối → về lại người/phòng ban cũ
+            ...asset,
+            trangThai: 2,
+            phongBanId: pendingRecord.tuPhongBanId,
+            nguoiDungId: pendingRecord.tuNguoiDungId,
+          };
+
+      const [assetRes, allocationUpdateRes] = await Promise.all([
+        assetApi.update(assetPayload),
+        assetAllocationApi.update({ ...pendingRecord, trangThai: 'tu_choi' }),
+      ]);
+
+      if (assetRes.errorCode === 200 && allocationUpdateRes.errorCode === 200) {
+        toast.success(
+          isCapPhat
+            ? 'Từ chối thành công. Tài sản đã về trạng thái chờ phân phát.'
+            : 'Từ chối thành công. Tài sản đã trả về người dùng cũ.'
+        );
+        fetchMyAssets(true);
+      } else {
+        toast.error(assetRes.message || allocationUpdateRes.message || 'Có lỗi xảy ra.');
+      }
+    } catch (error) {
+      toast.error('Lỗi kết nối máy chủ.');
     }
   };
 
@@ -151,13 +215,22 @@ export function MyAssets() {
                         <span className="font-medium text-gray-900">{asset.soSeri || 'Không có'}</span>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => asset.id && handleConfirm(asset.id)}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors shadow-sm"
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                      Ký nhận Tài sản này
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => asset.id && handleConfirm(asset.id)}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors shadow-sm"
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        Ký nhận
+                      </button>
+                      <button
+                        onClick={() => handleReject(asset)}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors shadow-sm"
+                      >
+                        <XCircle className="w-5 h-5" />
+                        Từ chối
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
