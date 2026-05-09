@@ -80,6 +80,6 @@ export const authApi = {
 
 
   getMyDepartmentInfo: async () => {
-    return await apiClient.get('/UserDepartment/my-info');
+    return await apiClient.get('/PhongBan/my-info');
   },
 };
