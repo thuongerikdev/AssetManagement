@@ -18,4 +18,5 @@ export const departmentApi = {
   update: (data: Department) => apiClient.put('/PhongBan/update', data),
   
   delete: (id: string | number) => apiClient.delete(`/PhongBan/delete/${id}`),
+  
 };

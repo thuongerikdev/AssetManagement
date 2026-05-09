@@ -23,6 +23,7 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<bool>> ConfirmAssetAsync(int id);
         Task<ResponseDto<List<TaiSan>>> GetTaiSanByUserIdAsync(int userId);
         Task<ResponseDto<GenerateMaTaiSanResponse>> GenerateMaTaiSanAsync(int danhMucId);
+        Task<ResponseDto<List<TaiSanResponse>>> GetTaiSanByPhongBanIdAsync(int phongBanId);
     }
 
     public class TaiSanService : AssetServiceBase, ITaiSanService
@@ -476,6 +477,36 @@ namespace TH.Asset.ApplicationService.Service
                     return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
                 }
             });
+        }
+
+        public async Task<ResponseDto<List<TaiSanResponse>>> GetTaiSanByPhongBanIdAsync(int phongBanId)
+        {
+            try
+            {
+                var result = await _dbContext.taiSans
+                    .Where(x => x.PhongBanId == phongBanId
+                             && x.NguoiDungId != null
+                             && (x.TrangThai == TrangThaiTaiSan.ChoXacNhan || x.TrangThai == TrangThaiTaiSan.DangSuDung))
+                    .Select(x => new TaiSanResponse
+                    {
+                        id = x.Id,
+                        maTaiSan = x.MaTaiSan,
+                        tenTaiSan = x.TenTaiSan,
+                        trangThai = x.TrangThai,
+                        ngayCapPhat = x.NgayCapPhat,
+                        nguoiDungId = x.NguoiDungId,
+                        phongBanId = x.PhongBanId,
+                        soSeri = x.SoSeri
+                    })
+                    .ToListAsync();
+
+                return ResponseConst.Success("Lấy tài sản phòng ban thành công.", result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi lấy tài sản theo phòng ban.");
+                return ResponseConst.Error<List<TaiSanResponse>>(500, "Lỗi hệ thống: " + ex.Message);
+            }
         }
 
         public async Task<ResponseDto<List<TaiSan>>> GetTaiSanByUserIdAsync(int userId)

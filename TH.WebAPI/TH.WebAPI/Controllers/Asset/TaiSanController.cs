@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
@@ -120,6 +120,15 @@ namespace TH.WebAPI.Controllers.Asset
             var result = await _taiSanService.GenerateMaTaiSanAsync(danhMucId);
             if (result.ErrorCode == 404) return NotFound(result);
             return result.ErrorCode == 200 ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("department/{phongBanId}")]
+        // [Authorize] (Tuỳ bạn cấu hình policy)
+        public async Task<IActionResult> GetByDepartmentId(int phongBanId)
+        {
+            var result = await _taiSanService.GetTaiSanByPhongBanIdAsync(phongBanId);
+            if (result.ErrorCode == 200) return Ok(result);
+            return BadRequest(result);
         }
     }
 }

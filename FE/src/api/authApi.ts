@@ -77,4 +77,9 @@ export const authApi = {
     apiClient.post('/userrole/admin/assign-roles', data),
   assignPermissionsToRole: (data: { roleId: number; permissionIds: number[] }) =>
     apiClient.post('/rolepermission/admin/assign-permissions', data),
+
+
+  getMyDepartmentInfo: async () => {
+    return await apiClient.get('/UserDepartment/my-info');
+  },
 };
