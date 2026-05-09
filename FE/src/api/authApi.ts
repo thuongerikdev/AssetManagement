@@ -70,7 +70,7 @@ export const authApi = {
 
   // --- ASSIGN ---
   assignRolesToUser: (data: { userId: number; roleIds: number[] }) =>
-    apiClient.post('/userrole/assign-roles', data),
+    apiClient.post('/userrole/admin/assign-roles', data),
   assignPermissionsToRole: (data: { roleId: number; permissionIds: number[] }) =>
-    apiClient.post('/rolepermission/assign-permissions', data),
+    apiClient.post('/rolepermission/admin/assign-permissions', data),
 };
