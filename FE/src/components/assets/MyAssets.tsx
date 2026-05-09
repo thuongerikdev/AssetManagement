@@ -1,67 +1,67 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Monitor, CheckCircle, Package, AlertTriangle, Clock, RefreshCw, XCircle, Users } from 'lucide-react';
+import { Monitor, CheckCircle, Package, AlertTriangle, Clock, RefreshCw, XCircle, Users, Box } from 'lucide-react';
 import { toast } from 'sonner';
 import { assetApi, TaiSan } from '../../api/assetApi';
 import { authApi } from '../../api/authApi';
-import { assetAllocationApi } from '../../api/assetAllocationApi';
 
 export function MyAssets() {
   const [myAssets, setMyAssets] = useState<TaiSan[]>([]);
   
-  // Dữ liệu cho Trưởng phòng
+  // State quản lý Trưởng phòng
   const [departmentUsers, setDepartmentUsers] = useState<any[]>([]);
   const [departmentAssets, setDepartmentAssets] = useState<TaiSan[]>([]);
-  
   const [isLoading, setIsLoading] = useState(true);
-  
-  // State quản lý Tab đang mở
   const [activeTab, setActiveTab] = useState<'my_assets' | 'staff_assets'>('my_assets');
 
-  // ── 1. ĐỌC THÔNG TIN VÀ PHÂN QUYỀN TRƯỞNG PHÒNG ──────────────────
+  // ── 1. ĐỌC THÔNG TIN TỪ LOCAL STORAGE ──────────────────────────────
   const userInfoStr = localStorage.getItem('user_info');
   const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
   const currentUserId = userInfo?.userID;
-  const currentDeptId = userInfo?.departmentID;
-  
-  // KIỂM TRA TRƯỞNG PHÒNG (Dựa vào quyền lấy danh sách user trong phòng ban)
+  // Bắt cả trường hợp camelCase hoặc PascalCase
+  const currentDeptId = userInfo?.departmentID || userInfo?.departmentId; 
+
   const isManager = useMemo(() => {
     const permissions: string[] = userInfo?.permissions || [];
-    // Mã quyền của Role Trưởng phòng (hoặc Giám đốc)
     return permissions.includes('user.get_by_department_id') || permissions.includes('user.admin_get_all');
   }, [userInfo]);
 
-  // ── 2. FETCH DỮ LIỆU SONG SONG ────────────────────────────────────
+  // ── 2. FETCH DỮ LIỆU ĐÚNG LOGIC PHÒNG BAN ──────────────────────────
   const fetchData = async () => {
     if (!currentUserId) return;
     setIsLoading(true);
 
     try {
-      // API 1: Lấy tài sản của bản thân
-      const myAssetsPromise = assetApi.getMyAssets(currentUserId);
-      
-      let deptUsersPromise = Promise.resolve({ data: [] });
-      let deptAssetsPromise = Promise.resolve({ data: [] });
-
-      // Nếu là quản lý và có ID phòng ban -> Gọi thêm 2 API nữa
-      if (isManager && currentDeptId) {
-        deptUsersPromise = authApi.getUsersByDepartment(Number(currentDeptId));
-        deptAssetsPromise = assetApi.getAssetsByDepartment(Number(currentDeptId));
-      }
-
-      // Chờ cả 3 API chạy xong cùng lúc
-      const [myRes, usersRes, assetsRes] = await Promise.all([myAssetsPromise, deptUsersPromise, deptAssetsPromise]);
-
+      // 1. Luôn gọi API lấy tài sản của bản thân
+      const myRes = await assetApi.getMyAssets(currentUserId);
       if (myRes.errorCode === 200) setMyAssets(myRes.data || []);
-      
-      if (isManager) {
-        // Lọc bỏ chính bản thân quản lý ra khỏi danh sách nhân viên để không trùng lặp
-        const staffList = (usersRes.data || []).filter((u: any) => u.userID !== currentUserId);
-        setDepartmentUsers(staffList);
-        setDepartmentAssets(assetsRes.data || []);
-      }
 
+      // 2. NẾU LÀ QUẢN LÝ -> GỌI API PHÒNG BAN
+      if (isManager) {
+        if (!currentDeptId) {
+          toast.error("Lỗi: Tài khoản của bạn không có mã phòng ban (departmentID). Vui lòng kiểm tra lại lúc Login!");
+          setIsLoading(false);
+          return;
+        }
+
+        console.log("Đang gọi API lấy nhân viên và tài sản cho Phòng ban ID:", currentDeptId);
+
+        const [usersRes, assetsRes] = await Promise.all([
+          authApi.getUsersByDepartment(Number(currentDeptId)),
+          assetApi.getAssetsByDepartment(Number(currentDeptId))
+        ]);
+
+        if (usersRes.errorCode === 200) {
+          // Bỏ chính mình ra khỏi danh sách nhân viên
+          setDepartmentUsers(usersRes.data.filter((u: any) => u.userID !== currentUserId));
+        }
+        
+        if (assetsRes.errorCode === 200) {
+          setDepartmentAssets(assetsRes.data || []);
+        }
+      }
     } catch (error) {
-      toast.error('Lỗi khi tải dữ liệu.');
+      toast.error('Lỗi khi tải dữ liệu từ máy chủ.');
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +71,42 @@ export function MyAssets() {
     fetchData();
   }, []);
 
-  // ── 3. XỬ LÝ NHẬN/TỪ CHỐI ─────────────────────────────────────────
+  // ── 3. GOM NHÓM TÀI SẢN THEO TỪNG NHÂN VIÊN ────────────────────────
+  const groupedStaffAssets = useMemo(() => {
+    if (!isManager || departmentAssets.length === 0) return [];
+
+    const groups: { user: any, assets: TaiSan[] }[] = [];
+
+    // Lặp qua từng nhân viên trong phòng
+    departmentUsers.forEach(staff => {
+      // Tìm tài sản thuộc về nhân viên này
+      const staffAssets = departmentAssets.filter(a => a.nguoiDungId === staff.userID);
+      if (staffAssets.length > 0) {
+        groups.push({ user: staff, assets: staffAssets });
+      }
+    });
+
+    // Gom nhóm "Tài sản chung / Chưa giao ai" trong phòng ban (nếu có)
+    const unassignedAssets = departmentAssets.filter(a => !a.nguoiDungId);
+    if (unassignedAssets.length > 0) {
+      groups.push({
+        user: { userID: -1, fullName: "Tài sản chung của phòng (Chưa giao ai)", userName: "system" },
+        assets: unassignedAssets
+      });
+    }
+
+    return groups;
+  }, [departmentUsers, departmentAssets, isManager]);
+
+  // Lọc tài sản cá nhân (Chờ xác nhận / Đang sử dụng)
+  const { pendingAssets, activeAssets } = useMemo(() => {
+    return {
+      pendingAssets: myAssets.filter(a => a.trangThai?.toString() === 'ChoXacNhan' || a.trangThai?.toString() === '1'),
+      activeAssets: myAssets.filter(a => a.trangThai?.toString() === 'DangSuDung' || a.trangThai?.toString() === '2')
+    };
+  }, [myAssets]);
+
+  // ── HÀNH ĐỘNG KÝ NHẬN ──────────────────────────────────────────────
   const handleConfirm = async (id: number) => {
     if (window.confirm('Xác nhận bạn đã nhận tài sản này với tình trạng hoạt động tốt?')) {
       try {
@@ -90,31 +125,7 @@ export function MyAssets() {
     toast.info("Gọi logic API từ chối ở đây");
   };
 
-  // ── 4. NHÓM DỮ LIỆU ĐỂ RENDER ─────────────────────────────────────
-  
-  // Lọc tài sản của mình
-  const { pendingAssets, activeAssets } = useMemo(() => {
-    return {
-      pendingAssets: myAssets.filter(a => a.trangThai?.toString() === 'ChoXacNhan' || a.trangThai?.toString() === '1'),
-      activeAssets: myAssets.filter(a => a.trangThai?.toString() === 'DangSuDung' || a.trangThai?.toString() === '2')
-    };
-  }, [myAssets]);
-
-  // Gom nhóm tài sản theo từng nhân viên
-  const groupedStaffAssets = useMemo(() => {
-    if (!isManager || departmentUsers.length === 0) return [];
-
-    return departmentUsers.map(staff => {
-      // Tìm tài sản khớp với ID nhân viên
-      const staffAssets = departmentAssets.filter(a => a.nguoiDungId === staff.userID);
-      return {
-        user: staff,
-        assets: staffAssets
-      };
-    }).filter(group => group.assets.length > 0); // Chỉ lấy nhân viên nào đang cầm tài sản
-  }, [departmentUsers, departmentAssets, isManager]);
-
-  // ── 5. COMPONENT RENDER TỪNG THẺ TÀI SẢN ──────────────────────────
+  // ── COMPONENT THẺ TÀI SẢN ──────────────────────────────────────────
   const RenderAssetCard = ({ asset, isMyAsset }: { asset: TaiSan, isMyAsset: boolean }) => {
     const isPending = asset.trangThai?.toString() === 'ChoXacNhan' || asset.trangThai?.toString() === '1';
 
@@ -148,7 +159,7 @@ export function MyAssets() {
           </div>
         </div>
 
-        {/* Nút hành động (Chỉ hiện nếu là đồ của mình VÀ đang chờ xác nhận) */}
+        {/* Nút Ký nhận CHỈ HIỆN KHI là tài sản CỦA MÌNH */}
         {isMyAsset && isPending && (
           <div className="flex gap-2 mt-4 pt-3 border-t border-yellow-200/50">
             <button
@@ -173,8 +184,8 @@ export function MyAssets() {
     <div className="space-y-6 max-w-6xl mx-auto py-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý tài sản</h1>
-          <p className="text-gray-500 mt-1">Danh sách tài sản bạn đang quản lý hoặc sử dụng.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Tài sản của tôi</h1>
+          <p className="text-gray-500 mt-1">Quản lý các tài sản cá nhân {isManager ? 'và tài sản của nhân sự trong phòng ban.' : 'được công ty cấp phát.'}</p>
         </div>
         
         <button 
@@ -187,15 +198,12 @@ export function MyAssets() {
         </button>
       </div>
 
-      {/* TABS (Chỉ hiện nếu là Manager) */}
       {isManager && (
         <div className="flex space-x-1 bg-gray-200/50 p-1 rounded-xl w-fit">
           <button
             onClick={() => setActiveTab('my_assets')}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'my_assets' 
-                ? 'bg-white text-blue-600 shadow-sm' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+              activeTab === 'my_assets' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
             }`}
           >
             <Package className="w-4 h-4" />
@@ -204,9 +212,7 @@ export function MyAssets() {
           <button
             onClick={() => setActiveTab('staff_assets')}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'staff_assets' 
-                ? 'bg-white text-purple-600 shadow-sm' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+              activeTab === 'staff_assets' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -257,23 +263,23 @@ export function MyAssets() {
             </div>
           )}
 
-          {/* TAB 2: TÀI SẢN NHÂN VIÊN */}
+          {/* TAB 2: TÀI SẢN NHÂN VIÊN TRONG PHÒNG */}
           {activeTab === 'staff_assets' && isManager && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
               {groupedStaffAssets.length === 0 ? (
                 <div className="text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center">
-                  <Users className="w-16 h-16 text-gray-300 mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900">Không có dữ liệu</h3>
+                  <Box className="w-16 h-16 text-gray-300 mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900">Phòng ban trống</h3>
                   <p className="text-gray-500 mt-1">Chưa có nhân viên nào trong phòng được cấp phát tài sản.</p>
                 </div>
               ) : (
                 <div className="space-y-6">
+                  {/* Map ra từng người dùng và danh sách đồ của họ */}
                   {groupedStaffAssets.map((group, index) => (
                     <div key={index} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                      {/* Tiêu đề nhóm nhân viên */}
                       <div className="bg-gray-50 px-5 py-3 border-b border-gray-200 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-lg border border-purple-200">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border ${group.user.userID === -1 ? 'bg-gray-200 text-gray-700 border-gray-300' : 'bg-purple-100 text-purple-700 border-purple-200'}`}>
                             {group.user.fullName?.charAt(0) || 'U'}
                           </div>
                           <div>
@@ -283,7 +289,6 @@ export function MyAssets() {
                         </div>
                       </div>
 
-                      {/* Danh sách tài sản của nhân viên này */}
                       <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-50/30">
                         {group.assets.map(asset => (
                           <RenderAssetCard key={asset.id} asset={asset} isMyAsset={false} />
