@@ -8,12 +8,23 @@ const buildUrl = (endpoint: string) => {
   return `${BASE_URL}${endpoint}`;
 };
 
+// Cập nhật hàm getHeaders để lấy Token
 const getHeaders = () => {
-  return {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'accept': '*/*',
     'ngrok-skip-browser-warning': 'true' 
   };
+
+  // CÁCH 2: Kẹp Token lên Header
+  // Giả sử bạn lưu token trong localStorage với key là 'access_token' sau khi đăng nhập
+  // Bạn có thể thay đổi cách lấy token này (ví dụ từ Redux/Zustand store nếu cần)
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return headers;
 };
 
 // Hàm xử lý chung cho Response
@@ -29,6 +40,11 @@ const handleResponse = async (response: Response) => {
   if (!response.ok) {
     throw new Error('API Request Failed');
   }
+  
+  // Xử lý trường hợp API trả về rỗng (204 No Content) để tránh lỗi JSON.parse
+  if (response.status === 204) {
+    return null; 
+  }
   return response.json();
 };
 
@@ -37,7 +53,7 @@ export const apiClient = {
     const response = await fetch(buildUrl(endpoint), {
       method: 'GET',
       headers: getHeaders(),
-      credentials: 'include', // BẮT BUỘC: Để trình duyệt gửi kèm Cookie
+      credentials: 'include', // CÁCH 1: BẮT BUỘC để trình duyệt gửi kèm Cookie
     });
     return handleResponse(response);
   },
@@ -46,7 +62,7 @@ export const apiClient = {
     const response = await fetch(buildUrl(endpoint), {
       method: 'POST',
       headers: getHeaders(),
-      credentials: 'include',
+      credentials: 'include', // CÁCH 1
       body: JSON.stringify(data),
     });
     return handleResponse(response);
@@ -56,7 +72,7 @@ export const apiClient = {
     const response = await fetch(buildUrl(endpoint), {
       method: 'PUT',
       headers: getHeaders(),
-      credentials: 'include',
+      credentials: 'include', // CÁCH 1
       body: JSON.stringify(data),
     });
     return handleResponse(response);
@@ -66,7 +82,7 @@ export const apiClient = {
     const response = await fetch(buildUrl(endpoint), {
       method: 'DELETE',
       headers: getHeaders(),
-      credentials: 'include',
+      credentials: 'include', // CÁCH 1
     });
     return handleResponse(response);
   }
