@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { voucherApi, ChungTu } from '../../api/voucherApi';
 import * as XLSX from 'xlsx';
 import { exportNhatKyChung } from '../../utils/excelExport';
+import { exportNhatKyChungWord } from '../../utils/wordExport';
 
 // ==========================================
 // 1. HÀM CHUẨN HÓA VÀ CONFIG
@@ -224,32 +225,29 @@ export function GeneralJournal() {
           </button>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (filteredEntries.length === 0) { toast.error('Không có dữ liệu để xuất'); return; }
-              exportNhatKyChung(filteredEntries.map(e => ({
-                ngayGhiSo: e.ngayLap,
-                ngayLap: e.ngayLap,
-                maChungTu: e.maChungTu,
-                dienGiai: e.moTa,
-                
-                // THÊM || undefined ĐỂ FIX LỖI TYPESCRIPT
-                taiKhoanNo: e.taiKhoanNo || undefined, 
-                taiKhoanCo: e.taiKhoanCo || undefined, 
-                
-                soTien: e.soTien,
-              })), fromDate, toDate);
-              toast.success('Xuất file Sổ Nhật Ký Chung thành công!');
+              try {
+                await exportNhatKyChungWord(filteredEntries.map(e => ({
+                  ngayGhiSo: e.ngayLap,
+                  ngayLap: e.ngayLap,
+                  maChungTu: e.maChungTu,
+                  dienGiai: e.moTa,
+                  taiKhoanNo: e.taiKhoanNo || undefined, 
+                  taiKhoanCo: e.taiKhoanCo || undefined, 
+                  soTien: e.soTien,
+                })), fromDate, toDate);
+                toast.success('Xuất file Word Sổ Nhật Ký Chung thành công!');
+              } catch (error) {
+                toast.error('Có lỗi xảy ra khi tạo file Word.');
+                console.error(error);
+              }
             }}
-            className="flex items-center gap-2 px-4 py-2 border border-green-300 rounded-md hover:bg-green-50 bg-white font-medium text-sm text-green-700 transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 border border-blue-300 rounded-md hover:bg-blue-50 bg-white font-medium text-sm text-blue-700 transition-colors shadow-sm"
           >
-            <Download className="w-4 h-4" /> Xuất S03a-DN
+            <FileText className="w-4 h-4" /> Xuất Word
           </button>
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 bg-white font-medium text-sm text-gray-700 transition-colors shadow-sm"
-          >
-            <Download className="w-4 h-4" /> Xuất Excel
-          </button>
+          
           <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm text-white transition-colors shadow-sm">
             <Plus className="w-4 h-4" /> Tạo bút toán
           </button>
