@@ -5,6 +5,7 @@ import { useGlobalData } from '../../context/GlobalContext';
 import { depreciationHistoryApi, LichSuKhauHao } from '../../api/depreciationHistoryApi';
 import { exportBangKhauHaoExcel } from '../../utils/excelExport';
 import { exportBangKhauHaoWord } from '../../utils/wordExport';
+import { systemConfigApi, CauHinhHeThong } from '../../api/systemConfigApi';
 
 interface DepreciationAsset {
   id: number;
@@ -32,9 +33,10 @@ export function DepreciationList() {
     const date = new Date();
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   });
-  
+
   const [showVoucher, setShowVoucher] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [systemConfig, setSystemConfig] = useState<CauHinhHeThong | null>(null);
 
   // State quản lý riêng cho Lịch sử khấu hao
   const [history, setHistory] = useState<LichSuKhauHao[]>(cachedHistory || []);
@@ -68,6 +70,22 @@ export function DepreciationList() {
 
   useEffect(() => {
     fetchHistory();
+  }, []);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await systemConfigApi.get();
+        if (response.errorCode === 200 && response.data) {
+          setSystemConfig(response.data);
+        } else {
+          console.warn('Không thể lấy cấu hình hệ thống:', response.message);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy cấu hình hệ thống:', error);
+      }
+    };
+    fetchConfig();
   }, []);
 
   // ==========================================
@@ -275,7 +293,7 @@ export function DepreciationList() {
             <button
   onClick={async () => {
     try {
-      await exportBangKhauHaoWord(tableAssets, selectedMonth);
+      await exportBangKhauHaoWord(tableAssets, selectedMonth, systemConfig || undefined);
       toast.success("Xuất bảng trích khấu hao thành công!");
     } catch (error) {
       toast.error("Có lỗi xảy ra khi tạo file Word.");

@@ -342,12 +342,12 @@ function LayoutInner() {
                 <span className="hidden sm:block">{isLoadingGlobal ? 'Đang đồng bộ...' : 'Làm mới'}</span>
               </button> */}
 
-              <button className="relative text-gray-600 hover:text-gray-900 focus:outline-none">
+              {/* <button className="relative text-gray-600 hover:text-gray-900 focus:outline-none">
                 <Bell className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
                   3
                 </span>
-              </button>
+              </button> */}
               <div className="text-right hidden sm:block border-l border-gray-200 pl-4 ml-1">
                 <p className="text-sm font-medium text-gray-900">{companyName}</p>
                 <p className="text-xs text-gray-500">Hôm nay: {new Date().toLocaleDateString('vi-VN')}</p>

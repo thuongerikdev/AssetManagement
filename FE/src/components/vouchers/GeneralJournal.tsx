@@ -6,6 +6,7 @@ import { voucherApi, ChungTu } from '../../api/voucherApi';
 import * as XLSX from 'xlsx';
 import { exportNhatKyChung } from '../../utils/excelExport';
 import { exportNhatKyChungWord } from '../../utils/wordExport';
+import { systemConfigApi, CauHinhHeThong } from '../../api/systemConfigApi';
 
 // ==========================================
 // 1. HÀM CHUẨN HÓA VÀ CONFIG
@@ -63,6 +64,7 @@ export function GeneralJournal() {
     return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().split('T')[0];
   });
   const [typeFilter, setTypeFilter] = useState('all');
+  const [systemConfig, setSystemConfig] = useState<CauHinhHeThong | null>(null);
 
   // ==========================================
   // 3. HÀM TẢI DỮ LIỆU CÓ CACHE
@@ -89,6 +91,22 @@ export function GeneralJournal() {
 
   useEffect(() => {
     fetchJournalEntries();
+  }, []);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await systemConfigApi.get();
+        if (response.errorCode === 200 && response.data) {
+          setSystemConfig(response.data);
+        } else {
+          console.warn('Không thể lấy cấu hình hệ thống:', response.message);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy cấu hình hệ thống:', error);
+      }
+    };
+    fetchConfig();
   }, []);
 
   // ==========================================
@@ -233,10 +251,10 @@ export function GeneralJournal() {
                   ngayLap: e.ngayLap,
                   maChungTu: e.maChungTu,
                   dienGiai: e.moTa,
-                  taiKhoanNo: e.taiKhoanNo || undefined, 
-                  taiKhoanCo: e.taiKhoanCo || undefined, 
+                  taiKhoanNo: e.taiKhoanNo || undefined,
+                  taiKhoanCo: e.taiKhoanCo || undefined,
                   soTien: e.soTien,
-                })), fromDate, toDate);
+                })), fromDate, toDate, systemConfig || undefined);
                 toast.success('Xuất file Word Sổ Nhật Ký Chung thành công!');
               } catch (error) {
                 toast.error('Có lỗi xảy ra khi tạo file Word.');

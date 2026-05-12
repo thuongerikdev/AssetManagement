@@ -23,6 +23,7 @@ import { voucherApi } from '../../api/voucherApi';
 import { depreciationHistoryApi } from '../../api/depreciationHistoryApi';
 import { attachmentApi, TaiSanDinhKem, formatFileSize, getFileIcon, ATTACHMENT_BASE_URL } from '../../api/attachmentApi';
 import { UserSelectDropdown } from '../shared/UserSelectDropdown';
+import { systemConfigApi, CauHinhHeThong } from '../../api/systemConfigApi';
 
 const statusConfig: Record<string, { label: string; color: string; value: number }> = {
   '0': { label: 'Chưa cấp phát', color: 'bg-gray-100 text-gray-700', value: 0 },
@@ -49,6 +50,7 @@ export function AssetDetail() {
   const [asset, setAsset] = useState<TaiSan | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [categories, setCategories] = useState<AssetCategory[]>([]);
+  const [systemConfig, setSystemConfig] = useState<CauHinhHeThong | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
   const [activeTab, setActiveTab] = useState<'general' | 'usage' | 'depreciation' | 'vouchers' | 'attachments'>('general');
@@ -250,6 +252,22 @@ export function AssetDetail() {
       fetchHistoryData(asset.id);
     }
   }, [activeTab, asset?.id]);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await systemConfigApi.get();
+        if (response.errorCode === 200 && response.data) {
+          setSystemConfig(response.data);
+        } else {
+          console.warn('Không thể lấy cấu hình hệ thống:', response.message);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy cấu hình hệ thống:', error);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const getDeptName = (deptId?: number) => departments.find(d => d.id === deptId)?.tenPhongBan || 'Kho / Chưa xác định';
   
@@ -606,7 +624,7 @@ export function AssetDetail() {
               onClick={async () => {
                 if (asset) {
                   try {
-                    await exportTheTSCDWord(asset, categories, departments);
+                    await exportTheTSCDWord(asset, categories, departments, systemConfig || undefined);
                     toast.success("Xuất thẻ tài sản thành công!");
                   } catch (error) {
                     toast.error("Có lỗi xảy ra khi tạo file Word.");

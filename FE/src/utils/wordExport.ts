@@ -7,13 +7,15 @@ import { saveAs } from "file-saver";
 import { TaiSan } from "../api/assetApi";
 import { Department } from "../api/departmentApi";
 import { AssetCategory } from "../api/assetCategoryApi";
+import { CauHinhHeThong } from "../api/systemConfigApi";
 
 // Hàm hỗ trợ format tiền
 
 export const exportTheTSCDWord = async (
   asset: TaiSan,
   categories: AssetCategory[],
-  departments: Department[]
+  departments: Department[],
+  config?: CauHinhHeThong
 ) => {
   const deptName = departments.find(d => d.id === asset.phongBanId)?.tenPhongBan || "........................................";
   
@@ -51,8 +53,9 @@ export const exportTheTSCDWord = async (
                 new TableCell({
                   width: { size: 40, type: WidthType.PERCENTAGE },
                   children: [
-                    new Paragraph({ children: [new TextRun({ text: "Đơn vị: ...........................................", bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: "Địa chỉ: ..........................................", bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
                   ],
                 }),
                 new TableCell({
@@ -232,7 +235,7 @@ const formatVND = (value?: number) => {
   return new Intl.NumberFormat('vi-VN').format(value);
 };
 
-export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string) => {
+export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string, config?: CauHinhHeThong) => {
   const [year, month] = selectedMonth.split('-');
   
   const today = new Date();
@@ -259,9 +262,10 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
       },
       children: [
         // HEADER: Đơn vị / Địa chỉ
-        new Paragraph({ children: [new TextRun({ text: "Đơn vị: ...........................................", bold: true })] }),
-        new Paragraph({ children: [new TextRun({ text: "Địa chỉ: ..........................................", bold: true })] }),
-        
+        new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
+        new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
+        new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
+
         new Paragraph({ text: "", spacing: { after: 300 } }),
 
         // TÊN TIÊU ĐỀ
@@ -369,7 +373,8 @@ export const exportSoCaiWord = async (
   accountCode: string,
   accountName: string,
   fromDate: string,
-  toDate: string
+  toDate: string,
+  config?: CauHinhHeThong
 ) => {
   const fromYear = new Date(fromDate).getFullYear();
   const toYear = new Date(toDate).getFullYear();
@@ -407,8 +412,9 @@ export const exportSoCaiWord = async (
                 new TableCell({
                   width: { size: 40, type: WidthType.PERCENTAGE },
                   children: [
-                    new Paragraph({ children: [new TextRun({ text: "Đơn vị: ...........................................", bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: "Địa chỉ: ..........................................", bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
                   ],
                 }),
                 new TableCell({
@@ -603,7 +609,8 @@ export const exportSoCaiWord = async (
 export const exportNhatKyChungWord = async (
   entries: any[],
   fromDate: string,
-  toDate: string
+  toDate: string,
+  config?: CauHinhHeThong
 ) => {
   const today = new Date();
   const day = today.getDate().toString().padStart(2, '0');
@@ -648,8 +655,9 @@ export const exportNhatKyChungWord = async (
                 new TableCell({
                   width: { size: 40, type: WidthType.PERCENTAGE },
                   children: [
-                    new Paragraph({ children: [new TextRun({ text: "Đơn vị: ...........................................", bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: "Địa chỉ: ..........................................", bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
                   ],
                 }),
                 new TableCell({

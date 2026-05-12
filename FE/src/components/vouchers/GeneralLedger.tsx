@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { generalLedgerApi, SoCaiChiTietResponse } from '../../api/generalLedgerApi';
 import { exportSoCaiWord } from '../../utils/wordExport';
+import { systemConfigApi, CauHinhHeThong } from '../../api/systemConfigApi';
 const ACCOUNTS = [
   { ma: '211', ten: 'Tài sản cố định hữu hình' },
   { ma: '214', ten: 'Hao mòn tài sản cố định' },
@@ -28,6 +29,7 @@ export function GeneralLedger() {
   const [toDate, setToDate] = useState(lastOfYear);
   const [data, setData] = useState<SoCaiChiTietResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [systemConfig, setSystemConfig] = useState<CauHinhHeThong | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -44,17 +46,34 @@ export function GeneralLedger() {
 
   useEffect(() => { load(); }, [selectedMa, fromDate, toDate]);
 
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await systemConfigApi.get();
+        if (response.errorCode === 200 && response.data) {
+          setSystemConfig(response.data);
+        } else {
+          console.warn('Không thể lấy cấu hình hệ thống:', response.message);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy cấu hình hệ thống:', error);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   const selectedAccount = ACCOUNTS.find(a => a.ma === selectedMa)!;
 
   const exportWord = async () => {
     if (!data) return;
     try {
       await exportSoCaiWord(
-        data, 
-        selectedAccount.ma, 
-        data.tenTaiKhoan ?? selectedAccount.ten, 
-        fromDate, 
-        toDate
+        data,
+        selectedAccount.ma,
+        data.tenTaiKhoan ?? selectedAccount.ten,
+        fromDate,
+        toDate,
+        systemConfig || undefined
       );
       toast.success("Xuất sổ cái Word thành công!");
     } catch (error) {
