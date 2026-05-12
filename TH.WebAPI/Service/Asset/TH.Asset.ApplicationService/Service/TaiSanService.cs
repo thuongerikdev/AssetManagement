@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Common;
 using TH.Asset.Domain.Entities;
@@ -21,6 +23,7 @@ namespace TH.Asset.ApplicationService.Service
         Task<ResponseDto<List<TaiSanResponse>>> GetAllTaiSanAsync();
         Task<ResponseDto<TaiSanResponse>> GetTaiSanByIdAsync(int id);
         Task<ResponseDto<bool>> ConfirmAssetAsync(int id);
+        Task<ResponseDto<bool>> RejectAssetAsync(int id);
         Task<ResponseDto<List<TaiSan>>> GetTaiSanByUserIdAsync(int userId);
         Task<ResponseDto<GenerateMaTaiSanResponse>> GenerateMaTaiSanAsync(int danhMucId);
         Task<ResponseDto<List<TaiSanResponse>>> GetTaiSanByPhongBanIdAsync(int phongBanId);
@@ -30,11 +33,23 @@ namespace TH.Asset.ApplicationService.Service
     {
         private readonly AssetDbContext _dbContext;
         private readonly ILogger<TaiSanService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TaiSanService(ILogger<TaiSanService> logger, AssetDbContext dbContext) : base(logger, dbContext)
+        public TaiSanService(ILogger<TaiSanService> logger, AssetDbContext dbContext, IHttpContextAccessor httpContextAccessor) : base(logger, dbContext)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var userClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("userId");
+            if (userClaim != null && int.TryParse(userClaim.Value, out int userId))
+            {
+                return userId;
+            }
+            return null;
         }
 
         // ==========================================
@@ -402,10 +417,8 @@ namespace TH.Asset.ApplicationService.Service
 
         public async Task<ResponseDto<bool>> ConfirmAssetAsync(int id)
         {
-            // 1. Tạo Execution Strategy từ DbContext để hỗ trợ retry transaction
             var strategy = _dbContext.Database.CreateExecutionStrategy();
 
-            // 2. Bọc toàn bộ logic vào trong phương thức ExecuteAsync
             return await strategy.ExecuteAsync(async () =>
             {
                 using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -414,27 +427,35 @@ namespace TH.Asset.ApplicationService.Service
                     var taiSan = await _dbContext.taiSans.FindAsync(id);
                     if (taiSan == null) return ResponseConst.Error<bool>(404, "Không tìm thấy tài sản.");
 
+                    // Kiểm tra trạng thái
                     if (taiSan.TrangThai != TrangThaiTaiSan.ChoXacNhan)
                         return ResponseConst.Error<bool>(400, "Tài sản không ở trạng thái chờ xác nhận.");
 
-                    // 1. Chuyển tài sản sang Đang sử dụng
+                    // Kiểm tra quyền sở hữu: Chỉ người được gán tài sản mới có thể xác nhận
+                    var currentUserId = GetCurrentUserId();
+                    if (currentUserId == null)
+                        return ResponseConst.Error<bool>(401, "Bạn chưa đăng nhập.");
+
+                    if (taiSan.NguoiDungId != currentUserId)
+                        return ResponseConst.Error<bool>(403, "Bạn chỉ có thể xác nhận tài sản của chính mình.");
+
+                    // Chuyển tài sản sang Đang sử dụng
                     taiSan.TrangThai = TrangThaiTaiSan.DangSuDung;
-                    taiSan.NgayCapPhat = DateTime.UtcNow; // Chốt ngày nhận
+                    taiSan.NgayCapPhat = DateTime.UtcNow;
                     _dbContext.taiSans.Update(taiSan);
 
-                    // 2. Tự động tìm Phiếu cấp phát/điều chuyển đang "Chờ xử lý" của tài sản này
+                    // Tự động tìm Phiếu cấp phát/điều chuyển đang "Chờ xử lý" của tài sản này
                     var phieuCho = await _dbContext.dieuChuyenTaiSans
                         .Where(x => x.TaiSanId == id && x.TrangThai == "cho_xu_ly")
                         .FirstOrDefaultAsync();
 
-                    // Chốt luôn phiếu thành Đã hoàn thành
                     if (phieuCho != null)
                     {
                         phieuCho.TrangThai = "da_hoan_thanh";
                         _dbContext.dieuChuyenTaiSans.Update(phieuCho);
                     }
 
-                    // 3. TẠO CHỨNG TỪ GHI TĂNG TÀI SẢN KÈM HẠCH TOÁN NỢ / CÓ
+                    // Tạo chứng từ ghi tăng
                     string taiKhoanCo = taiSan.PhuongThucThanhToan == PhuongThucThanhToan.ChuyenKhoan ? "112" : "111";
 
                     var chungTu = new ChungTu
@@ -450,7 +471,7 @@ namespace TH.Asset.ApplicationService.Service
                     };
 
                     _dbContext.chungTus.Add(chungTu);
-                    await _dbContext.SaveChangesAsync(); // Lưu để lấy Id chứng từ
+                    await _dbContext.SaveChangesAsync();
 
                     var chiTietChungTu = new ChiTietChungTu
                     {
@@ -465,15 +486,68 @@ namespace TH.Asset.ApplicationService.Service
                     _dbContext.chiTietChungTus.Add(chiTietChungTu);
                     await _dbContext.SaveChangesAsync();
 
-                    // Commit transaction
                     await transaction.CommitAsync();
-
                     return ResponseConst.Success("Xác nhận nhận tài sản và sinh chứng từ thành công!", true);
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
                     _logger.LogError(ex, "Lỗi khi xác nhận tài sản và sinh chứng từ.");
+                    return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
+                }
+            });
+        }
+
+        public async Task<ResponseDto<bool>> RejectAssetAsync(int id)
+        {
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    var taiSan = await _dbContext.taiSans.FindAsync(id);
+                    if (taiSan == null) return ResponseConst.Error<bool>(404, "Không tìm thấy tài sản.");
+
+                    // Kiểm tra trạng thái: chỉ từ chối được khi đang chờ xác nhận
+                    if (taiSan.TrangThai != TrangThaiTaiSan.ChoXacNhan)
+                        return ResponseConst.Error<bool>(400, "Tài sản không ở trạng thái chờ xác nhận, không thể từ chối.");
+
+                    // Kiểm tra quyền sở hữu: Chỉ người được gán tài sản mới có thể từ chối
+                    var currentUserId = GetCurrentUserId();
+                    if (currentUserId == null)
+                        return ResponseConst.Error<bool>(401, "Bạn chưa đăng nhập.");
+
+                    if (taiSan.NguoiDungId != currentUserId)
+                        return ResponseConst.Error<bool>(403, "Bạn chỉ có thể từ chối tài sản của chính mình.");
+
+                    // 1. Quay trạng thái tài sản về "Chưa cấp phát"
+                    taiSan.TrangThai = TrangThaiTaiSan.ChuaCapPhat;
+                    taiSan.NguoiDungId = null;
+                    taiSan.NgayCapPhat = null;
+                    _dbContext.taiSans.Update(taiSan);
+
+                    // 2. Tìm phiếu cấp phát/điều chuyển đang "Chờ xử lý" và cập nhật thành "Từ chối"
+                    var phieuCho = await _dbContext.dieuChuyenTaiSans
+                        .Where(x => x.TaiSanId == id && x.TrangThai == "cho_xu_ly")
+                        .FirstOrDefaultAsync();
+
+                    if (phieuCho != null)
+                    {
+                        phieuCho.TrangThai = "tu_choi";
+                        _dbContext.dieuChuyenTaiSans.Update(phieuCho);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return ResponseConst.Success("Từ chối tài sản thành công!", true);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Lỗi khi từ chối tài sản.");
                     return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
                 }
             });

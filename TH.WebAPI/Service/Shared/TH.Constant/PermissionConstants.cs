@@ -132,6 +132,7 @@ namespace TH.Constant
             { "TaiSanGenerateCode", "tai_san.generate_code" },  // GET  generate-code
             { "TaiSanCreate",       "tai_san.create" },         // POST create
             { "TaiSanConfirm",      "tai_san.confirm" },        // POST confirm/{id}
+            { "TaiSanReject",       "tai_san.reject" },         // POST reject/{id}
             { "TaiSanUpdate",       "tai_san.update" },         // PUT  update
             { "TaiSanDelete",       "tai_san.delete" },         // DELETE delete/{id}
 

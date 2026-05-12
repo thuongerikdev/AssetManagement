@@ -85,7 +85,23 @@ export function MyAssets() {
   };
 
   const handleReject = async (asset: TaiSan) => {
-    toast.info("Tính năng từ chối đang được phát triển.");
+    const reason = window.prompt('Nhập lý do từ chối tài sản (bắt buộc):', '');
+    if (!reason || reason.trim() === '') {
+      toast.warning('Vui lòng nhập lý do từ chối.');
+      return;
+    }
+    try {
+      const res = await assetApi.reject(asset.id, reason);
+      if (res.errorCode === 200) {
+        toast.success(res.message || 'Từ chối tài sản thành công!');
+        fetchData();
+      } else {
+        toast.error(res.message || 'Có lỗi xảy ra khi từ chối tài sản');
+      }
+    } catch (error) {
+      toast.error('Lỗi kết nối máy chủ');
+      console.error(error);
+    }
   };
 
   // ── 3. LỌC VÀ GOM NHÓM DỮ LIỆU ĐỂ RENDER ──────────────────────────

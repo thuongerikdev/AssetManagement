@@ -263,6 +263,7 @@ namespace TH.Auth.Infrastructure.SeedData
                 "AccountForgotEmailStart", "AccountForgotEmailVerify",
                 "AccountForgotMfaVerify", "AccountForgotCommit",
                 "UserGetMe", "UserUpdateProfile", "UserUpdateUsername",
+                "CauHinhHeThongGet",
             };
 
             var adminPerms = _permKeys.ToArray();
@@ -273,7 +274,7 @@ namespace TH.Auth.Infrastructure.SeedData
                 "RoleGetAll", "RoleGetAllScopeUser", "RoleGetByUserId",
                 "PermissionGetAll", "PermissionGetById", "PermissionGetByUserId", "PermissionGetByRoleId",
                 "TaiSanGetAll", "TaiSanGetById", "TaiSanGetMine", "TaiSanGenerateCode",
-                "TaiSanCreate", "TaiSanConfirm", "TaiSanUpdate",
+                "TaiSanCreate", "TaiSanConfirm", "TaiSanReject", "TaiSanUpdate",
                 "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById", "DanhMucTaiSanCreate", "DanhMucTaiSanUpdate",
                 "PhongBanGetAll", "PhongBanGetById",
                 "TaiKhoanKeToanGetAll", "TaiKhoanKeToanGetById", "TaiKhoanKeToanCreate", "TaiKhoanKeToanUpdate",
@@ -287,6 +288,7 @@ namespace TH.Auth.Infrastructure.SeedData
                 "ThanhLyTaiSanCreate", "ThanhLyTaiSanUpdate",
                 "BaoTriTaiSanGetAll", "BaoTriTaiSanGetById", "BaoTriTaiSanGetByAsset",
                 "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset",
+                "DieuChuyenTaiSanCreate",
             }).Distinct().ToArray();
 
             // Đã xóa mảng truongPhongKeToanPerms
@@ -342,11 +344,12 @@ namespace TH.Auth.Infrastructure.SeedData
                 "DieuChuyenTaiSanGetAll", "DieuChuyenTaiSanGetById", "DieuChuyenTaiSanGetByAsset", "DieuChuyenTaiSanCreate",
                 "ThanhLyTaiSanGetAll", "ThanhLyTaiSanGetById", "ThanhLyTaiSanGetByAsset",
                 "LichSuKhauHaoGetAll", "LichSuKhauHaoGetById", "LichSuKhauHaoGetByAsset",
+                "TaiSanConfirm", "TaiSanReject",
             }).Distinct().ToArray();
 
             var nhanVienPerms = authCommon.Concat(new[]
             {
-                "TaiSanGetMine", "TaiSanGetById",
+                "TaiSanGetMine", "TaiSanGetById", "TaiSanConfirm", "TaiSanReject",
                 "DanhMucTaiSanGetAll", "DanhMucTaiSanGetById",
                 "PhongBanGetAll", "PhongBanGetById",
                 "TaiSanDinhKemGetByAsset",

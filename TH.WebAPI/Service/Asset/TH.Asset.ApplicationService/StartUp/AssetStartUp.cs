@@ -114,6 +114,9 @@ namespace TH.Asset.ApplicationService.StartUp
 
             // === APPLICATION SERVICES DI ===
 
+            // 0. HTTP Context Accessor (cần cho TaiSanService)
+            builder.Services.AddHttpContextAccessor();
+
             // 1. Các danh mục cơ bản
             builder.Services.AddScoped<IPhongBanService, PhongBanService>();
             builder.Services.AddScoped<ITaiKhoanKeToanService, TaiKhoanKeToanService>();

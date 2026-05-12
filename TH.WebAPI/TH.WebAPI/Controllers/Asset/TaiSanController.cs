@@ -103,6 +103,15 @@ namespace TH.WebAPI.Controllers.Asset
             return Ok(result);
         }
 
+        // POST: api/TaiSan/reject/{id}
+        [HttpPost("reject/{id}")]
+        [Authorize(Policy = "TaiSanReject")]
+        public async Task<IActionResult> RejectAsset(int id)
+        {
+            var result = await _taiSanService.RejectAssetAsync(id);
+            return Ok(result);
+        }
+
         // GET: api/TaiSan/my-assets/{userId}
         [HttpGet("my-assets/{userId}")]
         [Authorize(Policy = "TaiSanGetMine")]

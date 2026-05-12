@@ -596,7 +596,7 @@ namespace TH.Asset.Infrastructure.Database
                 chungTus.Add(ctGhiTangNew);
 
                 // GỘP 1 DÒNG
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = "2114", TaiKhoanCo = "331", SoTien = gia, MoTa = $"Ghi tăng nguyên giá {newLaptops[i]}" });
+                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = "2114", TaiKhoanCo = ts.PhuongThucThanhToan == PhuongThucThanhToan.TienMat ? "111" : "112", SoTien = gia, MoTa = $"Ghi tăng nguyên giá {newLaptops[i]}" });
 
                 ctId++;
             }

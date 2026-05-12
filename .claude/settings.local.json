@@ -34,7 +34,11 @@
       "Bash(Format-Table FullName)",
       "Bash(Get-ChildItem -Path \"D:\\\\PersonalProject\\\\GiangProject\\\\TH.WebAPI\" -Recurse -Filter \"*Controller*\" -Include \"*.cs\")",
       "Bash(Select-Object FullName)",
-      "Bash(Get-ChildItem -Path \"D:\\\\PersonalProject\\\\GiangProject\" -Force)"
+      "Bash(Get-ChildItem -Path \"D:\\\\PersonalProject\\\\GiangProject\" -Force)",
+      "Bash(dir FE\\\\*.png)",
+      "Bash(cd /tmp)",
+      "Bash(docx2txt \"C:\\\\Users\\\\DELL\\\\Downloads\\\\TaiLieu_ThietKe_HeThong_TSCD_v3.docx\" tai_lieu.txt)",
+      "Bash(docx2txt \"C:\\\\Users\\\\DELL\\\\Downloads\\\\TaiLieu_ThietKe_HeThong_TSCD_v3.docx\")"
     ]
   }
 }
