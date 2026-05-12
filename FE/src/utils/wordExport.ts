@@ -10,6 +10,10 @@ import { AssetCategory } from "../api/assetCategoryApi";
 import { CauHinhHeThong } from "../api/systemConfigApi";
 
 // Hàm hỗ trợ format tiền
+const formatVND = (value?: number) => {
+  if (value === undefined || value === null) return "";
+  return new Intl.NumberFormat('vi-VN').format(value);
+};
 
 export const exportTheTSCDWord = async (
   asset: TaiSan,
@@ -33,6 +37,8 @@ export const exportTheTSCDWord = async (
     bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
     left: { style: BorderStyle.NONE, size: 0, color: "auto" },
     right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
   };
 
   const doc = new Document({
@@ -51,7 +57,7 @@ export const exportTheTSCDWord = async (
             new TableRow({
               children: [
                 new TableCell({
-                  width: { size: 40, type: WidthType.PERCENTAGE },
+                  width: { size: 55, type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
                     new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
@@ -59,12 +65,15 @@ export const exportTheTSCDWord = async (
                   ],
                 }),
                 new TableCell({
-                  width: { size: 60, type: WidthType.PERCENTAGE },
+                  width: { size: 45, type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mẫu số S23-DN", bold: true })] }),
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC\nngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20 })]
+                      children: [
+                        new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC", italics: true, size: 20 }),
+                        new TextRun({ text: "ngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20, break: 1 })
+                      ]
                     }),
                   ],
                 }),
@@ -136,7 +145,7 @@ export const exportTheTSCDWord = async (
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Cộng dồn", bold: true })] })] }),
               ],
             }),
-            // Dòng dữ liệu mẫu 1 (Có thể map() từ dữ liệu lịch sử nếu có)
+            // Dòng dữ liệu mẫu 1
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "Ghi tăng" })] }),
@@ -155,7 +164,6 @@ export const exportTheTSCDWord = async (
           ],
         }),
 
-        // Đã sửa thuộc tính 'bold' bằng cách chuyển văn bản vào trong TextRun
         new Paragraph({
           children: [new TextRun({ text: "Dụng cụ phụ tùng kèm theo", bold: true })],
           spacing: { before: 200, after: 100 }
@@ -226,13 +234,8 @@ export const exportTheTSCDWord = async (
     }],
   });
 
-  // Xuất file
   const buffer = await Packer.toBlob(doc);
   saveAs(buffer, `The_TSCD_${asset.maTaiSan}.docx`);
-};
-const formatVND = (value?: number) => {
-  if (value === undefined || value === null) return "";
-  return new Intl.NumberFormat('vi-VN').format(value);
 };
 
 export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string, config?: CauHinhHeThong) => {
@@ -243,12 +246,13 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
   const currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
   const currentYear = today.getFullYear();
 
-  // Định dạng viền ẩn cho các bảng dùng để căn lề Header / Footer
   const noBorders = {
     top: { style: BorderStyle.NONE, size: 0, color: "auto" },
     bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
     left: { style: BorderStyle.NONE, size: 0, color: "auto" },
     right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
   };
 
   const doc = new Document({
@@ -256,7 +260,6 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
       properties: {
         page: {
           margin: { top: 1000, right: 1000, bottom: 1000, left: 1000 },
-          // Chuyển trang sang khổ ngang để chứa đủ 7 cột bảng
           size: { orientation: PageOrientation.LANDSCAPE }, 
         },
       },
@@ -283,7 +286,6 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
         new Table({
           width: { size: 100, type: WidthType.PERCENTAGE },
           rows: [
-            // Dòng Tiêu đề Bảng
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mã TSCĐ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
@@ -295,7 +297,6 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Giá trị còn lại", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
               ],
             }),
-            // Render tự động Data Bảng
             ...assets.map(asset => new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: asset.code || "" })] }),
@@ -307,7 +308,6 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: formatVND(asset.remainingValue) })] }),
               ]
             })),
-            // Dòng Tổng Cộng
             new TableRow({
               children: [
                 new TableCell({ columnSpan: 3, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Tổng cộng", bold: true })] })] }),
@@ -366,7 +366,6 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
   saveAs(buffer, `Bang_Trich_Khau_Hao_Thang_${month}_${year}.docx`);
 };
 
-// Thêm hàm này vào cuối file src/utils/wordExport.ts
 
 export const exportSoCaiWord = async (
   data: any,
@@ -385,12 +384,13 @@ export const exportSoCaiWord = async (
   const currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
   const currentYear = today.getFullYear();
 
-  // Định dạng viền ẩn
   const noBorders = {
     top: { style: BorderStyle.NONE, size: 0, color: "auto" },
     bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
     left: { style: BorderStyle.NONE, size: 0, color: "auto" },
     right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
   };
 
   const doc = new Document({
@@ -410,7 +410,7 @@ export const exportSoCaiWord = async (
             new TableRow({
               children: [
                 new TableCell({
-                  width: { size: 40, type: WidthType.PERCENTAGE },
+                  width: { size: 55, type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
                     new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
@@ -418,12 +418,15 @@ export const exportSoCaiWord = async (
                   ],
                 }),
                 new TableCell({
-                  width: { size: 60, type: WidthType.PERCENTAGE },
+                  width: { size: 45, type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mẫu số S03b-DN", bold: true })] }),
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC\nngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20 })]
+                      children: [
+                        new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC", italics: true, size: 20 }),
+                        new TextRun({ text: "ngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20, break: 1 })
+                      ]
                     }),
                   ],
                 }),
@@ -456,7 +459,6 @@ export const exportSoCaiWord = async (
         new Table({
           width: { size: 100, type: WidthType.PERCENTAGE },
           rows: [
-            // Row 1 (Header cấp 1)
             new TableRow({
               children: [
                 new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày, tháng\nghi sổ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
@@ -467,7 +469,6 @@ export const exportSoCaiWord = async (
                 new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số tiền", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
               ],
             }),
-            // Row 2 (Header cấp 2)
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số\nhiệu", bold: true })] })] }),
@@ -478,7 +479,6 @@ export const exportSoCaiWord = async (
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Có", bold: true })] })] }),
               ],
             }),
-            // Row Tiêu đề cột chữ cái A,B,C...
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "A" })] }),
@@ -493,7 +493,6 @@ export const exportSoCaiWord = async (
               ],
             }),
 
-            // DÒNG: Số dư đầu kỳ
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
@@ -508,22 +507,20 @@ export const exportSoCaiWord = async (
               ],
             }),
 
-            // DATA ROWS: Các bút toán phát sinh
             ...(data.butToans || []).map((b: any) => new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.ngayHachToan ? new Date(b.ngayHachToan).toLocaleDateString('vi-VN') : "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.maChungTu || "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.ngayHachToan ? new Date(b.ngayHachToan).toLocaleDateString('vi-VN') : "" })] }),
                 new TableCell({ children: [new Paragraph({ text: b.dienGiai || "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }), // Trang sổ (NKC)
-                new TableCell({ children: [new Paragraph({ text: "" })] }), // STT Dòng (NKC)
-                new TableCell({ children: [new Paragraph({ text: "" })] }), // TK Đối ứng
+                new TableCell({ children: [new Paragraph({ text: "" })] }), 
+                new TableCell({ children: [new Paragraph({ text: "" })] }), 
+                new TableCell({ children: [new Paragraph({ text: "" })] }), 
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: b.phatSinhNo > 0 ? formatVND(b.phatSinhNo) : "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: b.phatSinhCo > 0 ? formatVND(b.phatSinhCo) : "" })] }),
               ],
             })),
 
-            // DÒNG: Cộng số phát sinh
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
@@ -538,7 +535,6 @@ export const exportSoCaiWord = async (
               ],
             }),
 
-            // DÒNG: Số dư cuối kỳ
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
@@ -604,7 +600,6 @@ export const exportSoCaiWord = async (
   saveAs(buffer, `So_Cai_${accountCode}_${fromDate}_${toDate}.docx`);
 };
 
-// Thêm hàm này vào cuối file src/utils/wordExport.ts
 
 export const exportNhatKyChungWord = async (
   entries: any[],
@@ -626,9 +621,10 @@ export const exportNhatKyChungWord = async (
     bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
     left: { style: BorderStyle.NONE, size: 0, color: "auto" },
     right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
   };
 
-  // Tính tổng phát sinh
   let totalNo = 0;
   let totalCo = 0;
   entries.forEach(e => {
@@ -653,7 +649,7 @@ export const exportNhatKyChungWord = async (
             new TableRow({
               children: [
                 new TableCell({
-                  width: { size: 40, type: WidthType.PERCENTAGE },
+                  width: { size: 55, type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
                     new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
@@ -661,12 +657,15 @@ export const exportNhatKyChungWord = async (
                   ],
                 }),
                 new TableCell({
-                  width: { size: 60, type: WidthType.PERCENTAGE },
+                  width: { size: 45, type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mẫu số S03a-DN", bold: true })] }),
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC\nngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20 })]
+                      children: [
+                        new TextRun({ text: "(Kèm theo Thông tư số 99/2025/TT-BTC", italics: true, size: 20 }),
+                        new TextRun({ text: "ngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)", italics: true, size: 20, break: 1 })
+                      ]
                     }),
                   ],
                 }),
@@ -702,7 +701,6 @@ export const exportNhatKyChungWord = async (
         new Table({
           width: { size: 100, type: WidthType.PERCENTAGE },
           rows: [
-            // Row 1 (Header cấp 1)
             new TableRow({
               children: [
                 new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày, tháng\nghi sổ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
@@ -714,7 +712,6 @@ export const exportNhatKyChungWord = async (
                 new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số phát sinh", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
               ],
             }),
-            // Row 2 (Header cấp 2)
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số\nhiệu", bold: true })] })] }),
@@ -723,7 +720,6 @@ export const exportNhatKyChungWord = async (
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Có", bold: true })] })] }),
               ],
             }),
-            // Row Tiêu đề cột chữ cái A,B,C...
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "A" })] }),
@@ -738,22 +734,20 @@ export const exportNhatKyChungWord = async (
               ],
             }),
 
-            // DATA ROWS: Các bút toán
             ...entries.map(e => new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: e.ngayGhiSo ? new Date(e.ngayGhiSo).toLocaleDateString('vi-VN') : "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: e.maChungTu || "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: e.ngayLap ? new Date(e.ngayLap).toLocaleDateString('vi-VN') : "" })] }),
                 new TableCell({ children: [new Paragraph({ text: e.dienGiai || "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }), // Đã ghi SC
-                new TableCell({ children: [new Paragraph({ text: "" })] }), // STT dòng
+                new TableCell({ children: [new Paragraph({ text: "" })] }),
+                new TableCell({ children: [new Paragraph({ text: "" })] }), 
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: [e.taiKhoanNo, e.taiKhoanCo].filter(Boolean).join(' - ') })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: e.taiKhoanNo ? formatVND(e.soTien) : "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: e.taiKhoanCo ? formatVND(e.soTien) : "" })] }),
               ],
             })),
 
-            // DÒNG TỔNG CỘNG
             new TableRow({
               children: [
                 new TableCell({ columnSpan: 7, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Cộng số phát sinh", bold: true })] })] }),
