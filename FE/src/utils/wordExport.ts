@@ -59,9 +59,24 @@ export const exportTheTSCDWord = async (
                 new TableCell({
                   width: { size: 55, type: WidthType.PERCENTAGE },
                   children: [
-                    new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Đơn vị: ", bold: true }),
+                        new TextRun({ text: config?.tenCongTy || "..........................................." })
+                      ]
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Mã số thuế: ", bold: true }),
+                        new TextRun({ text: config?.maSoThue || "..................." })
+                      ]
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Địa chỉ: ", bold: true }),
+                        new TextRun({ text: config?.diaChi || ".........................................." })
+                      ]
+                    }),
                   ],
                 }),
                 new TableCell({
@@ -265,9 +280,24 @@ export const exportBangKhauHaoWord = async (assets: any[], selectedMonth: string
       },
       children: [
         // HEADER: Đơn vị / Địa chỉ
-        new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
-        new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
-        new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: "Đơn vị: ", bold: true }),
+            new TextRun({ text: config?.tenCongTy || "..........................................." })
+          ]
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: "Mã số thuế: ", bold: true }),
+            new TextRun({ text: config?.maSoThue || "..................." })
+          ]
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: "Địa chỉ: ", bold: true }),
+            new TextRun({ text: config?.diaChi || ".........................................." })
+          ]
+        }),
 
         new Paragraph({ text: "", spacing: { after: 300 } }),
 
@@ -412,9 +442,24 @@ export const exportSoCaiWord = async (
                 new TableCell({
                   width: { size: 55, type: WidthType.PERCENTAGE },
                   children: [
-                    new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Đơn vị: ", bold: true }),
+                        new TextRun({ text: config?.tenCongTy || "..........................................." })
+                      ]
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Mã số thuế: ", bold: true }),
+                        new TextRun({ text: config?.maSoThue || "..................." })
+                      ]
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Địa chỉ: ", bold: true }),
+                        new TextRun({ text: config?.diaChi || ".........................................." })
+                      ]
+                    }),
                   ],
                 }),
                 new TableCell({
@@ -651,9 +696,24 @@ export const exportNhatKyChungWord = async (
                 new TableCell({
                   width: { size: 55, type: WidthType.PERCENTAGE },
                   children: [
-                    new Paragraph({ children: [new TextRun({ text: `Đơn vị: ${config?.tenCongTy || "..........................................."}`, bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: `Mã số thuế: ${config?.maSoThue || "..................."}`, bold: true })] }),
-                    new Paragraph({ children: [new TextRun({ text: `Địa chỉ: ${config?.diaChi || ".........................................."}`, bold: true })] }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Đơn vị: ", bold: true }),
+                        new TextRun({ text: config?.tenCongTy || "..........................................." })
+                      ]
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Mã số thuế: ", bold: true }),
+                        new TextRun({ text: config?.maSoThue || "..................." })
+                      ]
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Địa chỉ: ", bold: true }),
+                        new TextRun({ text: config?.diaChi || ".........................................." })
+                      ]
+                    }),
                   ],
                 }),
                 new TableCell({
