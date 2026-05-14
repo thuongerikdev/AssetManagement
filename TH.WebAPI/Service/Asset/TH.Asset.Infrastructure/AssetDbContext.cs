@@ -556,6 +556,7 @@ namespace TH.Asset.Infrastructure.Database
                 int tsId = 85 + i;
                 decimal gia = newGia[i];
                 decimal khHangThang = Math.Round(gia / 36, 2);
+                var phuongThucThanhToan = PhuongThucThanhToan.ChuyenKhoan; // Mặc định chuyển khoản
                 taiSans.Add(new TaiSan
                 {
                     Id = tsId,
@@ -576,7 +577,7 @@ namespace TH.Asset.Infrastructure.Database
                     PhongBanId = null,
                     NguoiDungId = null,
                     NgayCapPhat = null,
-                    PhuongThucThanhToan = PhuongThucThanhToan.ChuyenKhoan,
+                    PhuongThucThanhToan = phuongThucThanhToan,
                     NgayTao = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 });
 
@@ -596,7 +597,7 @@ namespace TH.Asset.Infrastructure.Database
                 chungTus.Add(ctGhiTangNew);
 
                 // GỘP 1 DÒNG
-                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = "2114", TaiKhoanCo = ts.PhuongThucThanhToan == PhuongThucThanhToan.TienMat ? "111" : "112", SoTien = gia, MoTa = $"Ghi tăng nguyên giá {newLaptops[i]}" });
+                chiTiets.Add(new ChiTietChungTu { Id = chiTietId++, ChungTuId = ctId, TaiSanId = tsId, TaiKhoanNo = "2114", TaiKhoanCo = phuongThucThanhToan == PhuongThucThanhToan.TienMat ? "111" : "112", SoTien = gia, MoTa = $"Ghi tăng nguyên giá {newLaptops[i]}" });
 
                 ctId++;
             }

@@ -468,7 +468,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 22,
                             MoTa = "Ghi tăng nguyên giá Dell Latitude 5540 (i7/16GB/512GB)",
                             SoTien = 28000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 85
                         },
@@ -478,7 +478,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 23,
                             MoTa = "Ghi tăng nguyên giá Dell Latitude 5540 (i7/16GB/512GB)",
                             SoTien = 28000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 86
                         },
@@ -488,7 +488,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 24,
                             MoTa = "Ghi tăng nguyên giá HP EliteBook 840 G10 (i5/16GB/512GB)",
                             SoTien = 26000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 87
                         },
@@ -498,7 +498,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 25,
                             MoTa = "Ghi tăng nguyên giá HP EliteBook 840 G10 (i5/16GB/512GB)",
                             SoTien = 26000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 88
                         },
@@ -508,7 +508,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 26,
                             MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad E16 Gen 1 (i5/16GB/512GB)",
                             SoTien = 22000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 89
                         },
@@ -518,7 +518,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 27,
                             MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad E16 Gen 1 (i5/16GB/512GB)",
                             SoTien = 22000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 90
                         },
@@ -528,7 +528,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 28,
                             MoTa = "Ghi tăng nguyên giá Asus ExpertBook B5 Flip (i7/16GB/512GB)",
                             SoTien = 30000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 91
                         },
@@ -538,7 +538,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 29,
                             MoTa = "Ghi tăng nguyên giá Asus ExpertBook B5 Flip (i7/16GB/512GB)",
                             SoTien = 30000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 92
                         },
@@ -548,7 +548,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 30,
                             MoTa = "Ghi tăng nguyên giá Apple MacBook Air 13\" M3 (8GB/256GB)",
                             SoTien = 29000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 93
                         },
@@ -558,7 +558,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 31,
                             MoTa = "Ghi tăng nguyên giá Apple MacBook Air 13\" M3 (8GB/256GB)",
                             SoTien = 29000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 94
                         },
@@ -568,7 +568,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 32,
                             MoTa = "Ghi tăng nguyên giá Dell XPS 13 Plus 9320 (i7/32GB/1TB)",
                             SoTien = 38000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 95
                         },
@@ -578,7 +578,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 33,
                             MoTa = "Ghi tăng nguyên giá Dell XPS 13 Plus 9320 (i7/32GB/1TB)",
                             SoTien = 38000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 96
                         },
@@ -588,7 +588,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 34,
                             MoTa = "Ghi tăng nguyên giá HP Spectre x360 14 OLED (i7/16GB/512GB)",
                             SoTien = 42000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 97
                         },
@@ -598,7 +598,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 35,
                             MoTa = "Ghi tăng nguyên giá HP Spectre x360 14 OLED (i7/16GB/512GB)",
                             SoTien = 42000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 98
                         },
@@ -608,7 +608,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 36,
                             MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad X1 Carbon Gen 12 (i7/16GB/1TB)",
                             SoTien = 48000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 99
                         },
@@ -618,7 +618,7 @@ namespace TH.WebAPI.Migrations.AssetDb
                             ChungTuId = 37,
                             MoTa = "Ghi tăng nguyên giá Lenovo ThinkPad X1 Carbon Gen 12 (i7/16GB/1TB)",
                             SoTien = 48000000m,
-                            TaiKhoanCo = "331",
+                            TaiKhoanCo = "112",
                             TaiKhoanNo = "2114",
                             TaiSanId = 100
                         },

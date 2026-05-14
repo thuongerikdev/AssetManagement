@@ -1086,6 +1086,14 @@ namespace TH.WebAPI.Migrations
                         new
                         {
                             permissionID = 113,
+                            code = "tai_san.reject",
+                            permissionDescription = "tai_san.reject",
+                            permissionName = "TaiSanReject",
+                            scope = "staff"
+                        },
+                        new
+                        {
+                            permissionID = 114,
                             code = "tai_san.update",
                             permissionDescription = "tai_san.update",
                             permissionName = "TaiSanUpdate",
@@ -1093,7 +1101,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 114,
+                            permissionID = 115,
                             code = "thanh_ly_tai_san.create",
                             permissionDescription = "thanh_ly_tai_san.create",
                             permissionName = "ThanhLyTaiSanCreate",
@@ -1101,7 +1109,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 115,
+                            permissionID = 116,
                             code = "thanh_ly_tai_san.delete",
                             permissionDescription = "thanh_ly_tai_san.delete",
                             permissionName = "ThanhLyTaiSanDelete",
@@ -1109,7 +1117,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 116,
+                            permissionID = 117,
                             code = "thanh_ly_tai_san.get_all",
                             permissionDescription = "thanh_ly_tai_san.get_all",
                             permissionName = "ThanhLyTaiSanGetAll",
@@ -1117,7 +1125,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 117,
+                            permissionID = 118,
                             code = "thanh_ly_tai_san.get_by_asset",
                             permissionDescription = "thanh_ly_tai_san.get_by_asset",
                             permissionName = "ThanhLyTaiSanGetByAsset",
@@ -1125,7 +1133,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 118,
+                            permissionID = 119,
                             code = "thanh_ly_tai_san.get_by_id",
                             permissionDescription = "thanh_ly_tai_san.get_by_id",
                             permissionName = "ThanhLyTaiSanGetById",
@@ -1133,7 +1141,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 119,
+                            permissionID = 120,
                             code = "thanh_ly_tai_san.update",
                             permissionDescription = "thanh_ly_tai_san.update",
                             permissionName = "ThanhLyTaiSanUpdate",
@@ -1141,7 +1149,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 120,
+                            permissionID = 121,
                             code = "user.admin_get_all",
                             permissionDescription = "user.admin_get_all",
                             permissionName = "UserAdminGetAll",
@@ -1149,7 +1157,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 121,
+                            permissionID = 122,
                             code = "user.admin_get_by_id",
                             permissionDescription = "user.admin_get_by_id",
                             permissionName = "UserAdminGetById",
@@ -1157,7 +1165,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 122,
+                            permissionID = 123,
                             code = "user.admin_get_slim_by_id",
                             permissionDescription = "user.admin_get_slim_by_id",
                             permissionName = "UserAdminGetSlimById",
@@ -1165,7 +1173,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 123,
+                            permissionID = 124,
                             code = "user.delete",
                             permissionDescription = "user.delete",
                             permissionName = "UserDelete",
@@ -1173,7 +1181,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 124,
+                            permissionID = 125,
                             code = "user.get_all",
                             permissionDescription = "user.get_all",
                             permissionName = "UserGetAll",
@@ -1181,7 +1189,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 125,
+                            permissionID = 126,
                             code = "user.get_all_slim",
                             permissionDescription = "user.get_all_slim",
                             permissionName = "UserGetAllSlim",
@@ -1189,7 +1197,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 126,
+                            permissionID = 127,
                             code = "user.get_by_department_id",
                             permissionDescription = "user.get_by_department_id",
                             permissionName = "UserGetByDepartmentId",
@@ -1197,7 +1205,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 127,
+                            permissionID = 128,
                             code = "user.get_me",
                             permissionDescription = "user.get_me",
                             permissionName = "UserGetMe",
@@ -1205,7 +1213,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 128,
+                            permissionID = 129,
                             code = "user.get_slim_by_id",
                             permissionDescription = "user.get_slim_by_id",
                             permissionName = "UserGetSlimById",
@@ -1213,7 +1221,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 129,
+                            permissionID = 130,
                             code = "user_role.admin_assign",
                             permissionDescription = "user_role.admin_assign",
                             permissionName = "UserRoleAdminAssign",
@@ -1221,7 +1229,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 130,
+                            permissionID = 131,
                             code = "user_role.assign",
                             permissionDescription = "user_role.assign",
                             permissionName = "UserRoleAssign",
@@ -1229,7 +1237,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 131,
+                            permissionID = 132,
                             code = "user_session.get_all",
                             permissionDescription = "user_session.get_all",
                             permissionName = "UserSessionGetAll",
@@ -1237,7 +1245,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 132,
+                            permissionID = 133,
                             code = "user_session.get_by_session_id",
                             permissionDescription = "user_session.get_by_session_id",
                             permissionName = "UserSessionGetBySessionId",
@@ -1245,7 +1253,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 133,
+                            permissionID = 134,
                             code = "user_session.get_by_user_id",
                             permissionDescription = "user_session.get_by_user_id",
                             permissionName = "UserSessionGetByUserId",
@@ -1253,7 +1261,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 134,
+                            permissionID = 135,
                             code = "user.update_profile",
                             permissionDescription = "user.update_profile",
                             permissionName = "UserUpdateProfile",
@@ -1261,7 +1269,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 135,
+                            permissionID = 136,
                             code = "user.update_username",
                             permissionDescription = "user.update_username",
                             permissionName = "UserUpdateUsername",
@@ -2210,6 +2218,12 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
+                            rolePermissionID = 10136,
+                            permissionID = 136,
+                            roleID = 1
+                        },
+                        new
+                        {
                             rolePermissionID = 20016,
                             permissionID = 16,
                             roleID = 2
@@ -2360,14 +2374,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20127,
-                            permissionID = 127,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20134,
-                            permissionID = 134,
+                            rolePermissionID = 20128,
+                            permissionID = 128,
                             roleID = 2
                         },
                         new
@@ -2378,8 +2386,14 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20124,
-                            permissionID = 124,
+                            rolePermissionID = 20136,
+                            permissionID = 136,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20036,
+                            permissionID = 36,
                             roleID = 2
                         },
                         new
@@ -2390,14 +2404,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20128,
-                            permissionID = 128,
+                            rolePermissionID = 20126,
+                            permissionID = 126,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20126,
-                            permissionID = 126,
+                            rolePermissionID = 20129,
+                            permissionID = 129,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20127,
+                            permissionID = 127,
                             roleID = 2
                         },
                         new
@@ -2482,6 +2502,12 @@ namespace TH.WebAPI.Migrations
                         {
                             rolePermissionID = 20113,
                             permissionID = 113,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20114,
+                            permissionID = 114,
                             roleID = 2
                         },
                         new
@@ -2654,8 +2680,14 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20116,
-                            permissionID = 116,
+                            rolePermissionID = 20117,
+                            permissionID = 117,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20119,
+                            permissionID = 119,
                             roleID = 2
                         },
                         new
@@ -2666,20 +2698,14 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20117,
-                            permissionID = 117,
+                            rolePermissionID = 20115,
+                            permissionID = 115,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20114,
-                            permissionID = 114,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20119,
-                            permissionID = 119,
+                            rolePermissionID = 20120,
+                            permissionID = 120,
                             roleID = 2
                         },
                         new
@@ -2716,6 +2742,12 @@ namespace TH.WebAPI.Migrations
                         {
                             rolePermissionID = 20053,
                             permissionID = 53,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20050,
+                            permissionID = 50,
                             roleID = 2
                         },
                         new
@@ -2870,20 +2902,26 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 40127,
-                            permissionID = 127,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40134,
-                            permissionID = 134,
+                            rolePermissionID = 40128,
+                            permissionID = 128,
                             roleID = 4
                         },
                         new
                         {
                             rolePermissionID = 40135,
                             permissionID = 135,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40136,
+                            permissionID = 136,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40036,
+                            permissionID = 36,
                             roleID = 4
                         },
                         new
@@ -3188,20 +3226,26 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 50127,
-                            permissionID = 127,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50134,
-                            permissionID = 134,
+                            rolePermissionID = 50128,
+                            permissionID = 128,
                             roleID = 5
                         },
                         new
                         {
                             rolePermissionID = 50135,
                             permissionID = 135,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50136,
+                            permissionID = 136,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50036,
+                            permissionID = 36,
                             roleID = 5
                         },
                         new
@@ -3518,14 +3562,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 60127,
-                            permissionID = 127,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60134,
-                            permissionID = 134,
+                            rolePermissionID = 60128,
+                            permissionID = 128,
                             roleID = 6
                         },
                         new
@@ -3536,8 +3574,14 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 60124,
-                            permissionID = 124,
+                            rolePermissionID = 60136,
+                            permissionID = 136,
+                            roleID = 6
+                        },
+                        new
+                        {
+                            rolePermissionID = 60036,
+                            permissionID = 36,
                             roleID = 6
                         },
                         new
@@ -3548,14 +3592,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 60128,
-                            permissionID = 128,
+                            rolePermissionID = 60126,
+                            permissionID = 126,
                             roleID = 6
                         },
                         new
                         {
-                            rolePermissionID = 60126,
-                            permissionID = 126,
+                            rolePermissionID = 60129,
+                            permissionID = 129,
+                            roleID = 6
+                        },
+                        new
+                        {
+                            rolePermissionID = 60127,
+                            permissionID = 127,
                             roleID = 6
                         },
                         new
@@ -3710,20 +3760,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 60116,
-                            permissionID = 116,
+                            rolePermissionID = 60117,
+                            permissionID = 117,
+                            roleID = 6
+                        },
+                        new
+                        {
+                            rolePermissionID = 60119,
+                            permissionID = 119,
                             roleID = 6
                         },
                         new
                         {
                             rolePermissionID = 60118,
                             permissionID = 118,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60117,
-                            permissionID = 117,
                             roleID = 6
                         },
                         new
@@ -3764,26 +3814,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 60036,
-                            permissionID = 36,
+                            rolePermissionID = 60132,
+                            permissionID = 132,
                             roleID = 6
                         },
                         new
                         {
-                            rolePermissionID = 60131,
-                            permissionID = 131,
+                            rolePermissionID = 60134,
+                            permissionID = 134,
                             roleID = 6
                         },
                         new
                         {
                             rolePermissionID = 60133,
                             permissionID = 133,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60132,
-                            permissionID = 132,
                             roleID = 6
                         },
                         new
@@ -3956,14 +4000,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 70127,
-                            permissionID = 127,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70134,
-                            permissionID = 134,
+                            rolePermissionID = 70128,
+                            permissionID = 128,
                             roleID = 7
                         },
                         new
@@ -3974,8 +4012,14 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 70124,
-                            permissionID = 124,
+                            rolePermissionID = 70136,
+                            permissionID = 136,
+                            roleID = 7
+                        },
+                        new
+                        {
+                            rolePermissionID = 70036,
+                            permissionID = 36,
                             roleID = 7
                         },
                         new
@@ -3986,14 +4030,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 70128,
-                            permissionID = 128,
+                            rolePermissionID = 70126,
+                            permissionID = 126,
                             roleID = 7
                         },
                         new
                         {
-                            rolePermissionID = 70126,
-                            permissionID = 126,
+                            rolePermissionID = 70129,
+                            permissionID = 129,
+                            roleID = 7
+                        },
+                        new
+                        {
+                            rolePermissionID = 70127,
+                            permissionID = 127,
                             roleID = 7
                         },
                         new
@@ -4148,20 +4198,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 70116,
-                            permissionID = 116,
+                            rolePermissionID = 70117,
+                            permissionID = 117,
+                            roleID = 7
+                        },
+                        new
+                        {
+                            rolePermissionID = 70119,
+                            permissionID = 119,
                             roleID = 7
                         },
                         new
                         {
                             rolePermissionID = 70118,
                             permissionID = 118,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70117,
-                            permissionID = 117,
                             roleID = 7
                         },
                         new
@@ -4202,26 +4252,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 70036,
-                            permissionID = 36,
+                            rolePermissionID = 70132,
+                            permissionID = 132,
                             roleID = 7
                         },
                         new
                         {
-                            rolePermissionID = 70131,
-                            permissionID = 131,
+                            rolePermissionID = 70134,
+                            permissionID = 134,
                             roleID = 7
                         },
                         new
                         {
                             rolePermissionID = 70133,
                             permissionID = 133,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70132,
-                            permissionID = 132,
                             roleID = 7
                         },
                         new
@@ -4394,14 +4438,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 80127,
-                            permissionID = 127,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80134,
-                            permissionID = 134,
+                            rolePermissionID = 80128,
+                            permissionID = 128,
                             roleID = 8
                         },
                         new
@@ -4412,20 +4450,32 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 80125,
-                            permissionID = 125,
+                            rolePermissionID = 80136,
+                            permissionID = 136,
                             roleID = 8
                         },
                         new
                         {
-                            rolePermissionID = 80128,
-                            permissionID = 128,
+                            rolePermissionID = 80036,
+                            permissionID = 36,
                             roleID = 8
                         },
                         new
                         {
                             rolePermissionID = 80126,
                             permissionID = 126,
+                            roleID = 8
+                        },
+                        new
+                        {
+                            rolePermissionID = 80129,
+                            permissionID = 129,
+                            roleID = 8
+                        },
+                        new
+                        {
+                            rolePermissionID = 80127,
+                            permissionID = 127,
                             roleID = 8
                         },
                         new
@@ -4526,20 +4576,20 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 80116,
-                            permissionID = 116,
+                            rolePermissionID = 80117,
+                            permissionID = 117,
+                            roleID = 8
+                        },
+                        new
+                        {
+                            rolePermissionID = 80119,
+                            permissionID = 119,
                             roleID = 8
                         },
                         new
                         {
                             rolePermissionID = 80118,
                             permissionID = 118,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80117,
-                            permissionID = 117,
                             roleID = 8
                         },
                         new
@@ -4558,6 +4608,18 @@ namespace TH.WebAPI.Migrations
                         {
                             rolePermissionID = 80060,
                             permissionID = 60,
+                            roleID = 8
+                        },
+                        new
+                        {
+                            rolePermissionID = 80103,
+                            permissionID = 103,
+                            roleID = 8
+                        },
+                        new
+                        {
+                            rolePermissionID = 80113,
+                            permissionID = 113,
                             roleID = 8
                         },
                         new
@@ -4712,20 +4774,26 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 90127,
-                            permissionID = 127,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90134,
-                            permissionID = 134,
+                            rolePermissionID = 90128,
+                            permissionID = 128,
                             roleID = 9
                         },
                         new
                         {
                             rolePermissionID = 90135,
                             permissionID = 135,
+                            roleID = 9
+                        },
+                        new
+                        {
+                            rolePermissionID = 90136,
+                            permissionID = 136,
+                            roleID = 9
+                        },
+                        new
+                        {
+                            rolePermissionID = 90036,
+                            permissionID = 36,
                             roleID = 9
                         },
                         new
@@ -4738,6 +4806,18 @@ namespace TH.WebAPI.Migrations
                         {
                             rolePermissionID = 90111,
                             permissionID = 111,
+                            roleID = 9
+                        },
+                        new
+                        {
+                            rolePermissionID = 90103,
+                            permissionID = 103,
+                            roleID = 9
+                        },
+                        new
+                        {
+                            rolePermissionID = 90113,
+                            permissionID = 113,
                             roleID = 9
                         },
                         new
@@ -4958,20 +5038,26 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 100127,
-                            permissionID = 127,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100134,
-                            permissionID = 134,
+                            rolePermissionID = 100128,
+                            permissionID = 128,
                             roleID = 10
                         },
                         new
                         {
                             rolePermissionID = 100135,
                             permissionID = 135,
+                            roleID = 10
+                        },
+                        new
+                        {
+                            rolePermissionID = 100136,
+                            permissionID = 136,
+                            roleID = 10
+                        },
+                        new
+                        {
+                            rolePermissionID = 100036,
+                            permissionID = 36,
                             roleID = 10
                         },
                         new
@@ -4984,6 +5070,18 @@ namespace TH.WebAPI.Migrations
                         {
                             rolePermissionID = 100111,
                             permissionID = 111,
+                            roleID = 10
+                        },
+                        new
+                        {
+                            rolePermissionID = 100103,
+                            permissionID = 103,
+                            roleID = 10
+                        },
+                        new
+                        {
+                            rolePermissionID = 100113,
+                            permissionID = 113,
                             roleID = 10
                         },
                         new
@@ -5054,26 +5152,26 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 100124,
-                            permissionID = 124,
-                            roleID = 10
-                        },
-                        new
-                        {
                             rolePermissionID = 100125,
                             permissionID = 125,
                             roleID = 10
                         },
                         new
                         {
-                            rolePermissionID = 100128,
-                            permissionID = 128,
+                            rolePermissionID = 100126,
+                            permissionID = 126,
                             roleID = 10
                         },
                         new
                         {
-                            rolePermissionID = 100126,
-                            permissionID = 126,
+                            rolePermissionID = 100129,
+                            permissionID = 129,
+                            roleID = 10
+                        },
+                        new
+                        {
+                            rolePermissionID = 100127,
+                            permissionID = 127,
                             roleID = 10
                         },
                         new
@@ -5090,8 +5188,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 100133,
-                            permissionID = 133,
+                            rolePermissionID = 100134,
+                            permissionID = 134,
                             roleID = 10
                         });
                 });
