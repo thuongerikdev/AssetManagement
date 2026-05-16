@@ -151,7 +151,7 @@ export function Dashboard() {
     .sort((a, b) => b[1] - a[1])
     .map(([name, count], i) => ({ name, count, color: DEPT_COLORS[i % DEPT_COLORS.length] }));
 
-  const maxDeptCount = Math.max(...departmentRows.map(r => r.count), 1);
+
 
   // ── Asset Trend (last 6 months) ────────────────────────────────────────────
   const last6 = getLast6Months();
@@ -268,7 +268,7 @@ export function Dashboard() {
             {/* Rows */}
             <div className="space-y-3">
               {departmentRows.map((row) => {
-                const pct = (row.count / maxDeptCount) * 100;
+                const pct = totalAssets > 0 ? (row.count / totalAssets) * 100 : 0;
                 return (
                   <div key={row.name} className="flex items-center gap-3">
                     {/* Dot + label */}
