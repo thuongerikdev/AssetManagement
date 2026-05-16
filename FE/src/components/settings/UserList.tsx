@@ -229,7 +229,7 @@ export function UserList() {
             onClick={() => { setCreateForm(emptyForm); setIsCreateOpen(true); }}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium"
           >
-            <Plus className="w-5 h-5" /> Thêm User
+            <Plus className="w-5 h-5" /> Thêm người dùng
           </button>
         </div>
       </div>
