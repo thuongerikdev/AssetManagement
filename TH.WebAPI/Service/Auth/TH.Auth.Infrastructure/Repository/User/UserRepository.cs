@@ -516,7 +516,12 @@ namespace TH.Auth.Infrastructure.Repository.User
                         avatar = u.profile.avatar,
                         gender = u.profile.gender,
                         dateOfBirth = u.profile.dateOfBirth
-                    }
+                    },
+                     roles = u.userRoles!.Select(ur => new RoleSlimDto
+                     {
+                         roleID = ur.role.roleID,
+                         roleName = ur.role.roleName
+                     }).ToList()
                 })
                 .FirstOrDefaultAsync(ct);
             return user;
