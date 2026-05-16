@@ -96,13 +96,13 @@ export function AssetList() {
       phongBanId: undefined,
       nguoiDungId: undefined,
       trangThai: 0,
-      phuongThucThanhToan: undefined,   // <-- THÊM
+      phuongThucThanhToan: undefined,
 });
 
   const [usersInAddDept, setUsersInAddDept] = useState<any[]>([]);
   const [isLoadingAddUsers, setIsLoadingAddUsers] = useState(false);
 
-  // Logic tự động tạo Mã Tài Sản (mang từ form cũ sang)
+  // Logic tự động tạo Mã Tài Sản
   useEffect(() => {
     if (showAddModal && addFormData.danhMucId && categories.length > 0 && assets.length >= 0) {
       const category = categories.find((c: any) => c.id === addFormData.danhMucId);
@@ -217,13 +217,12 @@ export function AssetList() {
         toast.success('Thêm tài sản thành công!');
         setShowAddModal(false);
         refreshData();
-        // Reset form
-       setAddFormData({
+        setAddFormData({
           tenTaiSan: '', maTaiSan: '', danhMucId: undefined, nhaSanXuat: '', soSeri: '',
           moTa: '', ngayMua: new Date().toISOString().split('T')[0], nguyenGia: 0, giaTriConLai: 0,
           thoiGianKhauHao: 36, phuongPhapKhauHao: 0, maTaiKhoan: '', phongBanId: undefined,
           nguoiDungId: undefined, trangThai: 0,
-          phuongThucThanhToan: undefined,   // <-- THÊM
+          phuongThucThanhToan: undefined,
         });
       } else {
         toast.error(response.message || 'Có lỗi xảy ra khi thêm tài sản.');
@@ -343,7 +342,6 @@ export function AssetList() {
                 <th className="px-8 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Còn lại</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Trạng thái</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Thao tác</th>
-            
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -358,35 +356,23 @@ export function AssetList() {
 
                   return (
                     <tr key={asset.id} className="hover:bg-gray-50 transition-colors">
-                      
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{index + 1}</td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm font-medium text-blue-600">{asset.maTaiSan}</span></td>
                       <td className="px-6 py-4"><span className="text-sm text-gray-900">{asset.tenTaiSan}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getCatName(asset.danhMucId)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getDeptName(asset.phongBanId)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.nguyenGia)}</span></td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-600">
-                            {asset.phuongThucThanhToan !== undefined && asset.phuongThucThanhToan !== null
-                              ? PHUONG_THUC_THANH_TOAN_OPTIONS.find(o => o.value === asset.phuongThucThanhToan)?.label ?? '—'
-                              : '—'}
-                          </span>
-                        </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm font-medium text-gray-900">{formatCurrency(asset.giaTriConLai)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-center"><span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${currentStatus.color}`}>{currentStatus.label}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <div className="flex items-center justify-center gap-2">
-                          
                           {currentStatus.value === 0 && (
                             <button onClick={() => openAllocModal(asset, 'CapPhat')} className="p-1.5 text-green-600 hover:bg-green-100 rounded-md transition-colors" title="Cấp phát tài sản"><UserPlus className="w-4 h-4" /></button>
                           )}
-
                           {currentStatus.value === 2 && (
                             <button onClick={() => openAllocModal(asset, 'LuanChuyen')} className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-md transition-colors" title="Điều chuyển tài sản"><ArrowLeftRight className="w-4 h-4" /></button>
                           )}
-
                           <Link to={`/assets/${asset.id}`} className="p-1.5 text-gray-600 hover:bg-gray-200 rounded-md transition-colors" title="Chi tiết"><Eye className="w-4 h-4" /></Link>
-
                           {(currentStatus.value === 0 || currentStatus.value === 3) && (
                             <button onClick={() => asset.id && handleDelete(asset.id)} className="p-1.5 text-red-600 hover:bg-red-100 rounded-md transition-colors" title="Xóa tài sản vĩnh viễn">
                               <Trash2 className="w-4 h-4" />
@@ -394,7 +380,6 @@ export function AssetList() {
                           )}
                         </div>
                       </td>
-                      
                     </tr>
                   );
                 })
@@ -404,8 +389,8 @@ export function AssetList() {
         </div>
       </div>
 
-      {/* MODAL THÊM TÀI SẢN MỚI FULL THÔNG TIN */}
-{showAddModal && (
+      {/* MODAL THÊM TÀI SẢN MỚI */}
+      {showAddModal && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-white sticky top-0 z-10">
@@ -446,9 +431,7 @@ export function AssetList() {
                     />
                   </div>
                   <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Phương thức thanh toán
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Phương thức thanh toán</label>
                     <select
                       value={addFormData.phuongThucThanhToan ?? ''}
                       onChange={(e) =>
@@ -619,8 +602,8 @@ export function AssetList() {
                         setAddFormData({
                           ...addFormData, 
                           phongBanId: newDeptId,
-                          nguoiDungId: undefined, // Reset người dùng khi đổi phòng ban
-                          trangThai: 0 // Khi đổi/xóa phòng ban, do chưa có người dùng nên mặc định về 0
+                          nguoiDungId: undefined,
+                          trangThai: 0
                         });
                       }} 
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
@@ -641,7 +624,6 @@ export function AssetList() {
                         setAddFormData({
                           ...addFormData, 
                           nguoiDungId: newUserId,
-                          // Điều kiện: Bắt buộc có cả phòng ban và người dùng mới lên 1 (Chờ xác nhận), còn không thì 0 (Chờ cấp phát)
                           trangThai: (addFormData.phongBanId && newUserId) ? 1 : 0
                         });
                       }}
@@ -653,21 +635,11 @@ export function AssetList() {
                           ? '-- Chọn phòng ban trước --' 
                           : (usersInAddDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
                       </option>
-                      {usersInAddDept.map((user: any) => {
-                        const fullName = user.profile 
-                          ? ` ${user.profile.firstName} ${user.profile.lastName}`.trim() 
-                          : user.userName;
-                        
-                        // Lấy chức vụ: Thay 'chucVu' bằng trường lưu chức danh trong API của bạn nếu khác (vd: role, chucDanh...)
-                        const role = user.chucVu ? ` (${user.chucVu})` : ''; 
-
-                        return (
-                          <option key={user.userID} value={user.userID}>
-                            {/* Hiển thị: ID - Tên nhân viên (Chức vụ) */}
-                            {user.userID} - {fullName}{role}
-                          </option>
-                        );
-                      })}
+                      {usersInAddDept.map((user: any) => (
+                        <option key={user.userID} value={user.userID}>
+                          {user.userID} - {user.userName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   
@@ -676,7 +648,7 @@ export function AssetList() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái luồng cấp phát</label>
                       <select 
                         value={addFormData.trangThai ?? 0} 
-                        disabled // KHÓA SỬA TAY
+                        disabled
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 font-medium cursor-not-allowed focus:outline-none"
                       >
                         <option value={0}>Chờ cấp phát</option>
@@ -702,7 +674,7 @@ export function AssetList() {
         </div>
       )}
 
-      {/* MODAL CẤP PHÁT / LUÂN CHUYỂN BÊN NGOÀI BẢNG */}
+      {/* MODAL CẤP PHÁT / LUÂN CHUYỂN */}
       {showAllocModal && selectedAssetForModal && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg max-w-xl w-full overflow-hidden shadow-2xl flex flex-col">
