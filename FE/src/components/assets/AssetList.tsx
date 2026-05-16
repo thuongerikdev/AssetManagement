@@ -340,15 +340,16 @@ export function AssetList() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Phòng ban</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Nguyên giá</th>
                 <th className="px-8 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Còn lại</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Ngày cấp phát</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Trạng thái</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Thao tác</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoadingGlobal ? (
-                <tr><td colSpan={9} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
+                <tr><td colSpan={10} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : filteredAssets.length === 0 ? (
-                <tr><td colSpan={9} className="text-center py-6 text-gray-500">Không tìm thấy tài sản nào</td></tr>
+                <tr><td colSpan={10} className="text-center py-6 text-gray-500">Không tìm thấy tài sản nào</td></tr>
               ) : (
                 filteredAssets.map((asset, index) => {
                   const assetStatusStr = asset.trangThai?.toString() || '0';
@@ -363,6 +364,13 @@ export function AssetList() {
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getDeptName(asset.phongBanId)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.nguyenGia)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm font-medium text-gray-900">{formatCurrency(asset.giaTriConLai)}</span></td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span className="text-sm text-gray-700">
+                          {asset.ngayCapPhat
+                            ? new Date(asset.ngayCapPhat).toLocaleDateString('vi-VN')
+                            : <span className="text-gray-400">—</span>}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center"><span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${currentStatus.color}`}>{currentStatus.label}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <div className="flex items-center justify-center gap-2">
