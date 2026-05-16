@@ -12,8 +12,8 @@ export const PHUONG_THUC_THANH_TOAN_OPTIONS: {
 }[] = [
   { value: 0, label: 'Tiền mặt' },
   { value: 1, label: 'Chuyển khoản' },
-  { value: 2, label: 'Thẻ ngân hàng' },
-  { value: 3, label: 'Công nợ / Ghi nợ' },
+  // { value: 2, label: 'Thẻ ngân hàng' },
+  // { value: 3, label: 'Công nợ / Ghi nợ' },
 ];
 
 export interface TaiSan {
