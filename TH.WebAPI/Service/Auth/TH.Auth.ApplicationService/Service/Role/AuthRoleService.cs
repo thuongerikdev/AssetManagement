@@ -227,10 +227,10 @@ namespace TH.Auth.ApplicationService.Service.Role
             {
                 return ResponseConst.Error<bool>(404, "Role not found.");
             }
-            if (existingRole.scope != "user")
-            {
-                return ResponseConst.Error<bool>(400, "Access Denied: Cannot delete role outside 'user' scope.");
-            }
+            //if (existingRole.scope != "user")
+            //{
+            //    return ResponseConst.Error<bool>(400, "Access Denied: Cannot delete role outside 'user' scope.");
+            //}
             await _roleRepository.DeleteRoleAsync(roleID, ct);
             await _uow.SaveChangesAsync(ct);
             return ResponseConst.Success("Xoá vai trò thành công", true);

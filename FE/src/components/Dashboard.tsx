@@ -3,20 +3,27 @@ import {
   Package,
   DollarSign,
   TrendingDown,
-  Wrench,
   TrendingUp,
 } from 'lucide-react';
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
 import { useGlobalData } from '../context/GlobalContext';
 import { maintenanceApi, BaoTriTaiSan } from '../api/maintenanceApi';
 import { depreciationHistoryApi, LichSuKhauHao } from '../api/depreciationHistoryApi';
 import { liquidationApi, ThanhLyTaiSan } from '../api/liquidationApi';
-import { TaiSan } from '../api/assetApi';
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
+const DEPT_COLORS = [
+  '#3b82f6', // blue
+  '#6366f1', // indigo
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#06b6d4', // cyan
+  '#f97316', // orange
+];
 
 function getLast6Months(): { label: string; key: string }[] {
   const result = [];
@@ -126,7 +133,7 @@ export function Dashboard() {
     },
   ];
 
-  // ── Department Pie Chart ───────────────────────────────────────────────────
+  // ── Department Horizontal Bar ──────────────────────────────────────────────
   const deptNameMap = departments.reduce((m, d) => {
     m[String(d.id)] = d.tenPhongBan;
     return m;
@@ -140,9 +147,11 @@ export function Dashboard() {
     return m;
   }, {} as Record<string, number>);
 
-  const departmentChartData = Object.entries(deptCounts)
+  const departmentRows = Object.entries(deptCounts)
     .sort((a, b) => b[1] - a[1])
-    .map(([name, value], i) => ({ name, value, color: COLORS[i % COLORS.length] }));
+    .map(([name, count], i) => ({ name, count, color: DEPT_COLORS[i % DEPT_COLORS.length] }));
+
+  const maxDeptCount = Math.max(...departmentRows.map(r => r.count), 1);
 
   // ── Asset Trend (last 6 months) ────────────────────────────────────────────
   const last6 = getLast6Months();
@@ -161,29 +170,6 @@ export function Dashboard() {
     return { month: label, cost: Math.round(cost / 1_000_000) };
   });
 
-  // ── Upcoming Maintenance ───────────────────────────────────────────────────
-  const assetMap = assets.reduce((m, a) => {
-    if (a.id) m[a.id] = a;
-    return m;
-  }, {} as Record<number, TaiSan>);
-
-  const today = new Date().toISOString().slice(0, 10);
-  const upcomingMaintenanceData = maintenances
-    .filter(m => m.ngayThucHien && m.ngayThucHien >= today)
-    .sort((a, b) => (a.ngayThucHien || '').localeCompare(b.ngayThucHien || ''))
-    .slice(0, 5)
-    .map(m => {
-      const asset = assetMap[m.taiSanId];
-      const dept = asset?.phongBanId ? deptNameMap[String(asset.phongBanId)] : '';
-      return {
-        id: m.id,
-        asset: asset?.tenTaiSan || `Tài sản #${m.taiSanId}`,
-        code: asset?.maTaiSan || '',
-        date: m.ngayThucHien || '',
-        department: dept,
-      };
-    });
-
   // ── Loading skeleton ───────────────────────────────────────────────────────
   if (loading) {
     return (
@@ -200,6 +186,10 @@ export function Dashboard() {
               <div className="h-3 bg-gray-200 rounded w-1/3" />
             </div>
           ))}
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 h-64 animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
+          <div className="h-full bg-gray-100 rounded" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[...Array(2)].map((_, i) => (
@@ -259,40 +249,59 @@ export function Dashboard() {
         })}
       </div>
 
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Asset by Department */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Tài sản theo Phòng ban</h3>
-          {departmentChartData.length === 0 ? (
-            <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
-              Chưa có dữ liệu phân bổ phòng ban
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={departmentChartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    percent > 0.05 ? `${name}: ${(percent * 100).toFixed(0)}%` : ''
-                  }
-                  outerRadius={100}
-                  dataKey="value"
-                >
-                  {departmentChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value: number) => [`${value} tài sản`, 'Số lượng']} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </div>
+      {/* Department Stats — full width horizontal bar */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="font-semibold text-gray-900 mb-1">Tài sản theo Phòng ban</h3>
 
+        {departmentRows.length === 0 ? (
+          <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
+            Chưa có dữ liệu phân bổ phòng ban
+          </div>
+        ) : (
+          <>
+            {/* Total */}
+            <div className="mb-5">
+              <span className="text-4xl font-bold text-gray-900">{totalAssets}</span>
+              <span className="text-sm text-gray-400 ml-2">tổng tài sản</span>
+            </div>
+
+            {/* Rows */}
+            <div className="space-y-3">
+              {departmentRows.map((row) => {
+                const pct = (row.count / maxDeptCount) * 100;
+                return (
+                  <div key={row.name} className="flex items-center gap-3">
+                    {/* Dot + label */}
+                    <div className="flex items-center gap-2 w-48 shrink-0">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: row.color }}
+                      />
+                      <span className="text-sm text-gray-700 truncate">{row.name}</span>
+                    </div>
+
+                    {/* Bar */}
+                    <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${pct}%`, backgroundColor: row.color }}
+                      />
+                    </div>
+
+                    {/* Count */}
+                    <span className="text-sm font-semibold text-gray-800 w-8 text-right shrink-0">
+                      {row.count}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Charts Row — Asset Trend + Maintenance Cost */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Asset Trend */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="font-semibold text-gray-900 mb-4">
@@ -310,10 +319,7 @@ export function Dashboard() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
 
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Maintenance Cost */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Chi phí Bảo trì (triệu VNĐ)</h3>
@@ -322,9 +328,7 @@ export function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip
-                formatter={(value: number) => [`${value} triệu`, 'Chi phí']}
-              />
+              <Tooltip formatter={(value: number) => [`${value} triệu`, 'Chi phí']} />
               <Legend />
               <Line
                 type="monotone"
@@ -337,41 +341,6 @@ export function Dashboard() {
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-
-        {/* Upcoming Maintenance */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Wrench className="w-5 h-5 text-orange-500" />
-            Tài sản sắp Bảo trì
-          </h3>
-          {upcomingMaintenanceData.length === 0 ? (
-            <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
-              Không có lịch bảo trì sắp tới
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {upcomingMaintenanceData.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-gray-900 truncate">{item.asset}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {item.code}
-                      {item.department && ` • ${item.department}`}
-                    </p>
-                  </div>
-                  <div className="text-right ml-3 shrink-0">
-                    <p className="text-xs text-gray-600">
-                      {new Date(item.date).toLocaleDateString('vi-VN')}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -38,7 +38,8 @@
       "Bash(dir FE\\\\*.png)",
       "Bash(cd /tmp)",
       "Bash(docx2txt \"C:\\\\Users\\\\DELL\\\\Downloads\\\\TaiLieu_ThietKe_HeThong_TSCD_v3.docx\" tai_lieu.txt)",
-      "Bash(docx2txt \"C:\\\\Users\\\\DELL\\\\Downloads\\\\TaiLieu_ThietKe_HeThong_TSCD_v3.docx\")"
+      "Bash(docx2txt \"C:\\\\Users\\\\DELL\\\\Downloads\\\\TaiLieu_ThietKe_HeThong_TSCD_v3.docx\")",
+      "Bash(cat \"D:\\\\Học tập\\\\_____Đồ án tốt nghiệp_____\\\\datn\\\\app\\\\\\(dashboard\\)\\\\roles\\\\page.tsx\" > /tmp/roles_original.ts 2>&1 && echo \"File read successfully\")"
     ]
   }
 }
