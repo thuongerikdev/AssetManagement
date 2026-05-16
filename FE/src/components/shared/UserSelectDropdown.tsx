@@ -38,7 +38,7 @@ function getTruongPhongLabel(user: UserOption): string {
 function getFullName(user: UserOption): string {
   const p = user.profile;
   if (p?.lastName || p?.firstName) {
-    return `${p.lastName ?? ''} ${p.firstName ?? ''}`.trim();
+    return `${p.firstName ?? ''} ${p.lastName ?? ''} `.trim();
   }
   return user.userName;
 }
