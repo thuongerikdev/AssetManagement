@@ -2,13 +2,18 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   Users, Search, Trash2, ShieldCheck,
   XCircle, CheckCircle2, Loader2, Mail, RefreshCw,
-  Plus, UserCog, Save, X, Eye, EyeOff,
+  Plus, Edit2, UserCog, Save, X, Eye, EyeOff,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { authApi, CreateUserRequest } from '../../api/authApi';
 
 let cachedUsers: any[] | null = null;
 let cachedRoles: any[] | null = null;
+
+const SCOPE_OPTIONS = [
+  { value: 'staff', label: 'Staff (Nhân viên)' },
+  { value: 'user', label: 'User (Người dùng)' },
+];
 
 const GENDER_OPTIONS = [
   { value: '', label: '-- Không chọn --' },
@@ -123,7 +128,6 @@ export function UserList() {
     try {
       const payload: CreateUserRequest = {
         ...createForm,
-        scope: 'staff', // luôn gửi staff
         roleIds: createForm.roleIds?.length ? createForm.roleIds : undefined,
         gender: createForm.gender || undefined,
         firstName: createForm.firstName || undefined,
@@ -145,12 +149,18 @@ export function UserList() {
     }
   };
 
+  // ✅ LOGIC MỞ MODAL GÁN ROLE TỰ ĐỘNG MAP ID CŨ
   const openAssignModal = (user: any) => {
     setAssignUser(user);
+    
+    // 1. Đưa tất cả tên role user đang có về chữ thường (lowercase)
     const currentRoleNames: string[] = (user.roles || []).map((r: string) => r.toLowerCase());
+    
+    // 2. Đối chiếu và lấy ID (bắt cả roleID, roleId hoặc id)
     const matchedRoleIds = roles
       .filter(r => currentRoleNames.includes((r.roleName || '').toLowerCase()))
-      .map(r => r.roleID ?? r.roleId ?? r.id);
+      .map(r => r.roleID ?? r.roleId ?? r.id); // 👈 Cực kỳ quan trọng
+      
     setSelectedRoleIds(matchedRoleIds);
     setIsAssignOpen(true);
   };
@@ -160,6 +170,7 @@ export function UserList() {
     if (!assignUser) return;
     setIsAssigning(true);
     try {
+      // ✅ GỌI ĐÚNG API CỦA UserRoleController (authApi.assignRolesToUser)
       const res = await authApi.assignRolesToUser({
         userId: assignUser.userID,
         roleIds: selectedRoleIds,
@@ -167,7 +178,7 @@ export function UserList() {
       if (res.errorCode === 200 || res.errorCode === 201) {
         toast.success('Phân quyền thành công!');
         setIsAssignOpen(false);
-        fetchUsers(true);
+        fetchUsers(true); // Tải lại danh sách user để hiện roles mới
       } else {
         toast.error(res.errorMessage || 'Phân quyền thất bại');
       }
@@ -282,6 +293,7 @@ export function UserList() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
+                      {/* ✅ ĐÃ FIX LỖI TYPE LUICDE (Error 2322) */}
                       {row.isEmailVerified
                         ? <span title="Đã xác thực"><CheckCircle2 className="w-5 h-5 text-green-500 mx-auto" /></span>
                         : <span title="Chưa xác thực"><XCircle className="w-5 h-5 text-red-500 mx-auto" /></span>}
@@ -344,6 +356,7 @@ export function UserList() {
       {isCreateOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-gray-200">
+            {/* Header */}
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-600" /> Tạo Tài khoản Mới
@@ -427,16 +440,27 @@ export function UserList() {
                 </div>
               </div>
 
-              {/* Giới tính — full width vì đã bỏ Scope */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Giới tính</label>
-                <select
-                  value={createForm.gender}
-                  onChange={e => setCreateForm(p => ({ ...p, gender: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white"
-                >
-                  {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Giới tính</label>
+                  <select
+                    value={createForm.gender}
+                    onChange={e => setCreateForm(p => ({ ...p, gender: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white"
+                  >
+                    {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Phạm vi (Scope)</label>
+                  <select
+                    value={createForm.scope}
+                    onChange={e => setCreateForm(p => ({ ...p, scope: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white"
+                  >
+                    {SCOPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
               </div>
 
               {/* Gán Role ngay khi tạo */}
@@ -519,10 +543,11 @@ export function UserList() {
               {roles.length === 0 ? (
                 <p className="text-sm text-gray-400 italic">Không có vai trò nào trong hệ thống.</p>
               ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+               <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                   {roles.map(r => {
-                    const rId = r.roleID ?? r.roleId ?? r.id;
+                    const rId = r.roleID ?? r.roleId ?? r.id; // Lấy ID an toàn
                     const isChecked = selectedRoleIds.includes(rId);
+
                     return (
                       <label key={rId}
                         className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-all ${
@@ -534,7 +559,7 @@ export function UserList() {
                         <input
                           type="checkbox"
                           checked={isChecked}
-                          onChange={() => toggleRoleId(rId)}
+                          onChange={() => toggleRoleId(rId)} // Truyền đúng ID
                           className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
                         />
                         <div className="flex-1 min-w-0">
