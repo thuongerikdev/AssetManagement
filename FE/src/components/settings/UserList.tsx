@@ -297,17 +297,23 @@ export function UserList() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
-                        {row.roles?.slice(0, 2).map((role: string, idx: number) => (
-                          <span key={idx} className={`px-2 py-1 text-xs font-medium rounded border ${
-                            role.toLowerCase().includes('admin')
-                              ? 'bg-red-50 text-red-700 border-red-200'
-                              : 'bg-blue-50 text-blue-700 border-blue-200'
-                          }`}>
-                            {role}
-                          </span>
-                        ))}
+                        {row.roles?.slice(0, 2).map((role: any, idx: number) => {
+                          const rName = typeof role === 'string' ? role : (role.roleName || role.name || '');
+                          return (
+                            <span key={idx} className={`px-2 py-1 text-xs font-medium rounded border ${
+                              rName.toLowerCase().includes('admin')
+                                ? 'bg-red-50 text-red-700 border-red-200'
+                                : 'bg-blue-50 text-blue-700 border-blue-200'
+                            }`}>
+                              {rName}
+                            </span>
+                          );
+                        })}
                         {row.roles?.length > 2 && (
-                          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-200" title={row.roles.slice(2).join(', ')}>
+                          <span
+                            className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-200"
+                            title={row.roles.slice(2).map((r: any) => typeof r === 'string' ? r : r.roleName).join(', ')}
+                          >
                             +{row.roles.length - 2}
                           </span>
                         )}
