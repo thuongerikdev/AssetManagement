@@ -48,7 +48,7 @@ export const authApi = {
   },
 
   // --- USERS ---
-  getAllUsers: () => apiClient.get('/user/getAllUsers'),
+  getAllUsers: () => apiClient.get('/user/admin/getAllUsers'),
   getUserById: (id: number) => apiClient.get(`/user/admin/getUserById?userId=${id}`),
   deleteUser: (id: number) => apiClient.delete(`/user/deleteUser?userId=${id}`),
   createUser: (data: CreateUserRequest) => apiClient.post('/Register/createUser', data),
