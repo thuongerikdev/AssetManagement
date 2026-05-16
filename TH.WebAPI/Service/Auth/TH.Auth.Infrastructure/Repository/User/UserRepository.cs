@@ -537,6 +537,7 @@ namespace TH.Auth.Infrastructure.Repository.User
                     email = u.email,
                     status = u.status,
                     isEmailVerified = u.isEmailVerified,
+                    departmentID = u.departmentID,
                     profile = u.profile == null ? null : new ProfileResponseDto
                     {
                         firstName = u.profile.firstName,
