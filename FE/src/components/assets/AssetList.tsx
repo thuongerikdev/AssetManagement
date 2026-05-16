@@ -655,7 +655,7 @@ export function AssetList() {
                       </option>
                       {usersInAddDept.map((user: any) => {
                         const fullName = user.profile 
-                          ? `${user.profile.lastName} ${user.profile.firstName}`.trim() 
+                          ? ` ${user.profile.firstName} ${user.profile.lastName}`.trim() 
                           : user.userName;
                         
                         // Lấy chức vụ: Thay 'chucVu' bằng trường lưu chức danh trong API của bạn nếu khác (vd: role, chucDanh...)
