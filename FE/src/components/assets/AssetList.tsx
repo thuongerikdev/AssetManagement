@@ -622,33 +622,21 @@ export function AssetList() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Nhân viên sử dụng {isLoadingAddUsers && <span className="text-blue-500 text-xs ml-1">(Đang tải...)</span>}
-                    </label>
-                    <select
-                      value={addFormData.nguoiDungId || ''}
-                      onChange={(e) => {
-                        const newUserId = e.target.value ? Number(e.target.value) : undefined;
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nhân viên sử dụng</label>
+                    <UserSelectDropdown
+                      users={usersInAddDept}
+                      value={addFormData.nguoiDungId}
+                      onChange={(id) => {
                         setAddFormData({
-                          ...addFormData, 
-                          nguoiDungId: newUserId,
-                          trangThai: (addFormData.phongBanId && newUserId) ? 1 : 0
+                          ...addFormData,
+                          nguoiDungId: id,
+                          trangThai: (addFormData.phongBanId && id) ? 1 : 0,
                         });
                       }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
-                      disabled={!addFormData.phongBanId || usersInAddDept.length === 0}
-                    >
-                      <option value="">
-                        {!addFormData.phongBanId 
-                          ? '-- Chọn phòng ban trước --' 
-                          : (usersInAddDept.length === 0 ? '-- P.Ban này chưa có NV --' : '-- Chọn nhân viên --')}
-                      </option>
-                      {usersInAddDept.map((user: any) => (
-                        <option key={user.userID} value={user.userID}>
-                          {user.userID} - {user.userName}
-                        </option>
-                      ))}
-                    </select>
+                      disabled={!addFormData.phongBanId}
+                      isLoading={isLoadingAddUsers}
+                      noDeptSelected={!addFormData.phongBanId}
+                    />
                   </div>
                   
                   <div className="md:col-span-2 p-3 bg-white border border-gray-200 rounded-lg flex items-center">
