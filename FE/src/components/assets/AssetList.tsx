@@ -338,6 +338,7 @@ export function AssetList() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tên tài sản</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Danh mục</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Phòng ban</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nhân viên</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Nguyên giá</th>
                 <th className="px-8 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Còn lại</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider whitespace-nowrap min-w-[130px]">Ngày sử dụng</th>
@@ -347,9 +348,9 @@ export function AssetList() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoadingGlobal ? (
-                <tr><td colSpan={10} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
+                <tr><td colSpan={11} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : filteredAssets.length === 0 ? (
-                <tr><td colSpan={10} className="text-center py-6 text-gray-500">Không tìm thấy tài sản nào</td></tr>
+                <tr><td colSpan={11} className="text-center py-6 text-gray-500">Không tìm thấy tài sản nào</td></tr>
               ) : (
                 filteredAssets.map((asset, index) => {
                   const assetStatusStr = asset.trangThai?.toString() || '0';
@@ -362,6 +363,7 @@ export function AssetList() {
                       <td className="px-6 py-4"><span className="text-sm text-gray-900">{asset.tenTaiSan}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getCatName(asset.danhMucId)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getDeptName(asset.phongBanId)}</span></td>
+                      <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{asset.nguoiDungId ? 'Có người dùng' : 'Chưa cấp phát'}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.nguyenGia)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm font-medium text-gray-900">{formatCurrency(asset.giaTriConLai)}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
