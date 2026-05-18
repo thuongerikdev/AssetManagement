@@ -204,7 +204,8 @@ namespace TH.Asset.ApplicationService.Service
                         phatSinhNo = no,
                         phatSinhCo = co,
                         soDuLuyKe = runningBalance,
-                        loaiChungTu = e.LoaiChungTu?.ToString()
+                        loaiChungTu = e.LoaiChungTu?.ToString(),
+                        taiKhoanDoiUng = IsMatchTK(e.TaiKhoanNo) ? e.TaiKhoanCo : e.TaiKhoanNo
                     });
                 }
 

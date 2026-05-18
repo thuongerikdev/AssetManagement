@@ -9,6 +9,7 @@ import { authApi, CreateUserRequest } from '../../api/authApi';
 
 let cachedUsers: any[] | null = null;
 let cachedRoles: any[] | null = null;
+let cachedDepartments: any[] | null = null;
 
 const GENDER_OPTIONS = [
   { value: '', label: '-- Không chọn --' },
@@ -24,6 +25,7 @@ const emptyForm: CreateUserRequest = {
   autoVerifyEmail: true,
   scope: 'staff',
   roleIds: [],
+  departmentID: '',
   firstName: '',
   lastName: '',
   gender: '',
@@ -32,8 +34,10 @@ const emptyForm: CreateUserRequest = {
 export function UserList() {
   const [users, setUsers] = useState<any[]>(cachedUsers || []);
   const [roles, setRoles] = useState<any[]>(cachedRoles || []);
+  const [departments, setDepartments] = useState<any[]>(cachedDepartments || []);
   const [loading, setLoading] = useState(!cachedUsers);
   const [searchText, setSearchText] = useState('');
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
 
   // Modal: tạo user
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -82,20 +86,41 @@ export function UserList() {
     }
   };
 
+  const fetchDepartments = async () => {
+    if (cachedDepartments) { setDepartments(cachedDepartments); return; }
+    try {
+      const res = await authApi.getAllDepartments();
+      if (res.errorCode === 200 && res.data) {
+        cachedDepartments = res.data;
+        setDepartments(res.data);
+      }
+    } catch {
+      toast.error('Lỗi khi tải danh sách Phòng ban');
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
     fetchRoles();
+    fetchDepartments();
   }, []);
 
   // ── Search filter ────────────────────────────────────────────────────────────
   const filteredUsers = useMemo(() => {
-    const lower = searchText.toLowerCase();
-    return users.filter(u =>
-      u.fullName.toLowerCase().includes(lower) ||
-      u.email.toLowerCase().includes(lower) ||
-      u.userName.toLowerCase().includes(lower)
-    );
-  }, [users, searchText]);
+    return users.filter(u => {
+      // Lọc theo search text
+      const matchesSearch = searchText === '' ||
+        u.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchText.toLowerCase()) ||
+        u.userName.toLowerCase().includes(searchText.toLowerCase());
+
+      // Lọc theo phòng ban
+      const matchesDepartment = selectedDepartmentId === '' ||
+        u.departmentID === selectedDepartmentId;
+
+      return matchesSearch && matchesDepartment;
+    });
+  }, [users, searchText, selectedDepartmentId]);
 
   // ── Handlers ─────────────────────────────────────────────────────────────────
   const handleDelete = async (userId: number) => {
@@ -125,6 +150,7 @@ export function UserList() {
         ...createForm,
         scope: 'staff', // luôn gửi staff
         roleIds: createForm.roleIds?.length ? createForm.roleIds : undefined,
+        departmentID: createForm.departmentID || undefined,
         gender: createForm.gender || undefined,
         firstName: createForm.firstName || undefined,
         lastName: createForm.lastName || undefined,
@@ -226,8 +252,8 @@ export function UserList() {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
+      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-wrap items-center gap-4">
+        <div className="relative flex-1 min-w-64 max-w-md">
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
@@ -237,7 +263,31 @@ export function UserList() {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
-        {/* <span className="text-sm text-gray-500">{filteredUsers.length} người dùng</span> */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500 whitespace-nowrap">Phòng ban:</span>
+          <select
+            value={selectedDepartmentId}
+            onChange={e => setSelectedDepartmentId(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white min-w-48"
+          >
+            <option value="">-- Tất cả --</option>
+            {departments.map(dept => (
+              <option key={dept.id} value={String(dept.id)}>
+                {dept.maPhongBan} - {dept.tenPhongBan}
+              </option>
+            ))}
+          </select>
+          {selectedDepartmentId && (
+            <button
+              onClick={() => setSelectedDepartmentId('')}
+              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
+              title="Xóa bộ lọc"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <span className="text-sm text-gray-500">{filteredUsers.length} người dùng</span>
       </div>
 
       {/* Table */}
@@ -251,6 +301,7 @@ export function UserList() {
                 <th className="px-4 py-3">Tài khoản / Email</th>
                 <th className="px-4 py-3 text-center">Xác thực</th>
                 <th className="px-4 py-3 text-center">Trạng thái</th>
+                <th className="px-4 py-3">Phòng ban</th>
                 <th className="px-4 py-3">Vai trò</th>
                 <th className="px-4 py-3 text-center w-32">Hành động</th>
               </tr>
@@ -258,14 +309,14 @@ export function UserList() {
             <tbody className="divide-y divide-gray-200">
               {loading && filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-gray-500">
+                  <td colSpan={8} className="px-4 py-10 text-center text-gray-500">
                     <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-indigo-600" />
                     Đang tải dữ liệu người dùng...
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500 italic">
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500 italic">
                     Không tìm thấy người dùng nào.
                   </td>
                 </tr>
@@ -294,6 +345,23 @@ export function UserList() {
                       }`}>
                         {row.status}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {row.departmentID ? (
+                        (() => {
+                          const dept = departments.find(d => String(d.id) === String(row.departmentID));
+                          return dept ? (
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium">{dept.maPhongBan}</span>
+                              {dept.tenPhongBan && <span className="text-gray-500 ml-2">- {dept.tenPhongBan}</span>}
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400 italic">Không tìm thấy</span>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-sm text-gray-400 italic">Chưa thuộc phòng ban</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -469,6 +537,25 @@ export function UserList() {
                   ))}
                 </div>
               )}
+
+              {/* Chọn Phòng ban */}
+              <div className="pt-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Phòng ban (tùy chọn)
+                </label>
+                <select
+                  value={createForm.departmentID || ''}
+                  onChange={e => setCreateForm(p => ({ ...p, departmentID: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white"
+                >
+                  <option value="">-- Không thuộc phòng ban nào --</option>
+                  {departments.map(dept => (
+                    <option key={dept.id} value={String(dept.id)}>
+                      {dept.maPhongBan} - {dept.tenPhongBan}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <div className="flex items-center gap-2 pt-2">
                 <input

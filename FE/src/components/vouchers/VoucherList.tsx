@@ -51,8 +51,7 @@ let cachedVouchers: ChungTu[] | null = null;
 export function VoucherList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  
+
   // State quản lý Chứng từ
   const [vouchers, setVouchers] = useState<ChungTu[]>(cachedVouchers || []);
   const [isLoading, setIsLoading] = useState(!cachedVouchers);
@@ -105,16 +104,13 @@ export function VoucherList() {
     return vouchers.filter(voucher => {
       const searchStr = `${voucher.maChungTu} ${voucher.moTa}`.toLowerCase();
       const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
-      
-      const standardType = getStandardType(voucher.loaiChungTu);
-      const standardStatus = getStandardStatus(voucher.trangThai);
 
+      const standardType = getStandardType(voucher.loaiChungTu);
       const matchesType = filterType === 'all' || standardType === filterType;
-      const matchesStatus = filterStatus === 'all' || standardStatus === filterStatus;
-      
-      return matchesSearch && matchesType && matchesStatus;
+
+      return matchesSearch && matchesType;
     });
-  }, [vouchers, searchTerm, filterType, filterStatus]);
+  }, [vouchers, searchTerm, filterType]);
 
   // ==========================================
   // 5. USE_MEMO CHO THỐNG KÊ (Đếm số lượng tức thì)
@@ -227,20 +223,12 @@ export function VoucherList() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="flex gap-2">
+          <div>
             <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium text-gray-700">
               <option value="all">Tất cả loại nghiệp vụ</option>
               <option value="0">Ghi tăng TSCĐ</option>
               <option value="1">Khấu hao TSCĐ</option>
-              {/* <option value="2">Bảo trì TSCĐ</option> */}
               <option value="3">Thanh lý TSCĐ</option>
-              {/* <option value="4">Điều chuyển</option> */}
-            </select>
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium text-gray-700">
-              <option value="all">Tất cả trạng thái</option>
-              <option value="nhap">Bản nháp</option>
-              <option value="hoan_thanh">Đã ghi sổ</option>
-              <option value="da_khoa">Đã khóa</option>
             </select>
           </div>
         </div>

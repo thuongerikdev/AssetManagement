@@ -429,6 +429,7 @@ namespace TH.Asset.Dtos
         public decimal phatSinhCo { get; set; }
         public decimal soDuLuyKe { get; set; }
         public string? loaiChungTu { get; set; }
+        public string? taiKhoanDoiUng { get; set; }
     }
 
     // ==========================================

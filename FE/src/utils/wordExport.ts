@@ -506,35 +506,30 @@ export const exportSoCaiWord = async (
           rows: [
             new TableRow({
               children: [
-                new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày, tháng\nghi sổ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
-                new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Chứng từ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
-                new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Diễn giải", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
-                new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nhật ký chung", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
-                new TableCell({ rowSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số hiệu TK\nđối ứng", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
-                new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số tiền", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ rowSpan: 3, width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày, tháng\nghi sổ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ columnSpan: 2, rowSpan: 2, width: { size: 20, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Chứng từ", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ rowSpan: 3, width: { size: 25, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Diễn giải", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ rowSpan: 2, width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số hiệu TK\nđối ứng", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
+                new TableCell({ columnSpan: 2, rowSpan: 2, width: { size: 25, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số tiền", bold: true })] })], verticalAlign: VerticalAlign.CENTER }),
               ],
             }),
             new TableRow({
               children: [
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số\nhiệu", bold: true })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày,\ntháng", bold: true })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Trang\nsổ", bold: true })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "STT\ndòng", bold: true })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nợ", bold: true })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Có", bold: true })] })] }),
+                new TableCell({ width: { size: 10, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số\nhiệu", bold: true })] })] }),
+                new TableCell({ width: { size: 10, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ngày,\ntháng", bold: true })] })] }),
+                new TableCell({ width: { size: 12.5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nợ", bold: true })] })] }),
+                new TableCell({ width: { size: 12.5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Có", bold: true })] })] }),
               ],
             }),
             new TableRow({
               children: [
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "A" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "B" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "C" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "D" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "E" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "G" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "H" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "1" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: "2" })] }),
+                new TableCell({ width: { size: 10, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "A", bold: true })] })] }),
+                new TableCell({ width: { size: 10, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "B", bold: true })] })] }),
+                new TableCell({ width: { size: 10, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "C", bold: true })] })] }),
+                new TableCell({ width: { size: 12.5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "D", bold: true })] })] }),
+                new TableCell({ width: { size: 12.5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "E", bold: true })] })] }),
+                new TableCell({ width: { size: 12.5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "F", bold: true })] })] }),
+                new TableCell({ width: { size: 12.5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "G", bold: true })] })] }),
               ],
             }),
 
@@ -542,8 +537,6 @@ export const exportSoCaiWord = async (
               children: [
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "- Số dư đầu kỳ", bold: true })] })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
@@ -556,11 +549,8 @@ export const exportSoCaiWord = async (
               children: [
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.ngayHachToan ? new Date(b.ngayHachToan).toLocaleDateString('vi-VN') : "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.maChungTu || "" })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.ngayHachToan ? new Date(b.ngayHachToan).toLocaleDateString('vi-VN') : "" })] }),
                 new TableCell({ children: [new Paragraph({ text: b.dienGiai || "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }), 
-                new TableCell({ children: [new Paragraph({ text: "" })] }), 
-                new TableCell({ children: [new Paragraph({ text: "" })] }), 
+                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, text: b.taiKhoanDoiUng || "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: b.phatSinhNo > 0 ? formatVND(b.phatSinhNo) : "" })] }),
                 new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, text: b.phatSinhCo > 0 ? formatVND(b.phatSinhCo) : "" })] }),
               ],
@@ -569,9 +559,6 @@ export const exportSoCaiWord = async (
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "- Cộng số phát sinh", bold: true })] })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
@@ -583,9 +570,6 @@ export const exportSoCaiWord = async (
             new TableRow({
               children: [
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ text: "" })] }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "- Số dư cuối kỳ", bold: true })] })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),
                 new TableCell({ children: [new Paragraph({ text: "" })] }),

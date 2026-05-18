@@ -42,6 +42,12 @@ export interface CreateUserRequest {
   dateOfBirth?: string;
 }
 
+export interface Department {
+  id: number;
+  maPhongBan: string;
+  tenPhongBan: string;
+}
+
 export const authApi = {
   login: async (credentials: { userName: string; password: string }) => {
     return await apiClient.post('/Login/userLogin', credentials);
@@ -82,4 +88,7 @@ export const authApi = {
   getMyDepartmentInfo: async () => {
     return await apiClient.get('/PhongBan/my-info');
   },
+
+  // --- DEPARTMENTS ---
+  getAllDepartments: () => apiClient.get('/PhongBan/get-all'),
 };

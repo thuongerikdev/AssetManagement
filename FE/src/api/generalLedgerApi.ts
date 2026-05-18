@@ -20,6 +20,7 @@ export interface SoCaiButToanResponse {
   phatSinhCo: number;
   soDuLuyKe: number;
   loaiChungTu?: string;
+  taiKhoanDoiUng?: string;
 }
 
 export interface SoCaiChiTietResponse {
