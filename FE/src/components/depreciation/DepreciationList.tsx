@@ -337,15 +337,16 @@ export function DepreciationList() {
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Nguyên giá</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">KH lũy kế</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase bg-blue-50">KH tháng này</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase bg-green-50">Giá trị còn lại</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isScreenLoading && tableAssets.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
+                <tr><td colSpan={8} className="text-center py-6 text-gray-500">Đang tải dữ liệu...</td></tr>
               ) : tableAssets.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-500">
-                    Không có tài sản nào cần khấu hao trong tháng {selectedMonth}. 
+                  <td colSpan={8} className="text-center py-6 text-gray-500">
+                    Không có tài sản nào cần khấu hao trong tháng {selectedMonth}.
                   </td>
                 </tr>
               ) : (
@@ -382,6 +383,11 @@ export function DepreciationList() {
                         {formatCurrency(asset.monthlyDepreciation)}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right bg-green-50/30">
+                      <span className={`text-sm font-bold ${asset.isAlreadyDepreciated ? 'text-gray-500' : 'text-green-700'}`}>
+                        {formatCurrency(asset.remainingValue)}
+                      </span>
+                    </td>
                   </tr>
                 ))
               )}
@@ -389,10 +395,10 @@ export function DepreciationList() {
             {tableAssets.length > 0 && selectedAssets.length > 0 && (
               <tfoot className="bg-gray-50 border-t-2 border-gray-300">
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-right font-semibold text-gray-900">
+                  <td colSpan={7} className="px-6 py-4 text-right font-semibold text-gray-900">
                     Tổng khấu hao dự tính (các mục đã chọn):
                   </td>
-                  <td className="px-6 py-4 text-right font-bold text-blue-700 text-lg">
+                  <td className="px-6 py-4 text-right font-bold text-green-700 text-lg">
                     {formatCurrency(totalDepreciation)}
                   </td>
                 </tr>
