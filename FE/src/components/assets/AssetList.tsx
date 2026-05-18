@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { 
-  Plus, Search, Eye, Trash2, Download, Package, ArrowLeftRight, 
-  UserPlus, X, Save, Send, Calculator, AlertCircle 
+import {
+  Plus, Search, Eye, Trash2, Download, Package, ArrowLeftRight,
+  UserPlus, X, Save, Send, Calculator, AlertCircle
 } from 'lucide-react';
 import { toast } from "sonner";
 import { apiClient } from '../../api/client';
 import { assetApi, TaiSan ,PHUONG_THUC_THANH_TOAN_OPTIONS, PhuongThucThanhToan } from '../../api/assetApi';
 import { assetAllocationApi, DieuChuyenTaiSan } from '../../api/assetAllocationApi';
-import { accountApi, TaiKhoanKeToan } from '../../api/accountApi'; // <-- IMPORT TÀI KHOẢN KẾ TOÁN
+import { accountApi, TaiKhoanKeToan } from '../../api/accountApi';
 import * as XLSX from 'xlsx';
 import { useGlobalData } from '../../context/GlobalContext';
 import { UserSelectDropdown } from '../shared/UserSelectDropdown';
+import { authApi } from '../../api/authApi';
+
+// Cache danh sách người dùng
+let cachedUsers: any[] | null = null;
 
 // Hàm hỗ trợ tạo tiền tố từ Tên danh mục tự động
 const generatePrefix = (name: string) => {
@@ -40,11 +44,43 @@ export function AssetList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [accounts, setAccounts] = useState<TaiKhoanKeToan[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+
+  // Load danh sách người dùng
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (cachedUsers) {
+        setUsers(cachedUsers);
+        return;
+      }
+      try {
+        const res = await authApi.getAllUsers();
+        if (res.errorCode === 200 && res.data) {
+          cachedUsers = res.data;
+          setUsers(res.data);
+        }
+      } catch {
+        console.error('Lỗi khi tải danh sách người dùng');
+      }
+    };
+    fetchUsers();
+  }, []);
 
   // Load danh sách tài khoản kế toán
   useEffect(() => {
     accountApi.getAll().then(res => { if(res.errorCode === 200) setAccounts(res.data) });
   }, []);
+
+  // Hàm lấy tên người dùng theo ID
+  const getUserName = (userId?: number) => {
+    if (!userId) return '—';
+    const user = users.find(u => u.userID === userId);
+    if (user) {
+      const fullName = `${user.profile?.firstName || ''} ${user.profile?.lastName || ''}`.trim();
+      return fullName || user.userName;
+    }
+    return 'Chưa cấp phát';
+  };
 
   // ================= MODAL ĐIỀU CHUYỂN =================
   const [showAllocModal, setShowAllocModal] = useState(false);
@@ -333,17 +369,17 @@ export function AssetList() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-16">STT</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Mã TS</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tên tài sản</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Danh mục</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Phòng ban</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nhân viên</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Nguyên giá</th>
-                <th className="px-8 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Còn lại</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider whitespace-nowrap min-w-[130px]">Ngày sử dụng</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Trạng thái</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Thao tác</th>
+                <th className="px-3 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-12">STT</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">Mã TS</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tên tài sản</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">Danh mục</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">Phòng ban</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nhân viên</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider w-32">Nguyên giá</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider w-28">Còn lại</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-32">Ngày SD</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-32">Trạng thái</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-28">Thao tác</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -358,23 +394,23 @@ export function AssetList() {
 
                   return (
                     <tr key={asset.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{index + 1}</td>
-                      <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm font-medium text-blue-600">{asset.maTaiSan}</span></td>
-                      <td className="px-6 py-4"><span className="text-sm text-gray-900">{asset.tenTaiSan}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getCatName(asset.danhMucId)}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{getDeptName(asset.phongBanId)}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm text-gray-600">{asset.nguoiDungId ? 'Có người dùng' : 'Chưa cấp phát'}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.nguyenGia)}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right"><span className="text-sm font-medium text-gray-900">{formatCurrency(asset.giaTriConLai)}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500 text-center">{index + 1}</td>
+                      <td className="px-4 py-3 whitespace-nowrap"><span className="text-sm font-medium text-blue-600">{asset.maTaiSan}</span></td>
+                      <td className="px-4 py-3"><span className="text-sm text-gray-900">{asset.tenTaiSan}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap"><span className="text-sm text-gray-600">{getCatName(asset.danhMucId)}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap"><span className="text-sm text-gray-600 truncate max-w-[140px] block">{getDeptName(asset.phongBanId)}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap"><span className="text-sm text-gray-700">{getUserName(asset.nguoiDungId)}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap text-right"><span className="text-sm text-gray-900">{formatCurrency(asset.nguyenGia)}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap text-right"><span className="text-sm font-medium text-gray-900">{formatCurrency(asset.giaTriConLai)}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
                         <span className="text-sm text-gray-700">
                           {asset.ngayCapPhat
                             ? new Date(asset.ngayCapPhat).toLocaleDateString('vi-VN')
                             : <span className="text-gray-400">—</span>}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center"><span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${currentStatus.color}`}>{currentStatus.label}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-4 py-3 whitespace-nowrap text-center"><span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${currentStatus.color}`}>{currentStatus.label}</span></td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
                         <div className="flex items-center justify-center gap-2">
                           {currentStatus.value === 0 && (
                             <button onClick={() => openAllocModal(asset, 'CapPhat')} className="p-1.5 text-green-600 hover:bg-green-100 rounded-md transition-colors" title="Cấp phát tài sản"><UserPlus className="w-4 h-4" /></button>
@@ -534,15 +570,26 @@ export function AssetList() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-white rounded-md p-4 border border-gray-100 shadow-sm">
                     <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Nguyên giá (VNĐ) <span className="text-red-500">*</span></label>
-                    <input 
-                      type="number" required min="0"
-                      value={addFormData.nguyenGia === 0 ? '' : addFormData.nguyenGia} 
+                    <input
+                      type="number" required min="1" step="0.01"
+                      value={addFormData.nguyenGia === 0 ? '' : addFormData.nguyenGia}
                       onChange={(e) => {
                         const val = Number(e.target.value);
+                        if (val < 0) {
+                          toast.error('Nguyên giá không thể âm');
+                          return;
+                        }
                         setAddFormData({...addFormData, nguyenGia: val, giaTriConLai: val});
-                      }} 
-                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900 font-bold" 
-                      placeholder="0" 
+                      }}
+                      onBlur={(e) => {
+                        const val = Number(e.target.value);
+                        if (val <= 0) {
+                          toast.error('Nguyên giá phải lớn hơn 0');
+                          setAddFormData({...addFormData, nguyenGia: 0, giaTriConLai: 0});
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900 font-bold"
+                      placeholder="Nhập nguyên giá (> 0)"
                     />
                   </div>
 
@@ -565,12 +612,19 @@ export function AssetList() {
 
                   <div className="bg-white rounded-md p-4 border border-gray-100 shadow-sm">
                     <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Thời gian KH (Tháng) <span className="text-red-500">*</span></label>
-                    <input 
+                    <input
                       type="number" required min="1"
-                      value={addFormData.thoiGianKhauHao === 0 ? '' : addFormData.thoiGianKhauHao} 
-                      onChange={(e) => setAddFormData({...addFormData, thoiGianKhauHao: Number(e.target.value)})} 
-                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900 font-bold" 
-                      placeholder="VD: 36" 
+                      value={addFormData.thoiGianKhauHao === 0 ? '' : addFormData.thoiGianKhauHao}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        if (val <= 0) {
+                          toast.error('Thời gian khấu hao phải lớn hơn 0');
+                          return;
+                        }
+                        setAddFormData({...addFormData, thoiGianKhauHao: val});
+                      }}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900 font-bold"
+                      placeholder="VD: 36"
                     />
                   </div>
 

@@ -43,7 +43,23 @@ export function LiquidationForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const numberFields = ['giaTriThanhLy'];
+
+    // Xử lý trường giá trị thanh lý - không cho phép nhập số âm
+    if (name === 'giaTriThanhLy') {
+      const val = Number(value);
+      if (value !== '' && val < 0) {
+        toast.error('Giá trị thanh lý không thể âm');
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        [name]: value === '' ? undefined : val
+      }));
+      return;
+    }
+
+    // Các trường số khác
+    const numberFields: string[] = [];
 
     setFormData(prev => ({
       ...prev,
@@ -199,8 +215,9 @@ export function LiquidationForm() {
                 onChange={handleChange}
                 required
                 min="0"
+                step="0.01"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Nhập số tiền thu được..."
+                placeholder="Nhập giá trị thanh lý (>= 0)"
               />
             </div>
 

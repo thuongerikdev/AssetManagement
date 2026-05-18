@@ -103,7 +103,23 @@ export function MaintenanceList() {
 
   const handleModalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const numberFields = ['taiSanId', 'chiPhi'];
+
+    // Xử lý trường chi phí - không cho phép nhập số âm
+    if (name === 'chiPhi') {
+      const val = Number(value);
+      if (value !== '' && val < 0) {
+        toast.error('Chi phí không thể âm');
+        return;
+      }
+      setEditForm(prev => ({
+        ...prev,
+        [name]: value === '' ? undefined : val
+      }));
+      return;
+    }
+
+    // Các trường số khác
+    const numberFields = ['taiSanId'];
     setEditForm(prev => ({
       ...prev,
       [name]: numberFields.includes(name) ? (value === '' ? undefined : Number(value)) : value
@@ -366,7 +382,7 @@ export function MaintenanceList() {
                         {modalHasCost && (
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Chi phí (VNĐ) <span className="text-red-500">*</span></label>
-                            <input type="number" name="chiPhi" value={editForm.chiPhi || ''} onChange={handleModalChange} required min="0" className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" />
+                            <input type="number" name="chiPhi" value={editForm.chiPhi || ''} onChange={handleModalChange} required min="0" step="0.01" className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500" placeholder="Nhập chi phí (>= 0)" />
                           </div>
                         )}
                         <div className={!modalHasCost ? "col-span-2" : ""}>

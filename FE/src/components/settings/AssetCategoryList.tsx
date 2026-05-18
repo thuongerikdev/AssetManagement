@@ -56,6 +56,12 @@ export function AssetCategoryList() {
       return;
     }
 
+    // Validate thời gian khấu hao
+    if (formData.thoiGianKhauHao !== '' && Number(formData.thoiGianKhauHao) <= 0) {
+      toast.error('Thời gian khấu hao phải lớn hơn 0');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -257,7 +263,14 @@ export function AssetCategoryList() {
                   <input
                     type="number"
                     value={formData.thoiGianKhauHao}
-                    onChange={(e) => setFormData({...formData, thoiGianKhauHao: e.target.value === '' ? '' : Number(e.target.value)})}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val !== '' && Number(val) <= 0) {
+                        toast.error('Thời gian khấu hao phải lớn hơn 0');
+                        return;
+                      }
+                      setFormData({...formData, thoiGianKhauHao: val});
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                     placeholder="VD: 36"
                     min="1"

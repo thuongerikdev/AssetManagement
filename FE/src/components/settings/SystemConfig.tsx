@@ -41,12 +41,25 @@ export function SystemConfig() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     let parsedValue: any = value;
     if (type === 'checkbox') {
       parsedValue = (e.target as HTMLInputElement).checked;
     } else if (type === 'number' || name === 'phuongPhapKhauHaoMacDinh') {
-      parsedValue = value === '' ? 0 : Number(value);
+      const numVal = Number(value);
+
+      // Validate số bắt đầu chứng từ
+      if (name === 'soBatDauChungTu' && numVal < 1) {
+        toast.error('Số bắt đầu phải lớn hơn hoặc bằng 1');
+        return;
+      }
+      // Validate độ dài mã tài sản
+      if (name === 'doDaiMaTaiSan' && (numVal < 3 || numVal > 10)) {
+        toast.error('Độ dài mã tài sản phải từ 3 đến 10');
+        return;
+      }
+
+      parsedValue = value === '' ? 0 : numVal;
     }
 
     setFormData(prev => ({
@@ -135,7 +148,7 @@ export function SystemConfig() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Độ dài số thứ tự</label>
-              <input type="number" name="doDaiMaTaiSan" value={formData.doDaiMaTaiSan || 4} onChange={handleChange} min="3" max="10" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+              <input type="number" name="doDaiMaTaiSan" value={formData.doDaiMaTaiSan || 4} onChange={handleChange} min="3" max="10" step="1" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
               <p className="text-xs text-gray-500 mt-1">Ví dụ độ dài 4: 0001, 0002...</p>
             </div>
             <div className="p-3 bg-gray-50 rounded border border-gray-100 mt-2">
@@ -178,7 +191,7 @@ export function SystemConfig() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Số bắt đầu hiện tại</label>
-              <input type="number" name="soBatDauChungTu" value={formData.soBatDauChungTu || 1} onChange={handleChange} min="1" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+              <input type="number" name="soBatDauChungTu" value={formData.soBatDauChungTu || 1} onChange={handleChange} min="1" step="1" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
             </div>
           </div>
         </div>

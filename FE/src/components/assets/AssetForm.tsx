@@ -65,19 +65,56 @@ export function AssetForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const numberFields = ['danhMucId', 'phongBanId', 'nguoiDungId', 'nguyenGia', 'thoiGianKhauHao', 'phuongPhapKhauHao', 'trangThai'];
+
+    // Xử lý các trường số - không cho phép nhập số âm
+    if (name === 'nguyenGia') {
+      const val = Number(value);
+      if (value !== '' && val < 0) {
+        toast.error('Nguyên giá không thể âm');
+        return;
+      }
+      if (name === 'nguyenGia' && value !== '' && val <= 0) {
+        toast.error('Nguyên giá phải lớn hơn 0');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [name]: value === '' ? undefined : val }));
+      return;
+    }
+
+    if (name === 'thoiGianKhauHao') {
+      const val = Number(value);
+      if (value !== '' && val <= 0) {
+        toast.error('Thời gian khấu hao phải lớn hơn 0');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [name]: value === '' ? undefined : val }));
+      return;
+    }
+
+    if (name === 'giaTriThanhLy') {
+      const val = Number(value);
+      if (value !== '' && val < 0) {
+        toast.error('Giá trị thanh lý không thể âm');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [name]: value === '' ? undefined : val }));
+      return;
+    }
+
+    // Các trường số khác
+    const numberFields = ['danhMucId', 'phongBanId', 'nguoiDungId', 'phuongPhapKhauHao', 'trangThai'];
     const parsedValue = numberFields.includes(name) ? (value === '' ? undefined : Number(value)) : value;
 
     setFormData(prev => {
       const newData = { ...prev, [name]: parsedValue };
-      
+
       const currentPhongBanId = name === 'phongBanId' ? parsedValue : prev.phongBanId;
       const currentNguoiDungId = name === 'nguoiDungId' ? parsedValue : prev.nguoiDungId;
 
       if (currentPhongBanId && currentNguoiDungId) {
-        if (prev.trangThai === 0) newData.trangThai = 1; 
+        if (prev.trangThai === 0) newData.trangThai = 1;
       } else {
-        if (prev.trangThai === 1) newData.trangThai = 0; 
+        if (prev.trangThai === 1) newData.trangThai = 0;
       }
 
       return newData;
@@ -183,7 +220,7 @@ export function AssetForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nguyên giá (VNĐ) <span className="text-red-500">*</span></label>
-              <input type="number" name="nguyenGia" required value={formData.nguyenGia} onChange={handleChange} min="0" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="VD: 50000000" />
+              <input type="number" name="nguyenGia" required value={formData.nguyenGia} onChange={handleChange} min="1" step="0.01" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="VD: 50000000" />
             </div>
           </div>
         </div>

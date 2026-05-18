@@ -125,10 +125,10 @@ namespace TH.Asset.Infrastructure.Database
 
             int tsId = 1, ctId = 1, ctctId = 1, dcId = 1;
 
-            // Hàm tạo ngày Pseudo-random có quy luật trong khoảng 2021-2025
+            // Hàm tạo ngày pseudo-random có quy luật trong khoảng 2021-2025
             DateTime GetDate(int index)
             {
-                int daysToAdd = (index * 17) % 1800; // Khoảng ~5 năm từ 2021
+                int daysToAdd = (index * 17) % 1800; // ~5 năm từ 2021
                 return new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddDays(daysToAdd);
             }
 
@@ -173,11 +173,11 @@ namespace TH.Asset.Infrastructure.Database
                     MoTa = $"Ghi tăng {name}",
                     TongTien = gia,
                     TrangThai = "hoan_thanh",
-                    NguoiLapId = 6, // User Kế toán
+                    NguoiLapId = 6, // Lê Bảo Ngọc – Kế toán TSCĐ
                     NgayTao = date.AddDays(-5)
                 });
 
-                // 3. Chi tiết chứng từ (Xử lý Tài khoản CÓ)
+                // 3. Chi tiết chứng từ
                 string tkCo = phuongThuc == PhuongThucThanhToan.TienMat ? "111" : "112";
                 chiTiets.Add(new ChiTietChungTu
                 {
@@ -187,7 +187,7 @@ namespace TH.Asset.Infrastructure.Database
                     TaiKhoanNo = tkNo,
                     TaiKhoanCo = tkCo,
                     SoTien = gia,
-                    MoTa = $"Thanh toán & Ghi tăng nguyên giá TSCĐ"
+                    MoTa = "Thanh toán & Ghi tăng nguyên giá TSCĐ"
                 });
 
                 // 4. Phiếu cấp phát
@@ -208,57 +208,103 @@ namespace TH.Asset.Infrastructure.Database
                 ctId++;
             }
 
-            // --- TỪ ĐIỂN TÊN TÀI SẢN THỰC TẾ (ĐẢM BẢO > 30 TRIỆU ĐỒNG) ---
-            var lapNames = new[] {
-                ("Apple MacBook Pro 14\" M3 (16GB/512GB)", "Apple", 55_000_000m),
-                ("Dell Latitude 7430 (i7/16GB/512GB, vPro)", "Dell", 32_000_000m),
-                ("HP EliteBook 845 G10 (Ryzen 9/32GB/1TB)", "HP", 35_000_000m),
-                ("Lenovo ThinkPad T14s Gen 3 (Ryzen 7/16GB/512GB)", "Lenovo", 35_000_000m),
-                ("Asus ProArt Studiobook 16 OLED (i9/32GB/1TB)", "Asus", 55_000_000m),
-                ("Apple MacBook Air 15\" M2 (16GB/512GB)", "Apple", 38_000_000m),
-                ("Dell Precision 5570 (i7/32GB/1TB, Workstation)", "Dell", 55_000_000m),
-                ("Lenovo ThinkPad X1 Carbon Gen 11 (i7/16GB/1TB)", "Lenovo", 45_000_000m),
-                ("HP ZBook Firefly 14 G10 (i7/32GB/1TB)", "HP", 42_000_000m),
-                ("Dell XPS 13 9310 (i7/16GB/512GB)", "Dell", 35_000_000m)
-            };
-
-            var carNames = new[] {
-                ("Toyota Innova Crysta 2.0G MT 2023 (7 chỗ)", "Toyota", 980_000_000m),
-                ("Ford Ranger Wildtrak 2.0L Bi-Turbo AT 2023 (Pickup)", "Ford", 920_000_000m),
-                ("Mercedes-Benz GLC 300 4MATIC 2023", "Mercedes-Benz", 2_299_000_000m),
-                ("VinFast VF9 Plus 2023", "VinFast", 1_500_000_000m)
-            };
-
-            var netNames = new[] {
-                ("Cisco Catalyst 9200L-24P-4G (Switch 24-port PoE)", "Cisco", 45_000_000m),
-                ("Fortinet FortiGate 100F (NGFW, Firewall)", "Fortinet", 90_000_000m),
-                ("Cisco Meraki MS120-48LP (Cloud Managed Switch)", "Cisco", 35_000_000m),
-                ("Palo Alto PA-440 (Next-Gen Firewall)", "Palo Alto", 120_000_000m)
-            };
-
-            // --- 1. 99 LAPTOP CHO 99 USER ---
-            for (int i = 1; i <= 99; i++)
+            // --- TỪ ĐIỂN TÊN TÀI SẢN THỰC TẾ ---
+            var lapNames = new[]
             {
+                ("Apple MacBook Pro 14\" M3 (16GB/512GB)",                        "Apple",   55_000_000m),
+                ("Dell Latitude 7430 (i7/16GB/512GB, vPro)",                      "Dell",    32_000_000m),
+                ("HP EliteBook 845 G10 (Ryzen 9/32GB/1TB)",                       "HP",      35_000_000m),
+                ("Lenovo ThinkPad T14s Gen 3 (Ryzen 7/16GB/512GB)",               "Lenovo",  35_000_000m),
+                ("Asus ProArt Studiobook 16 OLED (i9/32GB/1TB)",                  "Asus",    55_000_000m),
+                ("Apple MacBook Air 15\" M2 (16GB/512GB)",                        "Apple",   38_000_000m),
+                ("Dell Precision 5570 (i7/32GB/1TB, Workstation)",                "Dell",    55_000_000m),
+                ("Lenovo ThinkPad X1 Carbon Gen 11 (i7/16GB/1TB)",                "Lenovo",  45_000_000m),
+                ("HP ZBook Firefly 14 G10 (i7/32GB/1TB)",                         "HP",      42_000_000m),
+                ("Dell XPS 13 9310 (i7/16GB/512GB)",                              "Dell",    35_000_000m),
+            };
+
+            var carNames = new[]
+            {
+                ("Toyota Innova Crysta 2.0G MT 2023 (7 chỗ)",              "Toyota",        980_000_000m),
+                ("Ford Ranger Wildtrak 2.0L Bi-Turbo AT 2023 (Pickup)",    "Ford",          920_000_000m),
+                ("Mercedes-Benz GLC 300 4MATIC 2023",                      "Mercedes-Benz", 2_299_000_000m),
+                ("VinFast VF9 Plus 2023",                                   "VinFast",       1_500_000_000m),
+            };
+
+            var netNames = new[]
+            {
+                ("Cisco Catalyst 9200L-24P-4G (Switch 24-port PoE)",       "Cisco",       45_000_000m),
+                ("Fortinet FortiGate 100F (NGFW, Firewall)",               "Fortinet",    90_000_000m),
+                ("Cisco Meraki MS120-48LP (Cloud Managed Switch)",         "Cisco",       35_000_000m),
+                ("Palo Alto PA-440 (Next-Gen Firewall)",                   "Palo Alto",  120_000_000m),
+            };
+
+            // =========================================================
+            // --- 1. LAPTOP – 1 máy / 1 user, khớp đúng userId & deptId
+            //        với AuthSeedData (35 user, userId 1-35)
+            // =========================================================
+            var userDeptMapping = new List<(int userId, int deptId)>
+            {
+                // Ban Giám đốc (Dept 1) – userId 1-4
+                (1, 1), (2, 1), (3, 1), (4, 1),
+
+                // Phòng Kế toán (Dept 2) – userId 5-9
+                (5, 2), (6, 2), (7, 2), (8, 2), (9, 2),
+
+                // Phòng Nhân sự (Dept 3) – userId 10-11
+                (10, 3), (11, 3),
+
+                // Phòng Kỹ thuật (Dept 4) – userId 12-14
+                (12, 4), (13, 4), (14, 4),
+
+                // Phòng Sản phẩm (Dept 5) – userId 15-19
+                (15, 5), (16, 5), (17, 5), (18, 5), (19, 5),
+
+                // Phòng Phát triển phần mềm (Dept 6) – userId 20-29
+                (20, 6), (21, 6), (22, 6), (23, 6), (24, 6),
+                (25, 6), (26, 6), (27, 6), (28, 6), (29, 6),
+
+                // Phòng Quản lý dự án (Dept 7) – userId 30-32
+                (30, 7), (31, 7), (32, 7),
+
+                // Phòng Thiết kế UI/UX (Dept 8) – userId 33-35
+                (33, 8), (34, 8), (35, 8),
+            };
+
+            for (int i = 0; i < userDeptMapping.Count; i++)
+            {
+                var (userId, deptId) = userDeptMapping[i];
                 var (name, manufacturer, price) = lapNames[i % lapNames.Length];
-                int deptId = (i % 8) + 1; // Phân bổ đều vào 8 phòng ban
-                CreateAssetFlow("LAP", name, manufacturer, 1, "2114", price, i, deptId);
+                CreateAssetFlow("LAP", name, manufacturer, 1, "2114", price, userId, deptId);
             }
 
-            // --- 2. 4 Ô TÔ CHO CÁC SẾP LỚN (Phòng 1, User 1->4) ---
+            // =========================================================
+            // --- 2. Ô TÔ – cấp cho 4 sếp lớn BGĐ (userId 1-4, dept 1)
+            // =========================================================
             for (int i = 0; i < 4; i++)
             {
                 var (name, manufacturer, price) = carNames[i];
                 CreateAssetFlow("OTO", name, manufacturer, 3, "2113", price, i + 1, 1);
             }
 
-            // --- 3. 1 SERVER (Phòng 4 Kỹ Thuật, Cấp phát cho Trưởng phòng - User 12) ---
-            CreateAssetFlow("SRV", "Dell PowerEdge R750xs (2×Xeon Silver, 128GB RAM, 4×3.5\" HDD 4TB)", "Dell", 2, "2112", 280_000_000m, 12, 4);
+            // =========================================================
+            // --- 3. SERVER – Phòng Kỹ thuật (userId 12 – Trưởng phòng, dept 4)
+            // =========================================================
+            CreateAssetFlow(
+                "SRV",
+                "Dell PowerEdge R750xs (2×Xeon Silver, 128GB RAM, 4×3.5\" HDD 4TB)",
+                "Dell",
+                2, "2112", 280_000_000m,
+                userId: 12, deptId: 4
+            );
 
-            // --- 4. 4 THIẾT BỊ MẠNG (Phòng 4 Kỹ Thuật, Cấp phát cho Trưởng phòng - User 12) ---
+            // =========================================================
+            // --- 4. THIẾT BỊ MẠNG – Phòng Kỹ thuật (userId 12, dept 4)
+            // =========================================================
             for (int i = 0; i < 4; i++)
             {
                 var (name, manufacturer, price) = netNames[i];
-                CreateAssetFlow("NET", name, manufacturer, 4, "2112", price, 12, 4);
+                CreateAssetFlow("NET", name, manufacturer, 4, "2112", price, userId: 12, deptId: 4);
             }
 
             // =========================================================

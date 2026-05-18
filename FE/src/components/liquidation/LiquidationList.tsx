@@ -289,7 +289,22 @@ export function LiquidationList() {
                   </div>
                   <div className="col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Giá thanh lý (VNĐ)</label>
-                    <input type="number" value={editForm.giaTriThanhLy || ''} onChange={e => setEditForm({...editForm, giaTriThanhLy: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500" required />
+                    <input
+                      type="number"
+                      value={editForm.giaTriThanhLy || ''}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        if (val < 0) {
+                          toast.error('Giá thanh lý không thể âm');
+                          return;
+                        }
+                        setEditForm({...editForm, giaTriThanhLy: val});
+                      }}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
+                      required
+                      min="0"
+                      step="0.01"
+                    />
                   </div>
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Lý do thanh lý</label>
