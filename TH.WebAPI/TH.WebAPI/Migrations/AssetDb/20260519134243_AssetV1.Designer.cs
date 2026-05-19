@@ -12,7 +12,7 @@ using TH.Asset.Infrastructure.Database;
 namespace TH.WebAPI.Migrations.AssetDb
 {
     [DbContext(typeof(AssetDbContext))]
-    [Migration("20260518153012_AssetV1")]
+    [Migration("20260519134243_AssetV1")]
     partial class AssetV1
     {
         /// <inheritdoc />

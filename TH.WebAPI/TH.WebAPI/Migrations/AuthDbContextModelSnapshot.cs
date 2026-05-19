@@ -190,94 +190,6 @@ namespace TH.WebAPI.Migrations
                         new
                         {
                             permissionID = 1,
-                            code = "account.forgot_commit",
-                            permissionDescription = "account.forgot_commit",
-                            permissionName = "AccountForgotCommit",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 2,
-                            code = "account.forgot_email_start",
-                            permissionDescription = "account.forgot_email_start",
-                            permissionName = "AccountForgotEmailStart",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 3,
-                            code = "account.forgot_email_verify",
-                            permissionDescription = "account.forgot_email_verify",
-                            permissionName = "AccountForgotEmailVerify",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 4,
-                            code = "account.forgot_mfa_verify",
-                            permissionDescription = "account.forgot_mfa_verify",
-                            permissionName = "AccountForgotMfaVerify",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 5,
-                            code = "account.mfa_totp_confirm",
-                            permissionDescription = "account.mfa_totp_confirm",
-                            permissionName = "AccountMfaTotpConfirm",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 6,
-                            code = "account.mfa_totp_disable",
-                            permissionDescription = "account.mfa_totp_disable",
-                            permissionName = "AccountMfaTotpDisable",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 7,
-                            code = "account.mfa_totp_start",
-                            permissionDescription = "account.mfa_totp_start",
-                            permissionName = "AccountMfaTotpStart",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 8,
-                            code = "account.password_change_commit",
-                            permissionDescription = "account.password_change_commit",
-                            permissionName = "AccountPasswordChangeCommit",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 9,
-                            code = "account.password_change_email_start",
-                            permissionDescription = "account.password_change_email_start",
-                            permissionName = "AccountPasswordChangeEmailStart",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 10,
-                            code = "account.password_change_email_verify",
-                            permissionDescription = "account.password_change_email_verify",
-                            permissionName = "AccountPasswordChangeEmailVerify",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 11,
-                            code = "account.password_change_mfa_verify",
-                            permissionDescription = "account.password_change_mfa_verify",
-                            permissionName = "AccountPasswordChangeMfaVerify",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 12,
                             code = "audit_log.get_all",
                             permissionDescription = "audit_log.get_all",
                             permissionName = "AuditLogGetAll",
@@ -285,7 +197,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 13,
+                            permissionID = 2,
                             code = "audit_log.get_by_id",
                             permissionDescription = "audit_log.get_by_id",
                             permissionName = "AuditLogGetById",
@@ -293,7 +205,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 14,
+                            permissionID = 3,
                             code = "audit_log.get_by_user_id",
                             permissionDescription = "audit_log.get_by_user_id",
                             permissionName = "AuditLogGetByUserId",
@@ -301,7 +213,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 15,
+                            permissionID = 4,
                             code = "auth.create_user",
                             permissionDescription = "auth.create_user",
                             permissionName = "AuthCreateUser",
@@ -309,119 +221,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 16,
-                            code = "auth.login",
-                            permissionDescription = "auth.login",
-                            permissionName = "AuthLogin",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 17,
-                            code = "auth.login_google",
-                            permissionDescription = "auth.login_google",
-                            permissionName = "AuthLoginGoogle",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 18,
-                            code = "auth.login_google_callback",
-                            permissionDescription = "auth.login_google_callback",
-                            permissionName = "AuthLoginGoogleCallback",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 19,
-                            code = "auth.login_mobile",
-                            permissionDescription = "auth.login_mobile",
-                            permissionName = "AuthLoginMobile",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 20,
-                            code = "auth.login_mobile_google",
-                            permissionDescription = "auth.login_mobile_google",
-                            permissionName = "AuthLoginMobileGoogle",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 21,
-                            code = "auth.login_staff",
-                            permissionDescription = "auth.login_staff",
-                            permissionName = "AuthLoginStaff",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 22,
-                            code = "auth.logout",
-                            permissionDescription = "auth.logout",
-                            permissionName = "AuthLogout",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 23,
-                            code = "auth.logout_all",
-                            permissionDescription = "auth.logout_all",
-                            permissionName = "AuthLogoutAll",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 24,
-                            code = "auth.logout_session",
-                            permissionDescription = "auth.logout_session",
-                            permissionName = "AuthLogoutSession",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 25,
-                            code = "auth.mfa_verify",
-                            permissionDescription = "auth.mfa_verify",
-                            permissionName = "AuthMfaVerify",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 26,
-                            code = "auth.refresh",
-                            permissionDescription = "auth.refresh",
-                            permissionName = "AuthRefresh",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 27,
-                            code = "auth.register",
-                            permissionDescription = "auth.register",
-                            permissionName = "AuthRegister",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 28,
-                            code = "auth.signin_google",
-                            permissionDescription = "auth.signin_google",
-                            permissionName = "AuthSigninGoogle",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 29,
-                            code = "auth.verify_register_email",
-                            permissionDescription = "auth.verify_register_email",
-                            permissionName = "AuthVerifyRegisterEmail",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            permissionID = 30,
+                            permissionID = 5,
                             code = "bao_tri_tai_san.create",
                             permissionDescription = "bao_tri_tai_san.create",
                             permissionName = "BaoTriTaiSanCreate",
@@ -429,7 +229,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 31,
+                            permissionID = 6,
                             code = "bao_tri_tai_san.delete",
                             permissionDescription = "bao_tri_tai_san.delete",
                             permissionName = "BaoTriTaiSanDelete",
@@ -437,7 +237,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 32,
+                            permissionID = 7,
                             code = "bao_tri_tai_san.get_all",
                             permissionDescription = "bao_tri_tai_san.get_all",
                             permissionName = "BaoTriTaiSanGetAll",
@@ -445,7 +245,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 33,
+                            permissionID = 8,
                             code = "bao_tri_tai_san.get_by_asset",
                             permissionDescription = "bao_tri_tai_san.get_by_asset",
                             permissionName = "BaoTriTaiSanGetByAsset",
@@ -453,7 +253,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 34,
+                            permissionID = 9,
                             code = "bao_tri_tai_san.get_by_id",
                             permissionDescription = "bao_tri_tai_san.get_by_id",
                             permissionName = "BaoTriTaiSanGetById",
@@ -461,7 +261,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 35,
+                            permissionID = 10,
                             code = "bao_tri_tai_san.update",
                             permissionDescription = "bao_tri_tai_san.update",
                             permissionName = "BaoTriTaiSanUpdate",
@@ -469,7 +269,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 36,
+                            permissionID = 11,
                             code = "cau_hinh_he_thong.get",
                             permissionDescription = "cau_hinh_he_thong.get",
                             permissionName = "CauHinhHeThongGet",
@@ -477,7 +277,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 37,
+                            permissionID = 12,
                             code = "cau_hinh_he_thong.update",
                             permissionDescription = "cau_hinh_he_thong.update",
                             permissionName = "CauHinhHeThongUpdate",
@@ -485,7 +285,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 38,
+                            permissionID = 13,
                             code = "chung_tu.create",
                             permissionDescription = "chung_tu.create",
                             permissionName = "ChungTuCreate",
@@ -493,7 +293,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 39,
+                            permissionID = 14,
                             code = "chung_tu.delete",
                             permissionDescription = "chung_tu.delete",
                             permissionName = "ChungTuDelete",
@@ -501,7 +301,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 40,
+                            permissionID = 15,
                             code = "chung_tu.generate_code",
                             permissionDescription = "chung_tu.generate_code",
                             permissionName = "ChungTuGenerateCode",
@@ -509,7 +309,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 41,
+                            permissionID = 16,
                             code = "chung_tu.get_all",
                             permissionDescription = "chung_tu.get_all",
                             permissionName = "ChungTuGetAll",
@@ -517,7 +317,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 42,
+                            permissionID = 17,
                             code = "chung_tu.get_by_asset",
                             permissionDescription = "chung_tu.get_by_asset",
                             permissionName = "ChungTuGetByAsset",
@@ -525,7 +325,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 43,
+                            permissionID = 18,
                             code = "chung_tu.get_by_id",
                             permissionDescription = "chung_tu.get_by_id",
                             permissionName = "ChungTuGetById",
@@ -533,7 +333,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 44,
+                            permissionID = 19,
                             code = "chung_tu.update",
                             permissionDescription = "chung_tu.update",
                             permissionName = "ChungTuUpdate",
@@ -541,7 +341,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 45,
+                            permissionID = 20,
                             code = "danh_muc_tai_san.create",
                             permissionDescription = "danh_muc_tai_san.create",
                             permissionName = "DanhMucTaiSanCreate",
@@ -549,7 +349,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 46,
+                            permissionID = 21,
                             code = "danh_muc_tai_san.delete",
                             permissionDescription = "danh_muc_tai_san.delete",
                             permissionName = "DanhMucTaiSanDelete",
@@ -557,7 +357,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 47,
+                            permissionID = 22,
                             code = "danh_muc_tai_san.get_all",
                             permissionDescription = "danh_muc_tai_san.get_all",
                             permissionName = "DanhMucTaiSanGetAll",
@@ -565,7 +365,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 48,
+                            permissionID = 23,
                             code = "danh_muc_tai_san.get_by_id",
                             permissionDescription = "danh_muc_tai_san.get_by_id",
                             permissionName = "DanhMucTaiSanGetById",
@@ -573,7 +373,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 49,
+                            permissionID = 24,
                             code = "danh_muc_tai_san.update",
                             permissionDescription = "danh_muc_tai_san.update",
                             permissionName = "DanhMucTaiSanUpdate",
@@ -581,7 +381,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 50,
+                            permissionID = 25,
                             code = "dieu_chuyen_tai_san.create",
                             permissionDescription = "dieu_chuyen_tai_san.create",
                             permissionName = "DieuChuyenTaiSanCreate",
@@ -589,7 +389,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 51,
+                            permissionID = 26,
                             code = "dieu_chuyen_tai_san.delete",
                             permissionDescription = "dieu_chuyen_tai_san.delete",
                             permissionName = "DieuChuyenTaiSanDelete",
@@ -597,7 +397,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 52,
+                            permissionID = 27,
                             code = "dieu_chuyen_tai_san.get_all",
                             permissionDescription = "dieu_chuyen_tai_san.get_all",
                             permissionName = "DieuChuyenTaiSanGetAll",
@@ -605,7 +405,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 53,
+                            permissionID = 28,
                             code = "dieu_chuyen_tai_san.get_by_asset",
                             permissionDescription = "dieu_chuyen_tai_san.get_by_asset",
                             permissionName = "DieuChuyenTaiSanGetByAsset",
@@ -613,7 +413,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 54,
+                            permissionID = 29,
                             code = "dieu_chuyen_tai_san.get_by_id",
                             permissionDescription = "dieu_chuyen_tai_san.get_by_id",
                             permissionName = "DieuChuyenTaiSanGetById",
@@ -621,7 +421,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 55,
+                            permissionID = 30,
                             code = "dieu_chuyen_tai_san.update",
                             permissionDescription = "dieu_chuyen_tai_san.update",
                             permissionName = "DieuChuyenTaiSanUpdate",
@@ -629,7 +429,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 56,
+                            permissionID = 31,
                             code = "lich_su_khau_hao.create",
                             permissionDescription = "lich_su_khau_hao.create",
                             permissionName = "LichSuKhauHaoCreate",
@@ -637,7 +437,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 57,
+                            permissionID = 32,
                             code = "lich_su_khau_hao.create_bulk",
                             permissionDescription = "lich_su_khau_hao.create_bulk",
                             permissionName = "LichSuKhauHaoCreateBulk",
@@ -645,7 +445,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 58,
+                            permissionID = 33,
                             code = "lich_su_khau_hao.delete",
                             permissionDescription = "lich_su_khau_hao.delete",
                             permissionName = "LichSuKhauHaoDelete",
@@ -653,7 +453,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 59,
+                            permissionID = 34,
                             code = "lich_su_khau_hao.get_all",
                             permissionDescription = "lich_su_khau_hao.get_all",
                             permissionName = "LichSuKhauHaoGetAll",
@@ -661,7 +461,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 60,
+                            permissionID = 35,
                             code = "lich_su_khau_hao.get_by_asset",
                             permissionDescription = "lich_su_khau_hao.get_by_asset",
                             permissionName = "LichSuKhauHaoGetByAsset",
@@ -669,7 +469,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 61,
+                            permissionID = 36,
                             code = "lich_su_khau_hao.get_by_id",
                             permissionDescription = "lich_su_khau_hao.get_by_id",
                             permissionName = "LichSuKhauHaoGetById",
@@ -677,7 +477,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 62,
+                            permissionID = 37,
                             code = "lich_su_khau_hao.update",
                             permissionDescription = "lich_su_khau_hao.update",
                             permissionName = "LichSuKhauHaoUpdate",
@@ -685,7 +485,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 63,
+                            permissionID = 38,
                             code = "permission.admin_add",
                             permissionDescription = "permission.admin_add",
                             permissionName = "PermissionAdminAdd",
@@ -693,7 +493,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 64,
+                            permissionID = 39,
                             code = "permission.admin_bulk_create",
                             permissionDescription = "permission.admin_bulk_create",
                             permissionName = "PermissionAdminBulkCreate",
@@ -701,7 +501,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 65,
+                            permissionID = 40,
                             code = "permission.admin_delete",
                             permissionDescription = "permission.admin_delete",
                             permissionName = "PermissionAdminDelete",
@@ -709,7 +509,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 66,
+                            permissionID = 41,
                             code = "permission.admin_get_all",
                             permissionDescription = "permission.admin_get_all",
                             permissionName = "PermissionAdminGetAll",
@@ -717,7 +517,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 67,
+                            permissionID = 42,
                             code = "permission.admin_get_by_id",
                             permissionDescription = "permission.admin_get_by_id",
                             permissionName = "PermissionAdminGetById",
@@ -725,7 +525,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 68,
+                            permissionID = 43,
                             code = "permission.admin_get_by_role_id",
                             permissionDescription = "permission.admin_get_by_role_id",
                             permissionName = "PermissionAdminGetByRoleId",
@@ -733,7 +533,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 69,
+                            permissionID = 44,
                             code = "permission.admin_get_by_user_id",
                             permissionDescription = "permission.admin_get_by_user_id",
                             permissionName = "PermissionAdminGetByUserId",
@@ -741,7 +541,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 70,
+                            permissionID = 45,
                             code = "permission.admin_update",
                             permissionDescription = "permission.admin_update",
                             permissionName = "PermissionAdminUpdate",
@@ -749,7 +549,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 71,
+                            permissionID = 46,
                             code = "permission.bulk_create",
                             permissionDescription = "permission.bulk_create",
                             permissionName = "PermissionBulkCreate",
@@ -757,7 +557,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 72,
+                            permissionID = 47,
                             code = "permission.delete",
                             permissionDescription = "permission.delete",
                             permissionName = "PermissionDelete",
@@ -765,7 +565,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 73,
+                            permissionID = 48,
                             code = "permission.get_all",
                             permissionDescription = "permission.get_all",
                             permissionName = "PermissionGetAll",
@@ -773,7 +573,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 74,
+                            permissionID = 49,
                             code = "permission.get_by_id",
                             permissionDescription = "permission.get_by_id",
                             permissionName = "PermissionGetById",
@@ -781,7 +581,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 75,
+                            permissionID = 50,
                             code = "permission.get_by_role_id",
                             permissionDescription = "permission.get_by_role_id",
                             permissionName = "PermissionGetByRoleId",
@@ -789,7 +589,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 76,
+                            permissionID = 51,
                             code = "permission.get_by_user_id",
                             permissionDescription = "permission.get_by_user_id",
                             permissionName = "PermissionGetByUserId",
@@ -797,7 +597,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 77,
+                            permissionID = 52,
                             code = "permission.update",
                             permissionDescription = "permission.update",
                             permissionName = "PermissionUpdate",
@@ -805,7 +605,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 78,
+                            permissionID = 53,
                             code = "phong_ban.create",
                             permissionDescription = "phong_ban.create",
                             permissionName = "PhongBanCreate",
@@ -813,7 +613,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 79,
+                            permissionID = 54,
                             code = "phong_ban.delete",
                             permissionDescription = "phong_ban.delete",
                             permissionName = "PhongBanDelete",
@@ -821,7 +621,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 80,
+                            permissionID = 55,
                             code = "phong_ban.get_all",
                             permissionDescription = "phong_ban.get_all",
                             permissionName = "PhongBanGetAll",
@@ -829,7 +629,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 81,
+                            permissionID = 56,
                             code = "phong_ban.get_by_id",
                             permissionDescription = "phong_ban.get_by_id",
                             permissionName = "PhongBanGetById",
@@ -837,7 +637,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 82,
+                            permissionID = 57,
                             code = "phong_ban.update",
                             permissionDescription = "phong_ban.update",
                             permissionName = "PhongBanUpdate",
@@ -845,7 +645,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 83,
+                            permissionID = 58,
                             code = "role.add",
                             permissionDescription = "role.add",
                             permissionName = "RoleAdd",
@@ -853,7 +653,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 84,
+                            permissionID = 59,
                             code = "role.admin_add",
                             permissionDescription = "role.admin_add",
                             permissionName = "RoleAdminAdd",
@@ -861,7 +661,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 85,
+                            permissionID = 60,
                             code = "role.admin_clone",
                             permissionDescription = "role.admin_clone",
                             permissionName = "RoleAdminClone",
@@ -869,7 +669,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 86,
+                            permissionID = 61,
                             code = "role.admin_delete",
                             permissionDescription = "role.admin_delete",
                             permissionName = "RoleAdminDelete",
@@ -877,7 +677,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 87,
+                            permissionID = 62,
                             code = "role.admin_update",
                             permissionDescription = "role.admin_update",
                             permissionName = "RoleAdminUpdate",
@@ -885,7 +685,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 88,
+                            permissionID = 63,
                             code = "role.clone",
                             permissionDescription = "role.clone",
                             permissionName = "RoleClone",
@@ -893,7 +693,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 89,
+                            permissionID = 64,
                             code = "role.delete",
                             permissionDescription = "role.delete",
                             permissionName = "RoleDelete",
@@ -901,7 +701,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 90,
+                            permissionID = 65,
                             code = "role.get_all",
                             permissionDescription = "role.get_all",
                             permissionName = "RoleGetAll",
@@ -909,7 +709,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 91,
+                            permissionID = 66,
                             code = "role.get_all_scope_user",
                             permissionDescription = "role.get_all_scope_user",
                             permissionName = "RoleGetAllScopeUser",
@@ -917,7 +717,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 92,
+                            permissionID = 67,
                             code = "role.get_by_user_id",
                             permissionDescription = "role.get_by_user_id",
                             permissionName = "RoleGetByUserId",
@@ -925,7 +725,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 93,
+                            permissionID = 68,
                             code = "role_permission.admin_assign",
                             permissionDescription = "role_permission.admin_assign",
                             permissionName = "RolePermissionAdminAssign",
@@ -933,7 +733,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 94,
+                            permissionID = 69,
                             code = "role_permission.assign",
                             permissionDescription = "role_permission.assign",
                             permissionName = "RolePermissionAssign",
@@ -941,7 +741,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 95,
+                            permissionID = 70,
                             code = "role.update",
                             permissionDescription = "role.update",
                             permissionName = "RoleUpdate",
@@ -949,7 +749,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 96,
+                            permissionID = 71,
                             code = "so_cai.get_chi_tiet",
                             permissionDescription = "so_cai.get_chi_tiet",
                             permissionName = "SoCaiGetChiTiet",
@@ -957,7 +757,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 97,
+                            permissionID = 72,
                             code = "so_cai.get_tom_tat",
                             permissionDescription = "so_cai.get_tom_tat",
                             permissionName = "SoCaiGetTomTat",
@@ -965,7 +765,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 98,
+                            permissionID = 73,
                             code = "tai_khoan_ke_toan.create",
                             permissionDescription = "tai_khoan_ke_toan.create",
                             permissionName = "TaiKhoanKeToanCreate",
@@ -973,7 +773,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 99,
+                            permissionID = 74,
                             code = "tai_khoan_ke_toan.delete",
                             permissionDescription = "tai_khoan_ke_toan.delete",
                             permissionName = "TaiKhoanKeToanDelete",
@@ -981,7 +781,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 100,
+                            permissionID = 75,
                             code = "tai_khoan_ke_toan.get_all",
                             permissionDescription = "tai_khoan_ke_toan.get_all",
                             permissionName = "TaiKhoanKeToanGetAll",
@@ -989,7 +789,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 101,
+                            permissionID = 76,
                             code = "tai_khoan_ke_toan.get_by_id",
                             permissionDescription = "tai_khoan_ke_toan.get_by_id",
                             permissionName = "TaiKhoanKeToanGetById",
@@ -997,7 +797,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 102,
+                            permissionID = 77,
                             code = "tai_khoan_ke_toan.update",
                             permissionDescription = "tai_khoan_ke_toan.update",
                             permissionName = "TaiKhoanKeToanUpdate",
@@ -1005,7 +805,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 103,
+                            permissionID = 78,
                             code = "tai_san.confirm",
                             permissionDescription = "tai_san.confirm",
                             permissionName = "TaiSanConfirm",
@@ -1013,7 +813,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 104,
+                            permissionID = 79,
                             code = "tai_san.create",
                             permissionDescription = "tai_san.create",
                             permissionName = "TaiSanCreate",
@@ -1021,7 +821,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 105,
+                            permissionID = 80,
                             code = "tai_san.delete",
                             permissionDescription = "tai_san.delete",
                             permissionName = "TaiSanDelete",
@@ -1029,7 +829,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 106,
+                            permissionID = 81,
                             code = "tai_san_dinh_kem.delete",
                             permissionDescription = "tai_san_dinh_kem.delete",
                             permissionName = "TaiSanDinhKemDelete",
@@ -1037,7 +837,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 107,
+                            permissionID = 82,
                             code = "tai_san_dinh_kem.get_by_asset",
                             permissionDescription = "tai_san_dinh_kem.get_by_asset",
                             permissionName = "TaiSanDinhKemGetByAsset",
@@ -1045,7 +845,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 108,
+                            permissionID = 83,
                             code = "tai_san_dinh_kem.upload",
                             permissionDescription = "tai_san_dinh_kem.upload",
                             permissionName = "TaiSanDinhKemUpload",
@@ -1053,7 +853,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 109,
+                            permissionID = 84,
                             code = "tai_san.generate_code",
                             permissionDescription = "tai_san.generate_code",
                             permissionName = "TaiSanGenerateCode",
@@ -1061,7 +861,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 110,
+                            permissionID = 85,
                             code = "tai_san.get_all",
                             permissionDescription = "tai_san.get_all",
                             permissionName = "TaiSanGetAll",
@@ -1069,7 +869,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 111,
+                            permissionID = 86,
                             code = "tai_san.get_by_id",
                             permissionDescription = "tai_san.get_by_id",
                             permissionName = "TaiSanGetById",
@@ -1077,7 +877,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 112,
+                            permissionID = 87,
                             code = "tai_san.get_mine",
                             permissionDescription = "tai_san.get_mine",
                             permissionName = "TaiSanGetMine",
@@ -1085,7 +885,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 113,
+                            permissionID = 88,
                             code = "tai_san.reject",
                             permissionDescription = "tai_san.reject",
                             permissionName = "TaiSanReject",
@@ -1093,7 +893,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 114,
+                            permissionID = 89,
                             code = "tai_san.update",
                             permissionDescription = "tai_san.update",
                             permissionName = "TaiSanUpdate",
@@ -1101,7 +901,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 115,
+                            permissionID = 90,
                             code = "thanh_ly_tai_san.create",
                             permissionDescription = "thanh_ly_tai_san.create",
                             permissionName = "ThanhLyTaiSanCreate",
@@ -1109,7 +909,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 116,
+                            permissionID = 91,
                             code = "thanh_ly_tai_san.delete",
                             permissionDescription = "thanh_ly_tai_san.delete",
                             permissionName = "ThanhLyTaiSanDelete",
@@ -1117,7 +917,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 117,
+                            permissionID = 92,
                             code = "thanh_ly_tai_san.get_all",
                             permissionDescription = "thanh_ly_tai_san.get_all",
                             permissionName = "ThanhLyTaiSanGetAll",
@@ -1125,7 +925,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 118,
+                            permissionID = 93,
                             code = "thanh_ly_tai_san.get_by_asset",
                             permissionDescription = "thanh_ly_tai_san.get_by_asset",
                             permissionName = "ThanhLyTaiSanGetByAsset",
@@ -1133,7 +933,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 119,
+                            permissionID = 94,
                             code = "thanh_ly_tai_san.get_by_id",
                             permissionDescription = "thanh_ly_tai_san.get_by_id",
                             permissionName = "ThanhLyTaiSanGetById",
@@ -1141,7 +941,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 120,
+                            permissionID = 95,
                             code = "thanh_ly_tai_san.update",
                             permissionDescription = "thanh_ly_tai_san.update",
                             permissionName = "ThanhLyTaiSanUpdate",
@@ -1149,7 +949,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 121,
+                            permissionID = 96,
                             code = "user.admin_get_all",
                             permissionDescription = "user.admin_get_all",
                             permissionName = "UserAdminGetAll",
@@ -1157,7 +957,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 122,
+                            permissionID = 97,
                             code = "user.admin_get_by_id",
                             permissionDescription = "user.admin_get_by_id",
                             permissionName = "UserAdminGetById",
@@ -1165,7 +965,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 123,
+                            permissionID = 98,
                             code = "user.admin_get_slim_by_id",
                             permissionDescription = "user.admin_get_slim_by_id",
                             permissionName = "UserAdminGetSlimById",
@@ -1173,7 +973,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 124,
+                            permissionID = 99,
                             code = "user.delete",
                             permissionDescription = "user.delete",
                             permissionName = "UserDelete",
@@ -1181,7 +981,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 125,
+                            permissionID = 100,
                             code = "user.get_all",
                             permissionDescription = "user.get_all",
                             permissionName = "UserGetAll",
@@ -1189,7 +989,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 126,
+                            permissionID = 101,
                             code = "user.get_all_slim",
                             permissionDescription = "user.get_all_slim",
                             permissionName = "UserGetAllSlim",
@@ -1197,7 +997,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 127,
+                            permissionID = 102,
                             code = "user.get_by_department_id",
                             permissionDescription = "user.get_by_department_id",
                             permissionName = "UserGetByDepartmentId",
@@ -1205,7 +1005,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 128,
+                            permissionID = 103,
                             code = "user.get_me",
                             permissionDescription = "user.get_me",
                             permissionName = "UserGetMe",
@@ -1213,7 +1013,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 129,
+                            permissionID = 104,
                             code = "user.get_slim_by_id",
                             permissionDescription = "user.get_slim_by_id",
                             permissionName = "UserGetSlimById",
@@ -1221,7 +1021,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 130,
+                            permissionID = 105,
                             code = "user_role.admin_assign",
                             permissionDescription = "user_role.admin_assign",
                             permissionName = "UserRoleAdminAssign",
@@ -1229,7 +1029,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 131,
+                            permissionID = 106,
                             code = "user_role.assign",
                             permissionDescription = "user_role.assign",
                             permissionName = "UserRoleAssign",
@@ -1237,7 +1037,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 132,
+                            permissionID = 107,
                             code = "user_session.get_all",
                             permissionDescription = "user_session.get_all",
                             permissionName = "UserSessionGetAll",
@@ -1245,7 +1045,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 133,
+                            permissionID = 108,
                             code = "user_session.get_by_session_id",
                             permissionDescription = "user_session.get_by_session_id",
                             permissionName = "UserSessionGetBySessionId",
@@ -1253,7 +1053,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 134,
+                            permissionID = 109,
                             code = "user_session.get_by_user_id",
                             permissionDescription = "user_session.get_by_user_id",
                             permissionName = "UserSessionGetByUserId",
@@ -1261,7 +1061,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 135,
+                            permissionID = 110,
                             code = "user.update_profile",
                             permissionDescription = "user.update_profile",
                             permissionName = "UserUpdateProfile",
@@ -1269,7 +1069,7 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            permissionID = 136,
+                            permissionID = 111,
                             code = "user.update_username",
                             permissionDescription = "user.update_username",
                             permissionName = "UserUpdateUsername",
@@ -1314,36 +1114,20 @@ namespace TH.WebAPI.Migrations
                             roleID = 1,
                             isDefault = false,
                             roleDescription = "Quản trị viên hệ thống",
-                            roleName = "admin_he_thong",
+                            roleName = "admin",
                             scope = "staff"
                         },
                         new
                         {
                             roleID = 2,
                             isDefault = false,
-                            roleDescription = "Kế toán tài sản cố định",
-                            roleName = "ke_toan_tscd",
+                            roleDescription = "Kế toán",
+                            roleName = "ke_toan",
                             scope = "staff"
                         },
                         new
                         {
-                            roleID = 4,
-                            isDefault = false,
-                            roleDescription = "Kỹ thuật viên",
-                            roleName = "ky_thuat_vien",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            roleID = 5,
-                            isDefault = false,
-                            roleDescription = "Trưởng phòng kỹ thuật",
-                            roleName = "truong_phong_ky_thuat",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            roleID = 6,
+                            roleID = 3,
                             isDefault = false,
                             roleDescription = "Giám đốc",
                             roleName = "giam_doc",
@@ -1351,34 +1135,18 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            roleID = 7,
+                            roleID = 4,
                             isDefault = false,
-                            roleDescription = "Phó giám đốc",
-                            roleName = "pho_giam_doc",
+                            roleDescription = "Trưởng phòng",
+                            roleName = "truong_phong",
                             scope = "staff"
                         },
                         new
                         {
-                            roleID = 8,
-                            isDefault = false,
-                            roleDescription = "Trưởng phòng ban",
-                            roleName = "truong_phong_ban",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            roleID = 9,
+                            roleID = 5,
                             isDefault = true,
                             roleDescription = "Nhân viên",
                             roleName = "nhan_vien",
-                            scope = "staff"
-                        },
-                        new
-                        {
-                            roleID = 10,
-                            isDefault = false,
-                            roleDescription = "Nhân viên nhân sự",
-                            roleName = "nhan_vien_nhan_su",
                             scope = "staff"
                         });
                 });
@@ -2074,392 +1842,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 10112,
-                            permissionID = 112,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10113,
-                            permissionID = 113,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10114,
-                            permissionID = 114,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10115,
-                            permissionID = 115,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10116,
-                            permissionID = 116,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10117,
-                            permissionID = 117,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10118,
-                            permissionID = 118,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10119,
-                            permissionID = 119,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10120,
-                            permissionID = 120,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10121,
-                            permissionID = 121,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10122,
-                            permissionID = 122,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10123,
-                            permissionID = 123,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10124,
-                            permissionID = 124,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10125,
-                            permissionID = 125,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10126,
-                            permissionID = 126,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10127,
-                            permissionID = 127,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10128,
-                            permissionID = 128,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10129,
-                            permissionID = 129,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10130,
-                            permissionID = 130,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10131,
-                            permissionID = 131,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10132,
-                            permissionID = 132,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10133,
-                            permissionID = 133,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10134,
-                            permissionID = 134,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10135,
-                            permissionID = 135,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 10136,
-                            permissionID = 136,
-                            roleID = 1
-                        },
-                        new
-                        {
-                            rolePermissionID = 20016,
-                            permissionID = 16,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20021,
-                            permissionID = 21,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20019,
-                            permissionID = 19,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20017,
-                            permissionID = 17,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20018,
-                            permissionID = 18,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20028,
-                            permissionID = 28,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20020,
-                            permissionID = 20,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20025,
-                            permissionID = 25,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20026,
-                            permissionID = 26,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20022,
-                            permissionID = 22,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20024,
-                            permissionID = 24,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20023,
-                            permissionID = 23,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20027,
-                            permissionID = 27,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20029,
-                            permissionID = 29,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20007,
-                            permissionID = 7,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20005,
-                            permissionID = 5,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20006,
-                            permissionID = 6,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20009,
-                            permissionID = 9,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20010,
-                            permissionID = 10,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20011,
-                            permissionID = 11,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20008,
-                            permissionID = 8,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20002,
-                            permissionID = 2,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20003,
-                            permissionID = 3,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20004,
-                            permissionID = 4,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20001,
-                            permissionID = 1,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20128,
-                            permissionID = 128,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20135,
-                            permissionID = 135,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20136,
-                            permissionID = 136,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20036,
-                            permissionID = 36,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20125,
-                            permissionID = 125,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20126,
-                            permissionID = 126,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20129,
-                            permissionID = 129,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20127,
-                            permissionID = 127,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20090,
-                            permissionID = 90,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20091,
-                            permissionID = 91,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20092,
-                            permissionID = 92,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20073,
-                            permissionID = 73,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20074,
-                            permissionID = 74,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20076,
-                            permissionID = 76,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20075,
-                            permissionID = 75,
+                            rolePermissionID = 20103,
+                            permissionID = 103,
                             roleID = 2
                         },
                         new
@@ -2476,74 +1860,14 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20112,
-                            permissionID = 112,
+                            rolePermissionID = 20011,
+                            permissionID = 11,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20109,
-                            permissionID = 109,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20104,
-                            permissionID = 104,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20103,
-                            permissionID = 103,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20113,
-                            permissionID = 113,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20114,
-                            permissionID = 114,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20047,
-                            permissionID = 47,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20048,
-                            permissionID = 48,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20045,
-                            permissionID = 45,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20049,
-                            permissionID = 49,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20080,
-                            permissionID = 80,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20081,
-                            permissionID = 81,
+                            rolePermissionID = 20004,
+                            permissionID = 4,
                             roleID = 2
                         },
                         new
@@ -2560,8 +1884,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20098,
-                            permissionID = 98,
+                            rolePermissionID = 20104,
+                            permissionID = 104,
                             roleID = 2
                         },
                         new
@@ -2572,176 +1896,38 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 20059,
-                            permissionID = 59,
+                            rolePermissionID = 20065,
+                            permissionID = 65,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20061,
-                            permissionID = 61,
+                            rolePermissionID = 20066,
+                            permissionID = 66,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20060,
-                            permissionID = 60,
+                            rolePermissionID = 20067,
+                            permissionID = 67,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20056,
-                            permissionID = 56,
+                            rolePermissionID = 20048,
+                            permissionID = 48,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20057,
-                            permissionID = 57,
+                            rolePermissionID = 20049,
+                            permissionID = 49,
                             roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 20062,
-                            permissionID = 62,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20058,
-                            permissionID = 58,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20041,
-                            permissionID = 41,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20043,
-                            permissionID = 43,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20042,
-                            permissionID = 42,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20040,
-                            permissionID = 40,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20038,
-                            permissionID = 38,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20044,
-                            permissionID = 44,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20039,
-                            permissionID = 39,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20097,
-                            permissionID = 97,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20096,
-                            permissionID = 96,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20107,
-                            permissionID = 107,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20108,
-                            permissionID = 108,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20117,
-                            permissionID = 117,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20119,
-                            permissionID = 119,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20118,
-                            permissionID = 118,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20115,
-                            permissionID = 115,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20120,
-                            permissionID = 120,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20032,
-                            permissionID = 32,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20034,
-                            permissionID = 34,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20033,
-                            permissionID = 33,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20052,
-                            permissionID = 52,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20054,
-                            permissionID = 54,
-                            roleID = 2
-                        },
-                        new
-                        {
-                            rolePermissionID = 20053,
-                            permissionID = 53,
+                            rolePermissionID = 20051,
+                            permissionID = 51,
                             roleID = 2
                         },
                         new
@@ -2752,176 +1938,596 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 40016,
-                            permissionID = 16,
-                            roleID = 4
+                            rolePermissionID = 20085,
+                            permissionID = 85,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40021,
-                            permissionID = 21,
-                            roleID = 4
+                            rolePermissionID = 20086,
+                            permissionID = 86,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40019,
-                            permissionID = 19,
-                            roleID = 4
+                            rolePermissionID = 20087,
+                            permissionID = 87,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40017,
-                            permissionID = 17,
-                            roleID = 4
+                            rolePermissionID = 20084,
+                            permissionID = 84,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40018,
-                            permissionID = 18,
-                            roleID = 4
+                            rolePermissionID = 20079,
+                            permissionID = 79,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40028,
-                            permissionID = 28,
-                            roleID = 4
+                            rolePermissionID = 20078,
+                            permissionID = 78,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40020,
-                            permissionID = 20,
-                            roleID = 4
+                            rolePermissionID = 20088,
+                            permissionID = 88,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40025,
-                            permissionID = 25,
-                            roleID = 4
+                            rolePermissionID = 20089,
+                            permissionID = 89,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40026,
-                            permissionID = 26,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40022,
+                            rolePermissionID = 20022,
                             permissionID = 22,
-                            roleID = 4
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40024,
-                            permissionID = 24,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40023,
+                            rolePermissionID = 20023,
                             permissionID = 23,
-                            roleID = 4
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40027,
-                            permissionID = 27,
-                            roleID = 4
+                            rolePermissionID = 20020,
+                            permissionID = 20,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40029,
-                            permissionID = 29,
-                            roleID = 4
+                            rolePermissionID = 20024,
+                            permissionID = 24,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40007,
-                            permissionID = 7,
-                            roleID = 4
+                            rolePermissionID = 20055,
+                            permissionID = 55,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40005,
-                            permissionID = 5,
-                            roleID = 4
+                            rolePermissionID = 20056,
+                            permissionID = 56,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40006,
-                            permissionID = 6,
-                            roleID = 4
+                            rolePermissionID = 20075,
+                            permissionID = 75,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40009,
-                            permissionID = 9,
-                            roleID = 4
+                            rolePermissionID = 20076,
+                            permissionID = 76,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40010,
-                            permissionID = 10,
-                            roleID = 4
+                            rolePermissionID = 20073,
+                            permissionID = 73,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40011,
-                            permissionID = 11,
-                            roleID = 4
+                            rolePermissionID = 20077,
+                            permissionID = 77,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40008,
-                            permissionID = 8,
-                            roleID = 4
+                            rolePermissionID = 20034,
+                            permissionID = 34,
+                            roleID = 2
                         },
                         new
                         {
-                            rolePermissionID = 40002,
-                            permissionID = 2,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40003,
-                            permissionID = 3,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40004,
-                            permissionID = 4,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40001,
-                            permissionID = 1,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40128,
-                            permissionID = 128,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40135,
-                            permissionID = 135,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40136,
-                            permissionID = 136,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40036,
+                            rolePermissionID = 20036,
                             permissionID = 36,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20035,
+                            permissionID = 35,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20031,
+                            permissionID = 31,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20032,
+                            permissionID = 32,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20037,
+                            permissionID = 37,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20033,
+                            permissionID = 33,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20016,
+                            permissionID = 16,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20018,
+                            permissionID = 18,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20017,
+                            permissionID = 17,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20015,
+                            permissionID = 15,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20013,
+                            permissionID = 13,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20019,
+                            permissionID = 19,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20014,
+                            permissionID = 14,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20072,
+                            permissionID = 72,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20071,
+                            permissionID = 71,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20082,
+                            permissionID = 82,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20083,
+                            permissionID = 83,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20092,
+                            permissionID = 92,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20094,
+                            permissionID = 94,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20093,
+                            permissionID = 93,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20090,
+                            permissionID = 90,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20095,
+                            permissionID = 95,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20007,
+                            permissionID = 7,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20009,
+                            permissionID = 9,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20008,
+                            permissionID = 8,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20027,
+                            permissionID = 27,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20029,
+                            permissionID = 29,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20028,
+                            permissionID = 28,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 20025,
+                            permissionID = 25,
+                            roleID = 2
+                        },
+                        new
+                        {
+                            rolePermissionID = 30103,
+                            permissionID = 103,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30110,
+                            permissionID = 110,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30111,
+                            permissionID = 111,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30011,
+                            permissionID = 11,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30100,
+                            permissionID = 100,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30101,
+                            permissionID = 101,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30104,
+                            permissionID = 104,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30102,
+                            permissionID = 102,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30065,
+                            permissionID = 65,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30066,
+                            permissionID = 66,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30067,
+                            permissionID = 67,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30048,
+                            permissionID = 48,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30049,
+                            permissionID = 49,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30051,
+                            permissionID = 51,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30050,
+                            permissionID = 50,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30085,
+                            permissionID = 85,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30086,
+                            permissionID = 86,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30087,
+                            permissionID = 87,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30078,
+                            permissionID = 78,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30088,
+                            permissionID = 88,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30022,
+                            permissionID = 22,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30023,
+                            permissionID = 23,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30055,
+                            permissionID = 55,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30056,
+                            permissionID = 56,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30075,
+                            permissionID = 75,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30076,
+                            permissionID = 76,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30034,
+                            permissionID = 34,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30036,
+                            permissionID = 36,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30035,
+                            permissionID = 35,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30016,
+                            permissionID = 16,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30018,
+                            permissionID = 18,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30017,
+                            permissionID = 17,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30072,
+                            permissionID = 72,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30071,
+                            permissionID = 71,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30082,
+                            permissionID = 82,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30092,
+                            permissionID = 92,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30094,
+                            permissionID = 94,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30093,
+                            permissionID = 93,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30007,
+                            permissionID = 7,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30009,
+                            permissionID = 9,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30008,
+                            permissionID = 8,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30027,
+                            permissionID = 27,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30029,
+                            permissionID = 29,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30028,
+                            permissionID = 28,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30107,
+                            permissionID = 107,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30109,
+                            permissionID = 109,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30108,
+                            permissionID = 108,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30001,
+                            permissionID = 1,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30002,
+                            permissionID = 2,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 30003,
+                            permissionID = 3,
+                            roleID = 3
+                        },
+                        new
+                        {
+                            rolePermissionID = 40103,
+                            permissionID = 103,
                             roleID = 4
                         },
                         new
@@ -2938,38 +2544,98 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 40112,
-                            permissionID = 112,
+                            rolePermissionID = 40011,
+                            permissionID = 11,
                             roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 40047,
-                            permissionID = 47,
+                            rolePermissionID = 40101,
+                            permissionID = 101,
                             roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 40048,
-                            permissionID = 48,
+                            rolePermissionID = 40104,
+                            permissionID = 104,
                             roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 40080,
-                            permissionID = 80,
+                            rolePermissionID = 40102,
+                            permissionID = 102,
                             roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 40081,
-                            permissionID = 81,
+                            rolePermissionID = 40085,
+                            permissionID = 85,
                             roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 40032,
-                            permissionID = 32,
+                            rolePermissionID = 40086,
+                            permissionID = 86,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40087,
+                            permissionID = 87,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40079,
+                            permissionID = 79,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40078,
+                            permissionID = 78,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40088,
+                            permissionID = 88,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40022,
+                            permissionID = 22,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40023,
+                            permissionID = 23,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40055,
+                            permissionID = 55,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40056,
+                            permissionID = 56,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40082,
+                            permissionID = 82,
+                            roleID = 4
+                        },
+                        new
+                        {
+                            rolePermissionID = 40083,
+                            permissionID = 83,
                             roleID = 4
                         },
                         new
@@ -2980,14 +2646,8 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 40033,
-                            permissionID = 33,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40030,
-                            permissionID = 30,
+                            rolePermissionID = 40036,
+                            permissionID = 36,
                             roleID = 4
                         },
                         new
@@ -2998,254 +2658,98 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 40031,
-                            permissionID = 31,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40052,
-                            permissionID = 52,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40054,
-                            permissionID = 54,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40053,
-                            permissionID = 53,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40050,
-                            permissionID = 50,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40107,
-                            permissionID = 107,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40108,
-                            permissionID = 108,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40059,
-                            permissionID = 59,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40061,
-                            permissionID = 61,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40060,
-                            permissionID = 60,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40041,
-                            permissionID = 41,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40043,
-                            permissionID = 43,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 40042,
-                            permissionID = 42,
-                            roleID = 4
-                        },
-                        new
-                        {
-                            rolePermissionID = 50016,
+                            rolePermissionID = 40016,
                             permissionID = 16,
-                            roleID = 5
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50021,
-                            permissionID = 21,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50019,
-                            permissionID = 19,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50017,
-                            permissionID = 17,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50018,
+                            rolePermissionID = 40018,
                             permissionID = 18,
-                            roleID = 5
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50028,
-                            permissionID = 28,
-                            roleID = 5
+                            rolePermissionID = 40017,
+                            permissionID = 17,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50020,
-                            permissionID = 20,
-                            roleID = 5
+                            rolePermissionID = 40092,
+                            permissionID = 92,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50025,
-                            permissionID = 25,
-                            roleID = 5
+                            rolePermissionID = 40094,
+                            permissionID = 94,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50026,
-                            permissionID = 26,
-                            roleID = 5
+                            rolePermissionID = 40093,
+                            permissionID = 93,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50022,
-                            permissionID = 22,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50024,
-                            permissionID = 24,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50023,
-                            permissionID = 23,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50027,
-                            permissionID = 27,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50029,
-                            permissionID = 29,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50007,
+                            rolePermissionID = 40007,
                             permissionID = 7,
-                            roleID = 5
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50005,
-                            permissionID = 5,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50006,
-                            permissionID = 6,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50009,
+                            rolePermissionID = 40009,
                             permissionID = 9,
-                            roleID = 5
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50010,
-                            permissionID = 10,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50011,
-                            permissionID = 11,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50008,
+                            rolePermissionID = 40008,
                             permissionID = 8,
-                            roleID = 5
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50002,
-                            permissionID = 2,
-                            roleID = 5
+                            rolePermissionID = 40005,
+                            permissionID = 5,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50003,
-                            permissionID = 3,
-                            roleID = 5
+                            rolePermissionID = 40010,
+                            permissionID = 10,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50004,
-                            permissionID = 4,
-                            roleID = 5
+                            rolePermissionID = 40027,
+                            permissionID = 27,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50001,
-                            permissionID = 1,
-                            roleID = 5
+                            rolePermissionID = 40029,
+                            permissionID = 29,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50128,
-                            permissionID = 128,
-                            roleID = 5
+                            rolePermissionID = 40028,
+                            permissionID = 28,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50135,
-                            permissionID = 135,
-                            roleID = 5
+                            rolePermissionID = 40025,
+                            permissionID = 25,
+                            roleID = 4
                         },
                         new
                         {
-                            rolePermissionID = 50136,
-                            permissionID = 136,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50036,
-                            permissionID = 36,
+                            rolePermissionID = 50103,
+                            permissionID = 103,
                             roleID = 5
                         },
                         new
@@ -3262,140 +2766,32 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 50112,
-                            permissionID = 112,
+                            rolePermissionID = 50011,
+                            permissionID = 11,
                             roleID = 5
                         },
                         new
                         {
-                            rolePermissionID = 50047,
-                            permissionID = 47,
+                            rolePermissionID = 50087,
+                            permissionID = 87,
                             roleID = 5
                         },
                         new
                         {
-                            rolePermissionID = 50048,
-                            permissionID = 48,
+                            rolePermissionID = 50086,
+                            permissionID = 86,
                             roleID = 5
                         },
                         new
                         {
-                            rolePermissionID = 50080,
-                            permissionID = 80,
+                            rolePermissionID = 50022,
+                            permissionID = 22,
                             roleID = 5
                         },
                         new
                         {
-                            rolePermissionID = 50081,
-                            permissionID = 81,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50032,
-                            permissionID = 32,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50034,
-                            permissionID = 34,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50033,
-                            permissionID = 33,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50030,
-                            permissionID = 30,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50035,
-                            permissionID = 35,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50031,
-                            permissionID = 31,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50052,
-                            permissionID = 52,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50054,
-                            permissionID = 54,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50053,
-                            permissionID = 53,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50050,
-                            permissionID = 50,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50107,
-                            permissionID = 107,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50108,
-                            permissionID = 108,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50059,
-                            permissionID = 59,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50061,
-                            permissionID = 61,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50060,
-                            permissionID = 60,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50041,
-                            permissionID = 41,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50043,
-                            permissionID = 43,
-                            roleID = 5
-                        },
-                        new
-                        {
-                            rolePermissionID = 50042,
-                            permissionID = 42,
+                            rolePermissionID = 50023,
+                            permissionID = 23,
                             roleID = 5
                         },
                         new
@@ -3406,1791 +2802,75 @@ namespace TH.WebAPI.Migrations
                         },
                         new
                         {
-                            rolePermissionID = 50051,
-                            permissionID = 51,
+                            rolePermissionID = 50056,
+                            permissionID = 56,
                             roleID = 5
                         },
                         new
                         {
-                            rolePermissionID = 60016,
-                            permissionID = 16,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60021,
-                            permissionID = 21,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60019,
-                            permissionID = 19,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60017,
-                            permissionID = 17,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60018,
-                            permissionID = 18,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60028,
-                            permissionID = 28,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60020,
-                            permissionID = 20,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60025,
-                            permissionID = 25,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60026,
-                            permissionID = 26,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60022,
-                            permissionID = 22,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60024,
-                            permissionID = 24,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60023,
-                            permissionID = 23,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60027,
-                            permissionID = 27,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60029,
-                            permissionID = 29,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60007,
-                            permissionID = 7,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60005,
-                            permissionID = 5,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60006,
-                            permissionID = 6,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60009,
-                            permissionID = 9,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60010,
-                            permissionID = 10,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60011,
-                            permissionID = 11,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60008,
-                            permissionID = 8,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60002,
-                            permissionID = 2,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60003,
-                            permissionID = 3,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60004,
-                            permissionID = 4,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60001,
-                            permissionID = 1,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60128,
-                            permissionID = 128,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60135,
-                            permissionID = 135,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60136,
-                            permissionID = 136,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60036,
-                            permissionID = 36,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60125,
-                            permissionID = 125,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60126,
-                            permissionID = 126,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60129,
-                            permissionID = 129,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60127,
-                            permissionID = 127,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60090,
-                            permissionID = 90,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60091,
-                            permissionID = 91,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60092,
-                            permissionID = 92,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60073,
-                            permissionID = 73,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60074,
-                            permissionID = 74,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60076,
-                            permissionID = 76,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60075,
-                            permissionID = 75,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60110,
-                            permissionID = 110,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60111,
-                            permissionID = 111,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60112,
-                            permissionID = 112,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60047,
-                            permissionID = 47,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60048,
-                            permissionID = 48,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60080,
-                            permissionID = 80,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60081,
-                            permissionID = 81,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60100,
-                            permissionID = 100,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60101,
-                            permissionID = 101,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60059,
-                            permissionID = 59,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60061,
-                            permissionID = 61,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60060,
-                            permissionID = 60,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60041,
-                            permissionID = 41,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60043,
-                            permissionID = 43,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60042,
-                            permissionID = 42,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60097,
-                            permissionID = 97,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60096,
-                            permissionID = 96,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60107,
-                            permissionID = 107,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60117,
-                            permissionID = 117,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60119,
-                            permissionID = 119,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60118,
-                            permissionID = 118,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60032,
-                            permissionID = 32,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60034,
-                            permissionID = 34,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60033,
-                            permissionID = 33,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60052,
-                            permissionID = 52,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60054,
-                            permissionID = 54,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60053,
-                            permissionID = 53,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60132,
-                            permissionID = 132,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60134,
-                            permissionID = 134,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60133,
-                            permissionID = 133,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60012,
-                            permissionID = 12,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60013,
-                            permissionID = 13,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 60014,
-                            permissionID = 14,
-                            roleID = 6
-                        },
-                        new
-                        {
-                            rolePermissionID = 70016,
-                            permissionID = 16,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70021,
-                            permissionID = 21,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70019,
-                            permissionID = 19,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70017,
-                            permissionID = 17,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70018,
-                            permissionID = 18,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70028,
-                            permissionID = 28,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70020,
-                            permissionID = 20,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70025,
-                            permissionID = 25,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70026,
-                            permissionID = 26,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70022,
-                            permissionID = 22,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70024,
-                            permissionID = 24,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70023,
-                            permissionID = 23,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70027,
-                            permissionID = 27,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70029,
-                            permissionID = 29,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70007,
-                            permissionID = 7,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70005,
-                            permissionID = 5,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70006,
-                            permissionID = 6,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70009,
-                            permissionID = 9,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70010,
-                            permissionID = 10,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70011,
-                            permissionID = 11,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70008,
-                            permissionID = 8,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70002,
-                            permissionID = 2,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70003,
-                            permissionID = 3,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70004,
-                            permissionID = 4,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70001,
-                            permissionID = 1,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70128,
-                            permissionID = 128,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70135,
-                            permissionID = 135,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70136,
-                            permissionID = 136,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70036,
-                            permissionID = 36,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70125,
-                            permissionID = 125,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70126,
-                            permissionID = 126,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70129,
-                            permissionID = 129,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70127,
-                            permissionID = 127,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70090,
-                            permissionID = 90,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70091,
-                            permissionID = 91,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70092,
-                            permissionID = 92,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70073,
-                            permissionID = 73,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70074,
-                            permissionID = 74,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70076,
-                            permissionID = 76,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70075,
-                            permissionID = 75,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70110,
-                            permissionID = 110,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70111,
-                            permissionID = 111,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70112,
-                            permissionID = 112,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70047,
-                            permissionID = 47,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70048,
-                            permissionID = 48,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70080,
-                            permissionID = 80,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70081,
-                            permissionID = 81,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70100,
-                            permissionID = 100,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70101,
-                            permissionID = 101,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70059,
-                            permissionID = 59,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70061,
-                            permissionID = 61,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70060,
-                            permissionID = 60,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70041,
-                            permissionID = 41,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70043,
-                            permissionID = 43,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70042,
-                            permissionID = 42,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70097,
-                            permissionID = 97,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70096,
-                            permissionID = 96,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70107,
-                            permissionID = 107,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70117,
-                            permissionID = 117,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70119,
-                            permissionID = 119,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70118,
-                            permissionID = 118,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70032,
-                            permissionID = 32,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70034,
-                            permissionID = 34,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70033,
-                            permissionID = 33,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70052,
-                            permissionID = 52,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70054,
-                            permissionID = 54,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70053,
-                            permissionID = 53,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70132,
-                            permissionID = 132,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70134,
-                            permissionID = 134,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70133,
-                            permissionID = 133,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70012,
-                            permissionID = 12,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70013,
-                            permissionID = 13,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 70014,
-                            permissionID = 14,
-                            roleID = 7
-                        },
-                        new
-                        {
-                            rolePermissionID = 80016,
-                            permissionID = 16,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80021,
-                            permissionID = 21,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80019,
-                            permissionID = 19,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80017,
-                            permissionID = 17,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80018,
-                            permissionID = 18,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80028,
-                            permissionID = 28,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80020,
-                            permissionID = 20,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80025,
-                            permissionID = 25,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80026,
-                            permissionID = 26,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80022,
-                            permissionID = 22,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80024,
-                            permissionID = 24,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80023,
-                            permissionID = 23,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80027,
-                            permissionID = 27,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80029,
-                            permissionID = 29,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80007,
-                            permissionID = 7,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80005,
-                            permissionID = 5,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80006,
-                            permissionID = 6,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80009,
-                            permissionID = 9,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80010,
-                            permissionID = 10,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80011,
-                            permissionID = 11,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80008,
-                            permissionID = 8,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80002,
-                            permissionID = 2,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80003,
-                            permissionID = 3,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80004,
-                            permissionID = 4,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80001,
-                            permissionID = 1,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80128,
-                            permissionID = 128,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80135,
-                            permissionID = 135,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80136,
-                            permissionID = 136,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80036,
-                            permissionID = 36,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80126,
-                            permissionID = 126,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80129,
-                            permissionID = 129,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80127,
-                            permissionID = 127,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80110,
-                            permissionID = 110,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80111,
-                            permissionID = 111,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80112,
-                            permissionID = 112,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80047,
-                            permissionID = 47,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80048,
-                            permissionID = 48,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80080,
-                            permissionID = 80,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80081,
-                            permissionID = 81,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80107,
-                            permissionID = 107,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80032,
-                            permissionID = 32,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80034,
-                            permissionID = 34,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80033,
-                            permissionID = 33,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80030,
-                            permissionID = 30,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80052,
-                            permissionID = 52,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80054,
-                            permissionID = 54,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80053,
-                            permissionID = 53,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80050,
-                            permissionID = 50,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80117,
-                            permissionID = 117,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80119,
-                            permissionID = 119,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80118,
-                            permissionID = 118,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80059,
-                            permissionID = 59,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80061,
-                            permissionID = 61,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80060,
-                            permissionID = 60,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80103,
-                            permissionID = 103,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 80113,
-                            permissionID = 113,
-                            roleID = 8
-                        },
-                        new
-                        {
-                            rolePermissionID = 90016,
-                            permissionID = 16,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90021,
-                            permissionID = 21,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90019,
-                            permissionID = 19,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90017,
-                            permissionID = 17,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90018,
-                            permissionID = 18,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90028,
-                            permissionID = 28,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90020,
-                            permissionID = 20,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90025,
-                            permissionID = 25,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90026,
-                            permissionID = 26,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90022,
-                            permissionID = 22,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90024,
-                            permissionID = 24,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90023,
-                            permissionID = 23,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90027,
-                            permissionID = 27,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90029,
-                            permissionID = 29,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90007,
-                            permissionID = 7,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90005,
-                            permissionID = 5,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90006,
-                            permissionID = 6,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90009,
-                            permissionID = 9,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90010,
-                            permissionID = 10,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90011,
-                            permissionID = 11,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90008,
-                            permissionID = 8,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90002,
-                            permissionID = 2,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90003,
-                            permissionID = 3,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90004,
-                            permissionID = 4,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90001,
-                            permissionID = 1,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90128,
-                            permissionID = 128,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90135,
-                            permissionID = 135,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90136,
-                            permissionID = 136,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90036,
-                            permissionID = 36,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90112,
-                            permissionID = 112,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90111,
-                            permissionID = 111,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90103,
-                            permissionID = 103,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90113,
-                            permissionID = 113,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90047,
-                            permissionID = 47,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90048,
-                            permissionID = 48,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90080,
-                            permissionID = 80,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90081,
-                            permissionID = 81,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90107,
-                            permissionID = 107,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90034,
-                            permissionID = 34,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90033,
-                            permissionID = 33,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90030,
-                            permissionID = 30,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90054,
-                            permissionID = 54,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90053,
-                            permissionID = 53,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 90050,
-                            permissionID = 50,
-                            roleID = 9
-                        },
-                        new
-                        {
-                            rolePermissionID = 100016,
-                            permissionID = 16,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100021,
-                            permissionID = 21,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100019,
-                            permissionID = 19,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100017,
-                            permissionID = 17,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100018,
-                            permissionID = 18,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100028,
-                            permissionID = 28,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100020,
-                            permissionID = 20,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100025,
-                            permissionID = 25,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100026,
-                            permissionID = 26,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100022,
-                            permissionID = 22,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100024,
-                            permissionID = 24,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100023,
-                            permissionID = 23,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100027,
-                            permissionID = 27,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100029,
-                            permissionID = 29,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100007,
-                            permissionID = 7,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100005,
-                            permissionID = 5,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100006,
-                            permissionID = 6,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100009,
-                            permissionID = 9,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100010,
-                            permissionID = 10,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100011,
-                            permissionID = 11,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100008,
-                            permissionID = 8,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100002,
-                            permissionID = 2,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100003,
-                            permissionID = 3,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100004,
-                            permissionID = 4,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100001,
-                            permissionID = 1,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100128,
-                            permissionID = 128,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100135,
-                            permissionID = 135,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100136,
-                            permissionID = 136,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100036,
-                            permissionID = 36,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100112,
-                            permissionID = 112,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100111,
-                            permissionID = 111,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100103,
-                            permissionID = 103,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100113,
-                            permissionID = 113,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100047,
-                            permissionID = 47,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100048,
-                            permissionID = 48,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100080,
-                            permissionID = 80,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100081,
-                            permissionID = 81,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100107,
-                            permissionID = 107,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100034,
-                            permissionID = 34,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100033,
-                            permissionID = 33,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100030,
-                            permissionID = 30,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100054,
-                            permissionID = 54,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100053,
-                            permissionID = 53,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100050,
-                            permissionID = 50,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100125,
-                            permissionID = 125,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100126,
-                            permissionID = 126,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100129,
-                            permissionID = 129,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100127,
-                            permissionID = 127,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100078,
-                            permissionID = 78,
-                            roleID = 10
-                        },
-                        new
-                        {
-                            rolePermissionID = 100082,
+                            rolePermissionID = 50082,
                             permissionID = 82,
-                            roleID = 10
+                            roleID = 5
                         },
                         new
                         {
-                            rolePermissionID = 100134,
-                            permissionID = 134,
-                            roleID = 10
+                            rolePermissionID = 50036,
+                            permissionID = 36,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50035,
+                            permissionID = 35,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50018,
+                            permissionID = 18,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50017,
+                            permissionID = 17,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50009,
+                            permissionID = 9,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50008,
+                            permissionID = 8,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50005,
+                            permissionID = 5,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50029,
+                            permissionID = 29,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50028,
+                            permissionID = 28,
+                            roleID = 5
+                        },
+                        new
+                        {
+                            rolePermissionID = 50025,
+                            permissionID = 25,
+                            roleID = 5
                         });
                 });
 
@@ -5222,31 +2902,31 @@ namespace TH.WebAPI.Migrations
                         new
                         {
                             userID = 1,
-                            roleID = 6,
+                            roleID = 3,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 2,
-                            roleID = 7,
+                            roleID = 3,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 3,
-                            roleID = 7,
+                            roleID = 3,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 4,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 5,
-                            roleID = 8,
+                            roleID = 4,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -5264,181 +2944,175 @@ namespace TH.WebAPI.Migrations
                         new
                         {
                             userID = 7,
-                            roleID = 9,
+                            roleID = 2,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 8,
-                            roleID = 9,
+                            roleID = 2,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 9,
-                            roleID = 9,
+                            roleID = 2,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 10,
-                            roleID = 8,
-                            assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            userID = 10,
-                            roleID = 10,
+                            roleID = 4,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 11,
-                            roleID = 10,
-                            assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            userID = 12,
                             roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            userID = 13,
+                            userID = 12,
                             roleID = 4,
+                            assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            userID = 13,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 14,
-                            roleID = 4,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 15,
-                            roleID = 8,
+                            roleID = 4,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 16,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 17,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 18,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 19,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 20,
-                            roleID = 8,
+                            roleID = 4,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 21,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 22,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 23,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 24,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 25,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 26,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 27,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 28,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 29,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 30,
-                            roleID = 8,
+                            roleID = 4,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 31,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 32,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 33,
-                            roleID = 8,
+                            roleID = 4,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 34,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             userID = 35,
-                            roleID = 9,
+                            roleID = 5,
                             assignedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });

@@ -10,44 +10,7 @@ namespace TH.Constant
     {
         public static readonly Dictionary<string, string> Permissions = new()
         {
-            // ============================================
-            // AUTH - Login (api/Login)
-            // ============================================
-            { "AuthLogin",                  "auth.login" },                    // POST userLogin
-            { "AuthLoginStaff",             "auth.login_staff" },              // POST StaffLogin
-            { "AuthLoginMobile",            "auth.login_mobile" },             // POST login/mobile
-            { "AuthLoginGoogle",            "auth.login_google" },             // GET  google-login
-            { "AuthLoginGoogleCallback",    "auth.login_google_callback" },    // GET  google/callback
-            { "AuthSigninGoogle",           "auth.signin_google" },            // GET  signin-google
-            { "AuthLoginMobileGoogle",      "auth.login_mobile_google" },      // POST login/mobile/google
-            { "AuthMfaVerify",              "auth.mfa_verify" },               // POST mfa/verify
-            { "AuthRefresh",                "auth.refresh" },                  // POST auth/refresh
-            { "AuthLogout",                 "auth.logout" },                   // POST logout
-            { "AuthLogoutSession",          "auth.logout_session" },           // POST logout/session/{sessionId}
-            { "AuthLogoutAll",              "auth.logout_all" },               // POST logout/all
-
-            // ============================================
-            // AUTH - Register (api/Register)
-            // ============================================
-            { "AuthRegister",               "auth.register" },                 // POST Register
-            { "AuthVerifyRegisterEmail",    "auth.verify_register_email" },    // POST verifyRegisterEmail
             { "AuthCreateUser",             "auth.create_user" },              // POST createUser
-
-            // ============================================
-            // AUTH - Account (api/Account)
-            // ============================================
-            { "AccountMfaTotpStart",              "account.mfa_totp_start" },              // POST mfa/totp/start
-            { "AccountMfaTotpConfirm",            "account.mfa_totp_confirm" },            // POST mfa/totp/confirm
-            { "AccountMfaTotpDisable",            "account.mfa_totp_disable" },            // POST mfa/totp/disable
-            { "AccountPasswordChangeEmailStart",  "account.password_change_email_start" }, // POST password/change/email/start
-            { "AccountPasswordChangeEmailVerify", "account.password_change_email_verify"}, // POST password/change/email/verify
-            { "AccountPasswordChangeMfaVerify",   "account.password_change_mfa_verify" },  // POST password/change/mfa/verify
-            { "AccountPasswordChangeCommit",      "account.password_change_commit" },      // POST password/change/commit
-            { "AccountForgotEmailStart",          "account.forgot_email_start" },          // POST password/forgot/email/start
-            { "AccountForgotEmailVerify",         "account.forgot_email_verify" },         // POST password/forgot/email/verify
-            { "AccountForgotMfaVerify",           "account.forgot_mfa_verify" },           // POST password/forgot/mfa/verify
-            { "AccountForgotCommit",              "account.forgot_commit" },               // POST password/forgot/commit
-
             // ============================================
             // USER (api/User)
             // ============================================
