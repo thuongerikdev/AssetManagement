@@ -283,39 +283,66 @@ namespace TH.Asset.ApplicationService.Service
         }
 
         // ==========================================
-        // 3. XÓA TÀI SẢN
+        // 3. XÓA TÀI SẢN (XÓA TOÀN BỘ DỮ LIỆU LIÊN QUAN)
         // ==========================================
         public async Task<ResponseDto<bool>> DeleteTaiSanAsync(int id)
         {
-            try
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                var taiSan = await _dbContext.taiSans.FirstOrDefaultAsync(x => x.Id == id);
-                if (taiSan == null)
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
                 {
-                    return ResponseConst.Error<bool>(404, "Không tìm thấy tài sản.");
+                    var taiSan = await _dbContext.taiSans.FirstOrDefaultAsync(x => x.Id == id);
+                    if (taiSan == null)
+                        return ResponseConst.Error<bool>(404, "Không tìm thấy tài sản.");
+
+                    // 1. Lấy danh sách ChungTuId liên quan đến tài sản này (qua ChiTietChungTu)
+                    var chungTuIds = await _dbContext.chiTietChungTus
+                        .Where(x => x.TaiSanId == id)
+                        .Select(x => x.ChungTuId)
+                        .Distinct()
+                        .ToListAsync();
+
+                    // 2. Xóa LichSuKhauHao của tài sản này trước (tránh conflict FK kép với TaiSan và ChungTu)
+                    var lichSuList = await _dbContext.lichSuKhauHaos.Where(x => x.TaiSanId == id).ToListAsync();
+                    if (lichSuList.Any())
+                    {
+                        _dbContext.lichSuKhauHaos.RemoveRange(lichSuList);
+                        await _dbContext.SaveChangesAsync();
+                    }
+
+                    // 3. Xóa các ChungTu liên quan (cascade tự xóa ChiTietChungTu)
+                    if (chungTuIds.Any())
+                    {
+                        var chungTuList = await _dbContext.chungTus.Where(x => chungTuIds.Contains(x.Id)).ToListAsync();
+                        _dbContext.chungTus.RemoveRange(chungTuList);
+                        await _dbContext.SaveChangesAsync();
+                    }
+
+                    // 4. Xóa file đính kèm
+                    var dinhKemList = await _dbContext.taiSanDinhKems.Where(x => x.TaiSanId == id).ToListAsync();
+                    if (dinhKemList.Any())
+                    {
+                        _dbContext.taiSanDinhKems.RemoveRange(dinhKemList);
+                        await _dbContext.SaveChangesAsync();
+                    }
+
+                    // 5. Xóa tài sản — cascade tự xóa: DieuChuyenTaiSan, BaoTriTaiSan, ThanhLyTaiSan, LichSuKhauHao còn lại
+                    _dbContext.taiSans.Remove(taiSan);
+                    await _dbContext.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return ResponseConst.Success("Xóa tài sản và toàn bộ dữ liệu liên quan thành công.", true);
                 }
-
-                // Kiểm tra xem tài sản đã có phát sinh lịch sử chưa
-                var isUsed = await _dbContext.lichSuKhauHaos.AnyAsync(x => x.TaiSanId == id) ||
-                             await _dbContext.dieuChuyenTaiSans.AnyAsync(x => x.TaiSanId == id) ||
-                             await _dbContext.baoTriTaiSans.AnyAsync(x => x.TaiSanId == id) ||
-                             await _dbContext.chiTietChungTus.AnyAsync(x => x.TaiSanId == id);
-
-                if (isUsed)
+                catch (Exception ex)
                 {
-                    return ResponseConst.Error<bool>(400, "Tài sản này đã phát sinh giao dịch/lịch sử. Không thể xóa hoàn toàn, vui lòng thực hiện Thanh lý.");
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Lỗi khi xóa tài sản. ID: {Id}", id);
+                    return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
                 }
-
-                _dbContext.taiSans.Remove(taiSan);
-                await _dbContext.SaveChangesAsync();
-
-                return ResponseConst.Success("Xóa tài sản thành công.", true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi xóa tài sản. ID: {Id}", id);
-                return ResponseConst.Error<bool>(500, "Lỗi hệ thống: " + ex.Message);
-            }
+            });
         }
 
         // ==========================================
