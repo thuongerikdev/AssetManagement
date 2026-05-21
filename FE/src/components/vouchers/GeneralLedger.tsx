@@ -280,8 +280,12 @@ export function GeneralLedger() {
       <td className="px-4 py-3 text-gray-500 text-xs">—</td>
       <td className="px-4 py-3 text-gray-500 text-xs">—</td>
       <td className="px-4 py-3 text-gray-700">Số dư đầu kỳ</td>
-      <td className="px-4 py-3 text-right text-gray-400">—</td>
-      <td className="px-4 py-3 text-right text-gray-400">—</td>
+      <td className="px-4 py-3 text-right text-yellow-700">
+        {data.soDuDauKy >= 0 ? fmtFull(data.soDuDauKy) : <span className="text-gray-300">—</span>}
+      </td>
+      <td className="px-4 py-3 text-right text-yellow-700">
+        {data.soDuDauKy < 0 ? fmtFull(Math.abs(data.soDuDauKy)) : <span className="text-gray-300">—</span>}
+      </td>
     </tr>
 
     {/* Các dòng phát sinh */}
@@ -332,9 +336,11 @@ export function GeneralLedger() {
       <td className="px-4 py-3" colSpan={3}>
         <span className="text-blue-800 text-sm">Số dư cuối kỳ</span>
       </td>
-      <td className="px-4 py-3 text-right text-gray-400">—</td>
       <td className="px-4 py-3 text-right text-blue-800 text-base">
-        {fmtFull(data.soDuCuoiKy)}
+        {data.soDuCuoiKy >= 0 ? fmtFull(data.soDuCuoiKy) : <span className="text-gray-300">—</span>}
+      </td>
+      <td className="px-4 py-3 text-right text-blue-800 text-base">
+        {data.soDuCuoiKy < 0 ? fmtFull(Math.abs(data.soDuCuoiKy)) : <span className="text-gray-300">—</span>}
       </td>
     </tr>
   </tbody>
