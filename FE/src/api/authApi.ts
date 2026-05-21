@@ -42,6 +42,16 @@ export interface CreateUserRequest {
   dateOfBirth?: string;
 }
 
+export interface UpdateUserProfileRequest {
+  userID: number;
+  newUserName: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  departmentID?: string;
+}
+
 export interface Department {
   id: number;
   maPhongBan: string;
@@ -58,6 +68,17 @@ export const authApi = {
   getUserById: (id: number) => apiClient.get(`/user/admin/getUserById?userId=${id}`),
   deleteUser: (id: number) => apiClient.delete(`/user/deleteUser?userId=${id}`),
   createUser: (data: CreateUserRequest) => apiClient.post('/Register/createUser', data),
+  updateUserProfile: (data: UpdateUserProfileRequest) => {
+    const formData = new FormData();
+    formData.append('userID', String(data.userID));
+    formData.append('newUserName', data.newUserName);
+    if (data.firstName !== undefined) formData.append('firstName', data.firstName);
+    if (data.lastName !== undefined) formData.append('lastName', data.lastName);
+    if (data.gender) formData.append('gender', data.gender);
+    if (data.dateOfBirth) formData.append('dateOfBirth', data.dateOfBirth);
+    if (data.departmentID !== undefined) formData.append('departmentID', data.departmentID);
+    return apiClient.putFormData('/user/update/profile', formData);
+  },
 
   getUsersByDepartment: async (departmentId: number) => {
     return await apiClient.get(`/Auth/User/getbyDepartmentID/${departmentId}`);

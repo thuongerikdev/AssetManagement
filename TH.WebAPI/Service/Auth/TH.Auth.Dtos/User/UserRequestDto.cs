@@ -66,6 +66,7 @@ namespace TH.Auth.Dtos.User
         public IFormFile? avatar { get; set; }
         public string? gender { get; set; }
         public DateTime? dateOfBirth { get; set; }
+        public string? departmentID { get; set; }
     }
 
 

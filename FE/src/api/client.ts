@@ -95,8 +95,12 @@ const callRefreshToken = async () => {
 
 // --- CUSTOM FETCH WRAPPER ---
 const customFetch = async (endpoint: string, options: RequestInit): Promise<any> => {
-  // Lấy header mới nhất gắn vào request
-  options.headers = getHeaders();
+  const headers = getHeaders();
+  // Don't override Content-Type for FormData — browser sets it with boundary
+  if (options.body instanceof FormData) {
+    delete headers['Content-Type'];
+  }
+  options.headers = headers;
   
   let response = await fetch(buildUrl(endpoint), options);
 
@@ -171,5 +175,11 @@ export const apiClient = {
     body: JSON.stringify(data),
   }),
 
-  delete: (endpoint: string) => customFetch(endpoint, { method: 'DELETE', credentials: 'omit' })
+  delete: (endpoint: string) => customFetch(endpoint, { method: 'DELETE', credentials: 'omit' }),
+
+  putFormData: (endpoint: string, formData: FormData) => customFetch(endpoint, {
+    method: 'PUT',
+    credentials: 'omit',
+    body: formData,
+  }),
 };

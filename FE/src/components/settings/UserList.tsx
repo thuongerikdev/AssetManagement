@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   Users, Search, Trash2, ShieldCheck,
   XCircle, CheckCircle2, Loader2, Mail, RefreshCw,
-  Plus, UserCog, Save, X, Eye, EyeOff,
+  Plus, UserCog, Save, X, Eye, EyeOff, Pencil,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { authApi, CreateUserRequest } from '../../api/authApi';
+import { authApi, CreateUserRequest, UpdateUserProfileRequest } from '../../api/authApi';
 
 let cachedUsers: any[] | null = null;
 let cachedRoles: any[] | null = null;
@@ -44,6 +44,13 @@ export function UserList() {
   const [createForm, setCreateForm] = useState<CreateUserRequest>(emptyForm);
   const [isSaving, setIsSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Modal: sửa user
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState<UpdateUserProfileRequest>({
+    userID: 0, newUserName: '', firstName: '', lastName: '', gender: '', dateOfBirth: '', departmentID: '',
+  });
+  const [isEditing, setIsEditing] = useState(false);
 
   // Modal: gán role
   const [isAssignOpen, setIsAssignOpen] = useState(false);
@@ -210,6 +217,42 @@ export function UserList() {
     setSelectedRoleIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
+  };
+
+  const openEditModal = (user: any) => {
+    setEditForm({
+      userID: user.userID,
+      newUserName: user.userName,
+      firstName: user.profile?.firstName || '',
+      lastName: user.profile?.lastName || '',
+      gender: user.profile?.gender || '',
+      dateOfBirth: user.profile?.dateOfBirth ? user.profile.dateOfBirth.split('T')[0] : '',
+      departmentID: user.departmentID || '',
+    });
+    setIsEditOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editForm.newUserName) {
+      toast.error('Tên đăng nhập không được để trống!');
+      return;
+    }
+    setIsEditing(true);
+    try {
+      const res = await authApi.updateUserProfile(editForm);
+      if (res.errorCode === 200) {
+        toast.success('Cập nhật thông tin thành công!');
+        setIsEditOpen(false);
+        fetchUsers(true);
+      } else {
+        toast.error(res.errorMessage || 'Cập nhật thất bại');
+      }
+    } catch {
+      toast.error('Lỗi kết nối máy chủ');
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   const toggleCreateRole = (id: number) => {
@@ -393,6 +436,13 @@ export function UserList() {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1">
                         <button
+                          onClick={() => openEditModal(row)}
+                          className="p-1.5 text-orange-500 hover:bg-orange-50 rounded transition-colors"
+                          title="Chỉnh sửa thông tin"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => openAssignModal(row)}
                           className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
                           title="Phân quyền vai trò"
@@ -415,6 +465,112 @@ export function UserList() {
           </table>
         </div>
       </div>
+
+      {/* ── Modal: Sửa User ─────────────────────────────────────────────────────── */}
+      {isEditOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <Pencil className="w-5 h-5 text-orange-500" /> Chỉnh sửa thông tin
+              </h2>
+              <button onClick={() => setIsEditOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Thông tin đăng nhập</p>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Tên đăng nhập <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text" required
+                  value={editForm.newUserName}
+                  onChange={e => setEditForm(p => ({ ...p, newUserName: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-sm"
+                  placeholder="username"
+                />
+              </div>
+
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 pt-2">Hồ sơ cá nhân</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Họ</label>
+                  <input
+                    type="text"
+                    value={editForm.firstName}
+                    onChange={e => setEditForm(p => ({ ...p, firstName: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-sm"
+                    placeholder="Nguyễn"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Tên</label>
+                  <input
+                    type="text"
+                    value={editForm.lastName}
+                    onChange={e => setEditForm(p => ({ ...p, lastName: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-sm"
+                    placeholder="Văn A"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Giới tính</label>
+                  <select
+                    value={editForm.gender}
+                    onChange={e => setEditForm(p => ({ ...p, gender: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-sm bg-white"
+                  >
+                    {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Ngày sinh</label>
+                  <input
+                    type="date"
+                    value={editForm.dateOfBirth}
+                    onChange={e => setEditForm(p => ({ ...p, dateOfBirth: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Phòng ban</label>
+                <select
+                  value={editForm.departmentID}
+                  onChange={e => setEditForm(p => ({ ...p, departmentID: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-sm bg-white"
+                >
+                  <option value="">-- Không thuộc phòng ban nào --</option>
+                  {departments.map(dept => (
+                    <option key={dept.id} value={String(dept.id)}>
+                      {dept.maPhongBan} - {dept.tenPhongBan}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <button type="button" onClick={() => setIsEditOpen(false)}
+                  className="px-5 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-100 font-medium transition-colors text-sm">
+                  Hủy bỏ
+                </button>
+                <button type="submit" disabled={isEditing}
+                  className="px-6 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 font-bold shadow-md transition-all disabled:opacity-50 flex items-center gap-2 text-sm">
+                  {isEditing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ── Modal: Tạo User ─────────────────────────────────────────────────────── */}
       {isCreateOpen && (

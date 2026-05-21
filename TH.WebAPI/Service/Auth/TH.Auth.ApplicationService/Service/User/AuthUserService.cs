@@ -227,6 +227,11 @@ namespace TH.Auth.ApplicationService.Service.User
                 }
                 await _users.UpdateUserName(req.newUserName, req.userID, ct);
 
+                if (req.departmentID != null)
+                {
+                    user.departmentID = string.IsNullOrWhiteSpace(req.departmentID) ? null : req.departmentID;
+                    await _users.UpdateAsync(user, ct);
+                }
 
                 profile.firstName = req.firstName;
                 profile.lastName = req.lastName;
