@@ -465,7 +465,7 @@ export function AssetDetail() {
       giaTriThanhLy: 0,
       lyDo: '',
       ghiChu: '',
-      trangThai: 'ChoDuyet'
+      trangThai: 'DaHoanThanh'
     });
     setShowLiqModal(true);
   };
@@ -1358,6 +1358,7 @@ export function AssetDetail() {
                   <p className="font-medium text-red-900 mb-1">Lưu ý quan trọng</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     <li>Hệ thống sẽ tự động tính toán lãi/lỗ thanh lý.</li>
+                    <li>Chứng từ kế toán sẽ được <strong>sinh và ghi sổ ngay lập tức</strong>.</li>
                     <li>Trạng thái tài sản sẽ tự động chuyển sang "Đã thanh lý".</li>
                   </ul>
                 </div>
@@ -1420,20 +1421,6 @@ export function AssetDetail() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Trạng thái phiếu <span className="text-red-500">*</span></label>
-                  <select
-                    required
-                    disabled // Khóa không cho người dùng thao tác
-                    value={liqFormData.trangThai ?? 'ChoDuyet'}
-                    onChange={(e) => setLiqFormData({...liqFormData, trangThai: e.target.value})} 
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed font-medium"
-                  >
-                    <option value="ChoDuyet">Chờ duyệt</option>
-                    <option value="DaDuyet">Đã duyệt</option> 
-                    <option value="DaHoanThanh">Hoàn thành (Ghi sổ)</option>
-                  </select>
-                </div>
               </div>
 
               <div>

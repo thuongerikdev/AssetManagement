@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import { Search, FileText, Eye, Lock, Unlock, Download, RefreshCw } from 'lucide-react';
+import { Search, FileText, Eye, Lock, Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { voucherApi, ChungTu } from '../../api/voucherApi';
 import * as XLSX from 'xlsx'; 
@@ -82,20 +82,6 @@ export function VoucherList() {
   useEffect(() => { 
     fetchVouchers(); 
   }, []);
-
-  const handlePostVoucher = async (id: number) => {
-    if (window.confirm('Bạn có chắc chắn muốn ghi sổ chứng từ này?')) {
-      try {
-        const response = await voucherApi.postVoucher(id);
-        if (response.errorCode === 200) {
-          toast.success('Ghi sổ thành công!');
-          fetchVouchers(true); // Ép làm mới để cập nhật trạng thái mới nhất
-        }
-      } catch (error) {
-        toast.error('Lỗi kết nối đến máy chủ.');
-      }
-    }
-  };
 
   // ==========================================
   // 4. USE_MEMO BỘ LỌC ĐỂ RENDER MƯỢT MÀ
@@ -295,19 +281,6 @@ export function VoucherList() {
                           <Link to={`/vouchers/${voucher.id}`} className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-md transition-colors" title="Xem chi tiết">
                             <Eye className="w-4 h-4" />
                           </Link>
-                          {stStatus === 'nhap' ? (
-                            <button
-                              onClick={() => voucher.id && handlePostVoucher(voucher.id)}
-                              className="p-1.5 text-green-600 hover:bg-green-100 rounded-md transition-colors"
-                              title="Ghi sổ kế toán"
-                            >
-                              <Unlock className="w-4 h-4" />
-                            </button>
-                          ) : (
-                            <button disabled className="p-1.5 text-gray-300 cursor-not-allowed rounded-md" title="Đã ghi sổ">
-                              <Lock className="w-4 h-4" />
-                            </button>
-                          )}
                         </div>
                       </td>
                     </tr>

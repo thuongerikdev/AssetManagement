@@ -6,9 +6,9 @@ import { liquidationApi, ThanhLyTaiSan } from '../../api/liquidationApi';
 import { useGlobalData } from '../../context/GlobalContext'; // <-- IMPORT GLOBAL CONTEXT
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  'ChoDuyet': { label: 'Chờ duyệt', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
-  'DaDuyet': { label: 'Đã duyệt', color: 'bg-blue-100 text-blue-700 border-blue-200' },
   'DaHoanThanh': { label: 'Đã thanh lý', color: 'bg-green-100 text-green-700 border-green-200' },
+  'ChoDuyet': { label: 'Đã thanh lý', color: 'bg-green-100 text-green-700 border-green-200' },
+  'DaDuyet': { label: 'Đã thanh lý', color: 'bg-green-100 text-green-700 border-green-200' },
 };
 
 // ==========================================
@@ -151,10 +151,8 @@ export function LiquidationList() {
             <input type="text" placeholder="Tìm mã hoặc tên tài sản..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 font-medium text-gray-700">
-            <option value="all">Tất cả trạng thái</option>
-            <option value="ChoDuyet">Chờ duyệt</option>
-            <option value="DaDuyet">Đã duyệt</option>
-            <option value="DaHoanThanh">Hoàn thành</option>
+            <option value="all">Tất cả</option>
+            <option value="DaHoanThanh">Đã thanh lý</option>
           </select>
         </div>
       </div>
@@ -227,15 +225,13 @@ export function LiquidationList() {
               {!isEditMode ? (
                 /* CHẾ ĐỘ XEM & XỬ LÝ WORKFLOW */
                 <div className="space-y-6">
-                  {/* Trạng thái Workflow */}
-                  <div className={`p-4 rounded-xl border flex items-center justify-between ${statusConfig[selectedRecord.trangThai?.toString() || 'ChoDuyet']?.color}`}>
+                  {/* Trạng thái */}
+                  <div className="p-4 rounded-xl border flex items-center justify-between bg-green-100 text-green-700 border-green-200">
                     <div className="flex items-center gap-2">
                       <FileCheck className="w-5 h-5" />
-                      <span className="font-bold text-sm uppercase tracking-wide">
-                        Trạng thái hiện tại: {statusConfig[selectedRecord.trangThai?.toString() || 'ChoDuyet']?.label}
-                      </span>
+                      <span className="font-bold text-sm uppercase tracking-wide">Đã thanh lý</span>
                     </div>
-                    {selectedRecord.trangThai === 'DaHoanThanh' && <span className="text-xs font-semibold">(Chứng từ đã được ghi nhận)</span>}
+                    <span className="text-xs font-semibold">(Chứng từ đã được ghi sổ)</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -281,7 +277,7 @@ export function LiquidationList() {
                 <form id="edit-liquidation" onSubmit={handleUpdateInfo} className="grid grid-cols-2 gap-5">
                   <div className="col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
                     <AlertCircle className="w-5 h-5 text-blue-600 shrink-0" />
-                    <p className="text-xs text-blue-800">Trạng thái phiếu sẽ được cập nhật thông qua các nút Duyệt. Ở đây bạn chỉ có thể sửa thông tin nội dung.</p>
+                    <p className="text-xs text-blue-800">Chỉ có thể sửa thông tin nội dung của phiếu. Chứng từ kế toán đã được ghi sổ không thể thay đổi.</p>
                   </div>
                   <div className="col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Ngày thanh lý</label>

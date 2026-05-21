@@ -80,7 +80,7 @@ namespace TH.Asset.ApplicationService.Service
                         LaiLo = laiLo,
                         LyDo = request.lyDo,
                         GhiChu = request.ghiChu,
-                        TrangThai = request.trangThai ?? TrangThaiThanhLy.ChoDuyet,
+                        TrangThai = TrangThaiThanhLy.DaHoanThanh,
                         NgayTao = DateTime.UtcNow
                     };
 
@@ -103,7 +103,7 @@ namespace TH.Asset.ApplicationService.Service
                             LoaiChungTu = (LoaiChungTu)3, // Cứ ép kiểu số 3 sang Enum
                             MoTa = $"Thanh lý tài sản {taiSan.MaTaiSan} - {taiSan.TenTaiSan}",
                             TongTien = nguyenGia,
-                            TrangThai = "nhap",
+                            TrangThai = "hoan_thanh",
                             NgayTao = DateTime.UtcNow
                         };
                         _dbContext.chungTus.Add(chungTu);

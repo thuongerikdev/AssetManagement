@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, FileText, Lock, Printer, Download, Unlock } from 'lucide-react';
+import { ArrowLeft, FileText, Lock, Printer, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { voucherApi, ChungTu } from '../../api/voucherApi';
 
@@ -40,23 +40,6 @@ export function VoucherDetail() {
   useEffect(() => {
     fetchVoucherDetail();
   }, [id]);
-
-  const handlePostVoucher = async () => {
-    if (!id) return;
-    if (window.confirm('Bạn có chắc chắn muốn ghi sổ chứng từ này?')) {
-      try {
-        const response = await voucherApi.postVoucher(Number(id));
-        if (response.errorCode === 200) {
-          toast.success('Ghi sổ thành công!');
-          fetchVoucherDetail(); // Reload lại để cập nhật trạng thái
-        } else {
-          toast.error(response.message || 'Lỗi ghi sổ chứng từ.');
-        }
-      } catch (error) {
-        toast.error('Lỗi kết nối máy chủ.');
-      }
-    }
-  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
@@ -231,22 +214,14 @@ export function VoucherDetail() {
       </div>
 
       {/* Actions */}
-      {!isLocked && (
-        <div className="flex justify-end gap-4">
-          <button
-            onClick={() => navigate('/vouchers')}
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Đóng
-          </button>
-          <button
-            onClick={handlePostVoucher}
-            className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Unlock className="w-5 h-5" /> Ghi sổ Kế toán
-          </button>
-        </div>
-      )}
+      <div className="flex justify-end gap-4">
+        <button
+          onClick={() => navigate('/vouchers')}
+          className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Đóng
+        </button>
+      </div>
     </div>
   );
 }
