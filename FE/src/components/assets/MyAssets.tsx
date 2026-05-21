@@ -76,13 +76,21 @@ export function MyAssets() {
   };
 
   const handleReject = async (asset: TaiSan) => {
+    // 1. Kiểm tra ID trước
+    if (!asset.id) {
+      toast.error('Không tìm thấy ID của tài sản này.');
+      return;
+    }
+
     const reason = window.prompt('Nhập lý do từ chối tài sản (bắt buộc):', '');
     if (!reason || reason.trim() === '') {
       toast.warning('Vui lòng nhập lý do từ chối.');
       return;
     }
+    
     try {
-      const res = await assetApi.reject(asset.id, reason);
+      // Lúc này TypeScript biết chắc chắn asset.id là kiểu number rồi
+      const res = await assetApi.reject(asset.id, reason); 
       if (res.errorCode === 200) {
         toast.success(res.message || 'Từ chối tài sản thành công!');
         fetchData();
@@ -106,20 +114,37 @@ export function MyAssets() {
   }, [myAssets]);
 
   // 3.2: Gom nhóm tài sản theo từng NHÂN VIÊN
+// 3.2: Gom nhóm tài sản theo từng NHÂN VIÊN
   const groupedStaffAssets = useMemo(() => {
     if (!deptInfo.isManager || departmentAssets.length === 0) return [];
 
     const groups: { user: any, assets: TaiSan[] }[] = [];
+    
+    // 1. Lọc ra danh sách các user duy nhất đang sở hữu tài sản (loại bỏ trường hợp null/undefined)
+    const uniqueUsersMap = new Map();
+    
+    departmentAssets.forEach(asset => {
+      // Giả sử backend trả về thông tin user lồng trong asset hoặc nằm cùng cấp
+      // Nếu backend trả về dạng asset.nguoiDungId, asset.tenNguoiDung...
+      if (asset.nguoiDungId) {
+        uniqueUsersMap.set(asset.nguoiDungId, {
+          userID: asset.nguoiDungId,
+          // Đổi các trường dưới đây cho đúng với key thực tế backend trả về trong asset (nếu có)
+          fullName: (asset as any).tenNguoiDung || `Nhân viên mã #${asset.nguoiDungId}`, 
+          userName: (asset as any).taiKhoanNguoiDung || `user_${asset.nguoiDungId}`
+        });
+      }
+    });
 
-    // Gắn đồ cho từng nhân viên
-    departmentUsers.forEach(staff => {
+    // 2. Gom tài sản vào từng user tìm được
+    uniqueUsersMap.forEach(staff => {
       const staffAssets = departmentAssets.filter(a => a.nguoiDungId === staff.userID);
       if (staffAssets.length > 0) {
         groups.push({ user: staff, assets: staffAssets });
       }
     });
 
-    // Mở rộng: Gom các tài sản của phòng mà CHƯA giao cho nhân viên nào
+    // 3. Gom các tài sản của phòng mà CHƯA giao cho nhân viên nào
     const unassignedAssets = departmentAssets.filter(a => !a.nguoiDungId);
     if (unassignedAssets.length > 0) {
       groups.push({
@@ -129,7 +154,7 @@ export function MyAssets() {
     }
 
     return groups;
-  }, [departmentUsers, departmentAssets, deptInfo.isManager]);
+  }, [departmentAssets, deptInfo.isManager]);
 
   // ── 4. COMPONENT THẺ TÀI SẢN ──────────────────────────────────────
   const RenderAssetCard = ({ asset, isMyAsset }: { asset: TaiSan, isMyAsset: boolean }) => {

@@ -220,7 +220,7 @@ export function AssetForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nguyên giá (VNĐ) <span className="text-red-500">*</span></label>
-              <input type="number" name="nguyenGia" required value={formData.nguyenGia} onChange={handleChange} min="1" step="0.01" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="VD: 50000000" />
+              <input type="number" name="nguyenGia" readOnly required value={formData.nguyenGia} onChange={handleChange} min="1" step="0.01" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="VD: 50000000" />
             </div>
           </div>
         </div>
@@ -228,14 +228,17 @@ export function AssetForm() {
         {/* Block 2: Thông tin kế toán */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <h3 className="font-bold text-gray-900 mb-5 text-lg">Thông tin kế toán</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tài khoản Kế toán <span className="text-red-500">*</span></label>
               <select 
+              
                 name="maTaiKhoan" 
+                disabled
                 value={formData.maTaiKhoan || ''} 
                 onChange={handleChange} 
                 required
+                
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Chọn tài khoản --</option>
@@ -249,7 +252,7 @@ export function AssetForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian Khấu hao (Tháng) <span className="text-red-500">*</span></label>
-              <input type="number" name="thoiGianKhauHao" required value={formData.thoiGianKhauHao} onChange={handleChange} min="1" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="VD: 36, 48, 60..." />
+              <input  readOnly type="number" name="thoiGianKhauHao" required value={formData.thoiGianKhauHao} onChange={handleChange} min="1" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="VD: 36, 48, 60..." />
             </div>
 
             <div className="md:col-span-2">

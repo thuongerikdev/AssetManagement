@@ -307,7 +307,7 @@ export function DepreciationList() {
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
         <div className="flex-1">
           <p className="text-sm text-blue-900 font-medium">Thông tin khấu hao tháng {selectedMonth}</p>
@@ -315,7 +315,7 @@ export function DepreciationList() {
             Hệ thống tự động lọc ra các tài sản đang hoạt động. <b>Lưu ý:</b> Tài sản mới cấp phát trong tháng này sẽ được tính khấu hao lẻ theo số ngày sử dụng thực tế.
           </p>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
