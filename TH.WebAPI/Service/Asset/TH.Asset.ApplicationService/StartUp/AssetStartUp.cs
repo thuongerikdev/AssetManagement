@@ -70,10 +70,17 @@ namespace TH.Asset.ApplicationService.StartUp
             }
 
             // KV-form: đảm bảo có SSL Mode/TrustServerCertificate
-            if (!raw.Contains("SSL Mode", StringComparison.OrdinalIgnoreCase))
+            if (!raw.Contains("SSL Mode", StringComparison.OrdinalIgnoreCase) &&
+             !raw.Contains("SslMode", StringComparison.OrdinalIgnoreCase))
+            {
                 raw += (raw.EndsWith(";") ? "" : ";") + "SSL Mode=Require";
-            if (!raw.Contains("Trust Server Certificate", StringComparison.OrdinalIgnoreCase))
+            }
+
+            if (!raw.Contains("Trust Server Certificate", StringComparison.OrdinalIgnoreCase) &&
+                !raw.Contains("TrustServerCertificate", StringComparison.OrdinalIgnoreCase))
+            {
                 raw += (raw.EndsWith(";") ? "" : ";") + "Trust Server Certificate=true";
+            }
 
             return raw;
         }
