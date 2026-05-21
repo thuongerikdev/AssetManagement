@@ -322,7 +322,7 @@ export function DepreciationList() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left">
+                <th className="px-6 py-3 text-left w-10">
                   <input
                     type="checkbox"
                     checked={tableAssets.filter(a => !a.isAlreadyDepreciated).length > 0 && tableAssets.filter(a => !a.isAlreadyDepreciated).every(a => a.selected)}
@@ -331,13 +331,13 @@ export function DepreciationList() {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Mã TS</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Mã TS</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Tên tài sản</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày cấp phát</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Nguyên giá</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">KH lũy kế</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase bg-blue-50">KH tháng này</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase bg-green-50">Giá trị còn lại</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap min-w-[120px]">Ngày cấp phát</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase whitespace-nowrap min-w-[130px]">Nguyên giá</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase whitespace-nowrap min-w-[130px]">KH lũy kế</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase whitespace-nowrap min-w-[130px] bg-blue-50">KH tháng này</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase whitespace-nowrap min-w-[140px] bg-green-50">Giá trị còn lại</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
