@@ -105,43 +105,31 @@ export function MyAssets() {
     };
   }, [myAssets]);
 
-  // 3.2: Gom nhóm tài sản theo từng NHÂN VIÊN (dùng tenNguoiDung đính kèm từ backend)
+  // 3.2: Gom nhóm tài sản theo từng NHÂN VIÊN
   const groupedStaffAssets = useMemo(() => {
     if (!deptInfo.isManager || departmentAssets.length === 0) return [];
 
-    const userMap = new Map<number, { user: any; assets: TaiSan[] }>();
-    const unassigned: TaiSan[] = [];
+    const groups: { user: any, assets: TaiSan[] }[] = [];
 
-    departmentAssets.forEach(asset => {
-      if (!asset.nguoiDungId) {
-        unassigned.push(asset);
-        return;
+    // Gắn đồ cho từng nhân viên
+    departmentUsers.forEach(staff => {
+      const staffAssets = departmentAssets.filter(a => a.nguoiDungId === staff.userID);
+      if (staffAssets.length > 0) {
+        groups.push({ user: staff, assets: staffAssets });
       }
-      const uid = asset.nguoiDungId;
-      if (!userMap.has(uid)) {
-        userMap.set(uid, {
-          user: {
-            userID: uid,
-            fullName: asset.tenNguoiDung || `Người dùng #${uid}`,
-            userName: asset.userNameNguoiDung || '',
-          },
-          assets: [],
-        });
-      }
-      userMap.get(uid)!.assets.push(asset);
     });
 
-    const groups: { user: any; assets: TaiSan[] }[] = Array.from(userMap.values());
-
-    if (unassigned.length > 0) {
+    // Mở rộng: Gom các tài sản của phòng mà CHƯA giao cho nhân viên nào
+    const unassignedAssets = departmentAssets.filter(a => !a.nguoiDungId);
+    if (unassignedAssets.length > 0) {
       groups.push({
-        user: { userID: -1, fullName: 'Chưa giao cho ai', userName: 'system' },
-        assets: unassigned,
+        user: { userID: -1, fullName: "Tài sản chung của phòng (Chưa giao ai)", userName: "system" },
+        assets: unassignedAssets
       });
     }
 
     return groups;
-  }, [departmentAssets, deptInfo.isManager]);
+  }, [departmentUsers, departmentAssets, deptInfo.isManager]);
 
   // ── 4. COMPONENT THẺ TÀI SẢN ──────────────────────────────────────
   const RenderAssetCard = ({ asset, isMyAsset }: { asset: TaiSan, isMyAsset: boolean }) => {
