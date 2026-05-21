@@ -81,7 +81,7 @@ export const authApi = {
   },
 
   getUsersByDepartment: async (departmentId: number) => {
-    return await apiClient.get(`/Auth/User/getbyDepartmentID/${departmentId}`);
+    return await apiClient.get(`/user/GetByDepartmentId/${departmentId}`);
   },
 
   // --- ROLES ---

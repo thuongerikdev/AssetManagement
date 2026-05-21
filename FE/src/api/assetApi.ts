@@ -36,6 +36,8 @@ export interface TaiSan {
   maTaiKhoan?: string;
   phongBanId?: number;
   nguoiDungId?: number;
+  tenNguoiDung?: string;
+  userNameNguoiDung?: string;
   ngayCapPhat?: string;
   ngayTao?: string;
   ngayCapNhat?: string;

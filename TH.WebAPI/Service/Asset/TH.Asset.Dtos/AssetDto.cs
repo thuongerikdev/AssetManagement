@@ -159,6 +159,8 @@ namespace TH.Asset.Dtos
         public string? maTaiKhoan { get; set; }
         public int? phongBanId { get; set; }
         public int? nguoiDungId { get; set; }
+        public string? tenNguoiDung { get; set; }
+        public string? userNameNguoiDung { get; set; }
 
         public DateTime? ngayCapPhat { get; set; }
         public DateTime? ngayTao { get; set; }

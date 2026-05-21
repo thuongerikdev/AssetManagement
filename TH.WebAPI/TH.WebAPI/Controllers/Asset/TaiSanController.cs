@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TH.Asset.ApplicationService.Service;
 using TH.Asset.Dtos;
+using TH.Auth.ApplicationService.Service.User;
 
 namespace TH.WebAPI.Controllers.Asset
 {
@@ -132,12 +133,47 @@ namespace TH.WebAPI.Controllers.Asset
         }
 
         [HttpGet("department/{phongBanId}")]
-        // [Authorize] (Tuỳ bạn cấu hình policy)
-        public async Task<IActionResult> GetByDepartmentId(int phongBanId)
+        [Authorize]
+        public async Task<IActionResult> GetByDepartmentId(
+            int phongBanId,
+            [FromServices] IAuthUserService authUserService,
+            CancellationToken ct)
         {
             var result = await _taiSanService.GetTaiSanByPhongBanIdAsync(phongBanId);
-            if (result.ErrorCode == 200) return Ok(result);
-            return BadRequest(result);
+            if (result.ErrorCode != 200) return BadRequest(result);
+
+            var assets = result.Data ?? new List<TaiSanResponse>();
+
+            // Enrich assets with user display names via auth service
+            var usersRes = await authUserService.GetByDepartmentID(phongBanId, ct);
+            if (usersRes.ErrorCode == 200 && usersRes.Data != null)
+            {
+                var userLookup = usersRes.Data
+                    .Where(u => u != null)
+                    .ToDictionary(
+                        u => u!.userID,
+                        u => {
+                            var fn = u!.profile?.firstName ?? "";
+                            var ln = u.profile?.lastName ?? "";
+                            var full = $"{fn} {ln}".Trim();
+                            return (
+                                tenNguoiDung: string.IsNullOrEmpty(full) ? u.userName : full,
+                                userNameNguoiDung: u.userName
+                            );
+                        });
+
+                foreach (var asset in assets)
+                {
+                    if (asset.nguoiDungId.HasValue
+                        && userLookup.TryGetValue(asset.nguoiDungId.Value, out var info))
+                    {
+                        asset.tenNguoiDung = info.tenNguoiDung;
+                        asset.userNameNguoiDung = info.userNameNguoiDung;
+                    }
+                }
+            }
+
+            return Ok(new { errorCode = 200, data = assets });
         }
     }
 }

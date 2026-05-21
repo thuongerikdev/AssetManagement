@@ -559,8 +559,7 @@ namespace TH.Asset.ApplicationService.Service
             {
                 var result = await _dbContext.taiSans
                     .Where(x => x.PhongBanId == phongBanId
-                             && x.NguoiDungId != null
-                             && (x.TrangThai == TrangThaiTaiSan.ChoXacNhan || x.TrangThai == TrangThaiTaiSan.DangSuDung))
+                             && x.TrangThai != TrangThaiTaiSan.DaThanhLy)
                     .Select(x => new TaiSanResponse
                     {
                         id = x.Id,
@@ -570,8 +569,10 @@ namespace TH.Asset.ApplicationService.Service
                         ngayCapPhat = x.NgayCapPhat,
                         nguoiDungId = x.NguoiDungId,
                         phongBanId = x.PhongBanId,
-                        soSeri = x.SoSeri
+                        soSeri = x.SoSeri,
+                        nhaSanXuat = x.NhaSanXuat
                     })
+                    .OrderBy(x => x.nguoiDungId == null ? 1 : 0)
                     .ToListAsync();
 
                 return ResponseConst.Success("Lấy tài sản phòng ban thành công.", result);
